@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="mediatoascii.client/mediatoascii.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="MediaToAscii.Server/MediaToAscii.Server.csproj" />
+</Solution>
