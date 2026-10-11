@@ -2,7 +2,7 @@
 
 ## Goal
 
-A web app that turns uploaded images into ASCII art. v1 is images only; the design must allow video → ASCII later without reworking the conversion core or the frontend upload contract.
+A web app that turns uploaded images and videos into ASCII art. Frontend in Angular; conversion on an ASP.NET Core Minimal API. Pixel→character mapping stays reusable so video frames share the same core as still images.
 
 ## Stack
 
@@ -12,42 +12,44 @@ A web app that turns uploaded images into ASCII art. v1 is images only; the desi
 | Backend | **.NET** Minimal API (version from the template) |
 | Frontend | **Angular** (version from the template) |
 | Images | **SixLabors.ImageSharp** |
+| Video frames | **FFMpegCore** (system ffmpeg may be required at runtime) |
 | Name | **media-to-ascii** (`MediaToAscii` for .NET) |
 
 ## How it works
 
 ```
-Browser (Angular)  →  POST multipart (image + options)  →  ASP.NET API
+Browser (Angular)  →  POST multipart (media + options)  →  ASP.NET API
                                                               ↓
-                                                    load → resize → map pixels → ASCII text
+                                         image: load → resize → map pixels → ASCII
+                                         video: sample frames → same path per frame (parallel later)
                                                               ↓
 Browser  ←  text/plain  ←─────────────────────────────────────┘
 ```
 
-1. User picks an image and conversion options in the UI.
-2. Angular uploads the file and options; it does **no** image processing.
+1. User picks an image or video and conversion options in the UI.
+2. Angular uploads the file and options; it does **no** media processing.
 3. The API validates input, runs conversion on the backend, returns plain ASCII text.
 4. The UI shows the result in a monospace preview and allows copy / download as `.txt`.
 
-Conversion stays on the server in a reusable backend module with two concerns kept separate:
+Conversion stays on the server with two concerns kept separate:
 
-- **Pixel → character** — pure, single-frame mapping (reusable for video frames later)
-- **Orchestration** — load, resize, walk pixels, assemble output (images now; frame loop later)
+- **Pixel → character** — pure, stateless, single frame
+- **Orchestration** — load/resize for images; frame extract + loop for video (parallelizable)
 
-v1 stays single-threaded; orchestration should be easy to parallelize later without touching the pixel→char logic.
+## Capabilities
 
-## Capabilities (v1)
-
-- Upload image (drag-and-drop or file picker; common formats such as JPG/PNG)
+- Upload image or video (drag-and-drop or file picker)
 - Options: output width, invert luminance, character-set preset (classic / detailed / blocks)
-- Preview ASCII in the page
-- Copy to clipboard and download as `.txt`
+- Preview ASCII; copy to clipboard; download `.txt`
+- Video: up to 30 evenly sampled frames; multi-frame text separated in the response
 - Single-page UI; minimal CSS; no UI kit
 
-## Out of scope (v1)
+## Out of scope
 
-Video, color ASCII, image-from-URL, PNG export of ASCII, auth/DB, Docker, and non-trivial test suites.
+Color ASCII, PNG export of ASCII, media-from-URL, auth/DB, Docker, non-trivial test suites.
 
 ## Success look like
 
-One `dotnet run` / F5 starts API + Angular. Upload an image → ASCII appears quickly. Options change the output. Copy/download work. All conversion lives on the backend; the frontend only uploads, configures, and displays.
+One `dotnet run` / F5 starts API + Angular. Upload image or video → ASCII appears. Options change the output. Copy/download work. All conversion lives on the backend; the frontend only uploads, configures, and displays.
+
+Step-by-step build order: [implementation.md](./implementation.md).
