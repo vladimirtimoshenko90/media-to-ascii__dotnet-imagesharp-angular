@@ -1,0 +1,38 @@
+---
+description: m2asc workflow — claim steps, avoid file conflicts, review before ship
+alwaysApply: true
+---
+
+# m2asc workflow
+
+Living plan: `docs/implementation.md` (see also `docs/spec.md`).
+
+## Status icons (plan only)
+
+| Icon | Meaning |
+|------|---------|
+| `⬜` | pending — not started |
+| `⏳` | in progress — claimed; coding |
+| `🔍` | under review — implementation done; awaiting review |
+| `✅` | completed — approved, committed, pushed |
+
+Keep the Contents TOC and the leaf body status in sync.
+
+## Claiming work
+
+Follow the plan’s **Agent playbook**, **Needs**, **Files**, **Hot files**, and **Locked layout**.
+
+1. Read the plan; note every leaf that is `⏳` or `🔍` and the **Files** it owns.
+2. Pick the next `⬜` leaf that (a) has all **Needs** leaves `✅`, and (b) **Files** do not overlap any `⏳`/`🔍` leaf (respect **Hot files** — one agent at a time).
+3. Set that leaf to `⏳` in Contents and body **before** editing code.
+4. Implement **only** that leaf; put new code on the **Locked layout** paths.
+
+All agents share one folder — status on disk is the lock. Do not commit intermediate status flips (`⬜`→`⏳`→`🔍`); only commit the plan when shipping (`✅`).
+
+## Commands
+
+- `/m2asc-next` — claim + implement next leaf; propose commit message; set `🔍`
+- `/m2asc-review` — review this leaf’s pending diff; do not commit or push
+- `/m2asc-ship` — after human approval: commit, push, mark `✅`
+
+Never commit or push unless the user runs `/m2asc-ship` or explicitly asks to ship.

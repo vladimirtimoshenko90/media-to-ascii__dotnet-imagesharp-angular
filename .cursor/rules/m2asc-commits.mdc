@@ -1,0 +1,24 @@
+---
+description: m2asc commit message format for this repository
+alwaysApply: true
+---
+
+# m2asc commits
+
+Format (guideline, not rigid):
+
+```text
+area - subarea, what was done/introduced/fixed
+```
+
+Examples:
+
+- `backend - conversion, add pixel to character mapping`
+- `frontend - ui, add image upload zone`
+- `docs - plan, mark step 2.1 completed`
+
+Rules:
+
+- Prefer short, outcome-focused subjects (about one line)
+- On `/m2asc-ship`, use this format and include the plan leaf status → `✅` in the same commit as the code
+- Do not invent Conventional Commit prefixes (`feat:`, `fix:`) unless the user asks
