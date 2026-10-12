@@ -4,27 +4,27 @@ using FFMpegCore.Pipes;
 
 namespace MediaToAscii.Server.Conversion;
 
-public sealed class VideoAsciiConverter : IVideoAsciiConverter
+public interface IVideoAsciiConverter
+{
+    Task<VideoAsciiResult> Convert(Stream stream, ConvertOptions options, CancellationToken ct);
+}
+
+public sealed class VideoAsciiResult
+{
+    public IReadOnlyList<string> Frames { get; init; } = [];
+}
+
+public sealed class VideoAsciiConverter(IImageAsciiConverter imageConverter) : IVideoAsciiConverter
 {
     public const int MaxFrames = 30;
 
-    private readonly IImageAsciiConverter _imageConverter;
-
-    public VideoAsciiConverter(IImageAsciiConverter imageConverter)
-    {
-        _imageConverter = imageConverter;
-    }
-
-    public async Task<VideoAsciiResult> ConvertAsync(
-        Stream stream,
-        ConvertOptions options,
-        CancellationToken cancellationToken = default)
+    public async Task<VideoAsciiResult> Convert(Stream stream, ConvertOptions options, CancellationToken ct)
     {
         await using var videoBuffer = new MemoryStream();
-        await stream.CopyToAsync(videoBuffer, cancellationToken);
+        await stream.CopyToAsync(videoBuffer, ct);
         videoBuffer.Position = 0;
 
-        var analysis = await FFProbe.AnalyseAsync(videoBuffer, cancellationToken: cancellationToken);
+        var analysis = await FFProbe.AnalyseAsync(videoBuffer, cancellationToken: ct);
         videoBuffer.Position = 0;
 
         var duration = analysis.Duration;
@@ -37,25 +37,25 @@ public sealed class VideoAsciiConverter : IVideoAsciiConverter
         var frames = new List<string>(timestamps.Count);
         for (var i = 0; i < timestamps.Count; i++)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            ct.ThrowIfCancellationRequested();
 
-            await using var pngBuffer = await ExtractFramePngAsync(
+            await using var pngBuffer = await ExtractFramePng(
                 videoBuffer,
                 timestamps[i],
                 videoStreamIndex,
-                cancellationToken);
-            var ascii = await _imageConverter.ConvertAsync(pngBuffer, options, cancellationToken);
+                ct);
+            var ascii = await imageConverter.Convert(pngBuffer, options, ct);
             frames.Add(ascii);
         }
 
         return new VideoAsciiResult { Frames = frames };
     }
 
-    private static async Task<MemoryStream> ExtractFramePngAsync(
+    private static async Task<MemoryStream> ExtractFramePng(
         MemoryStream videoBuffer,
         TimeSpan captureTime,
         int videoStreamIndex,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
         videoBuffer.Position = 0;
         var pngBuffer = new MemoryStream();
@@ -67,7 +67,7 @@ public sealed class VideoAsciiConverter : IVideoAsciiConverter
                 .WithVideoCodec(VideoCodec.Image.Png)
                 .WithFrameOutputCount(1)
                 .ForceFormat("image2"))
-            .CancellableThrough(cancellationToken)
+            .CancellableThrough(ct)
             .ProcessAsynchronously();
 
         pngBuffer.Position = 0;

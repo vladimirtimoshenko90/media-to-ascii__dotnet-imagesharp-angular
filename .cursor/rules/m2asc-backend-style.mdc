@@ -23,7 +23,14 @@ Conventions for `{Api}` (ASP.NET). Keep bullets short; expand only when a patter
 - One file per service pair: interface first, concrete type immediately after
 - File name matches the implementation (e.g. `PixelCharMapper.cs` contains `IPixelCharMapper` then `PixelCharMapper`)
 - Do not split into `IFoo.cs` + `Foo.cs`
+- Co-locate small result/DTO types used only by that service in the same file (e.g. `VideoAsciiResult` with `IVideoAsciiConverter` / `VideoAsciiConverter`)
+- Split those types out only when shared across features or they grow real behavior
 
 ## Constructor injection
 
 - Inject dependencies via primary constructors (no separate ctor body for DI wiring)
+
+## Async naming
+
+- Do not postfix method names with `Async` (e.g. prefer `Convert` over `ConvertAsync`)
+- Modern .NET APIs are async by default here; the suffix adds noise without clarity

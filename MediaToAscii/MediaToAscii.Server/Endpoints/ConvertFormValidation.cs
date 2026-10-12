@@ -13,16 +13,16 @@ public static class ConvertFormValidation
     /// Parses multipart form fields <c>file</c>, <c>width</c>, <c>invert</c>, <c>charset</c>.
     /// On failure, <paramref name="error"/> is a plain-text message suitable for HTTP 400.
     /// </summary>
-    public static async Task<(ParsedConvertForm? Parsed, string? Error)> TryParseAsync(
+    public static async Task<(ParsedConvertForm? Parsed, string? Error)> TryParse(
         HttpRequest request,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct)
     {
         if (!request.HasFormContentType)
         {
             return (null, "Expected multipart form data.");
         }
 
-        var form = await request.ReadFormAsync(cancellationToken);
+        var form = await request.ReadFormAsync(ct);
         var file = form.Files.GetFile("file");
         if (file is null || file.Length == 0)
         {

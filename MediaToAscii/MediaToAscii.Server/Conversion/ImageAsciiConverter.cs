@@ -5,21 +5,16 @@ using SixLabors.ImageSharp.Processing;
 
 namespace MediaToAscii.Server.Conversion;
 
-public sealed class ImageAsciiConverter : IImageAsciiConverter
+public interface IImageAsciiConverter
 {
-    private readonly IPixelCharMapper _mapper;
+    Task<string> Convert(Stream stream, ConvertOptions options, CancellationToken ct);
+}
 
-    public ImageAsciiConverter(IPixelCharMapper mapper)
+public sealed class ImageAsciiConverter(IPixelCharMapper mapper) : IImageAsciiConverter
+{
+    public async Task<string> Convert(Stream stream, ConvertOptions options, CancellationToken ct)
     {
-        _mapper = mapper;
-    }
-
-    public async Task<string> ConvertAsync(
-        Stream stream,
-        ConvertOptions options,
-        CancellationToken cancellationToken = default)
-    {
-        using var image = await Image.LoadAsync<Rgba32>(stream, cancellationToken);
+        using var image = await Image.LoadAsync<Rgba32>(stream, ct);
 
         var width = Math.Max(1, options.Width);
         // Monospace glyphs are roughly twice as tall as wide — halve height to keep aspect.
@@ -37,7 +32,7 @@ public sealed class ImageAsciiConverter : IImageAsciiConverter
                 for (var x = 0; x < row.Length; x++)
                 {
                     ref readonly var pixel = ref row[x];
-                    sb.Append(_mapper.ToChar(pixel.R, pixel.G, pixel.B, options));
+                    sb.Append(mapper.ToChar(pixel.R, pixel.G, pixel.B, options));
                 }
 
                 if (y < accessor.Height - 1)

@@ -72,10 +72,6 @@ After 1.1, resolve `{Api}` = API project folder and `{Ng}` = Angular app root (t
 {Api}/
   Conversion/
     ConvertOptions.cs
-    VideoAsciiResult.cs
-    IPixelCharMapper.cs
-    IImageAsciiConverter.cs
-    IVideoAsciiConverter.cs
     PixelCharMapper.cs
     ImageAsciiConverter.cs
     VideoAsciiConverter.cs
@@ -200,7 +196,7 @@ Interfaces + models + concrete class shells (stub bodies ok) + DI extension. **N
 
 - Status: ✅
 - Needs: 1.1
-- Files: `{Api}/Conversion/ConvertOptions.cs`, `{Api}/Conversion/VideoAsciiResult.cs`
+- Files: `{Api}/Conversion/ConvertOptions.cs`, `{Api}/Conversion/VideoAsciiConverter.cs` (`VideoAsciiResult` co-located)
 - Do: `ConvertOptions` (Width=100, Invert=false, Charset=Classic); `VideoAsciiResult` holding ordered frame strings (endpoint can join with the locked separator)
 - Done when: models compile
 - Commit: `backend - contracts, add conversion models`
@@ -209,7 +205,7 @@ Interfaces + models + concrete class shells (stub bodies ok) + DI extension. **N
 
 - Status: ✅
 - Needs: 2.1
-- Files: `{Api}/Conversion/IPixelCharMapper.cs`, `{Api}/Conversion/PixelCharMapper.cs`
+- Files: `{Api}/Conversion/PixelCharMapper.cs`
 - Do: interface for mapping luminance/pixels → charset chars; class stub throws until 4.1
 - Done when: injectable type exists; no I/O
 - Commit: `backend - contracts, add pixel mapper interface`
@@ -218,7 +214,7 @@ Interfaces + models + concrete class shells (stub bodies ok) + DI extension. **N
 
 - Status: ✅
 - Needs: 2.1
-- Files: `{Api}/Conversion/IImageAsciiConverter.cs`, `{Api}/Conversion/ImageAsciiConverter.cs`
+- Files: `{Api}/Conversion/ImageAsciiConverter.cs`
 - Do: `Task<string>` or `string` Convert(Stream, ConvertOptions); stub until 4.2
 - Done when: interface + stub class compile
 - Commit: `backend - contracts, add image converter interface`
@@ -227,7 +223,7 @@ Interfaces + models + concrete class shells (stub bodies ok) + DI extension. **N
 
 - Status: ✅
 - Needs: 2.1
-- Files: `{Api}/Conversion/IVideoAsciiConverter.cs`, `{Api}/Conversion/VideoAsciiConverter.cs`
+- Files: `{Api}/Conversion/VideoAsciiConverter.cs`
 - Do: Convert(Stream, ConvertOptions) → `VideoAsciiResult`; stub until 5.2
 - Done when: interface + stub class compile
 - Commit: `backend - contracts, add video converter interface`
