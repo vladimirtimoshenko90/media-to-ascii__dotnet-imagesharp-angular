@@ -1,0 +1,29 @@
+---
+description: m2asc backend API code style (ASP.NET / {Api})
+alwaysApply: true
+---
+
+# m2asc backend style
+
+Conventions for `{Api}` (ASP.NET). Keep bullets short; expand only when a pattern is repeated.
+
+## DI registration
+
+- File/class: `DependencyInjection` (not `*ServiceCollectionExtensions`)
+- Methods: `Add*Services(this IServiceCollection)`
+- Location: beside the feature (e.g. `Conversion/DependencyInjection.cs`)
+
+## CancellationToken
+
+- Parameter name: `ct` (not `cancellationToken`)
+- No default value (`= default` / `= default(CancellationToken)` forbidden)
+
+## Interface + implementation
+
+- One file per service pair: interface first, concrete type immediately after
+- File name matches the implementation (e.g. `PixelCharMapper.cs` contains `IPixelCharMapper` then `PixelCharMapper`)
+- Do not split into `IFoo.cs` + `Foo.cs`
+
+## Constructor injection
+
+- Inject dependencies via primary constructors (no separate ctor body for DI wiring)
