@@ -27,6 +27,11 @@ Conventions for `{Ng}` (Angular). Keep bullets short; expand only when a pattern
 - Do not nest a single-file component in its own subfolder — place flat under `src/app/components/` (e.g. `components/upload-zone.ts`, not `components/upload-zone/upload-zone.ts`)
 - Use a subfolder only when the component truly has multiple sibling files
 
+## App shell and pages
+
+- `AppComponent` is layout shell only (shared chrome + `<router-outlet />`) — no feature orchestration
+- Routed pages live flat under `src/app/pages/`
+
 ## Accessibility markup
 
 - Do not add ARIA / a11y attributes (`aria-*`, `role` for assistive tech, `sr-only` a11y helpers, etc.)

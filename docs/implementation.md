@@ -62,7 +62,7 @@
 5. When done coding: 🔍. After human approves `/m2asc-ship`: mark ✅; stage only this leaf (hunk-filter the plan if mixed); verify `git diff --cached`; commit locally; do not push unless asked.
 6. Commit style: `area - subarea, what was done/introduced/fixed`.
 
-**Hot files** (serialize — never two agents at once): `{Api}/Program.cs`, `{Ng}/src/app/app.component.ts`, `{Ng}/src/app/app.config.ts`, this `docs/implementation.md` while claiming/shipping.
+**Hot files** (serialize — never two agents at once): `{Api}/Program.cs`, `{Ng}/src/app/app.component.ts`, `{Ng}/src/app/pages/convert-page.ts`, `{Ng}/src/app/app.config.ts`, this `docs/implementation.md` while claiming/shipping.
 
 ### Locked layout
 
@@ -94,7 +94,9 @@ After 1.1, resolve `{Api}` = API project folder and `{Ng}` = Angular app root (t
     option-controls.ts
     ascii-preview.ts
     result-actions.ts
-  app.component.ts (inline template)
+  pages/
+    convert-page.ts
+  app.component.ts (layout shell + router-outlet)
   app.config.ts
   app.routes.ts
   styles.scss (global)
@@ -475,7 +477,7 @@ Polish after the app works end-to-end: README, favicon, UI design pass, plus a s
 
 - Status: ⬜
 - Needs: 8.2
-- Files: `{Ng}/src/app/app.component.ts`, `{Ng}/src/app/components/**`, `{Ng}/src/styles.scss` (templates/styles only as needed)
+- Files: `{Ng}/src/app/pages/convert-page.ts`, `{Ng}/src/app/app.component.ts`, `{Ng}/src/app/components/**`, `{Ng}/src/styles.scss` (templates/styles only as needed)
 - Do: align the live UI with the agreed Open Design artifact / [open-design-prompt.md](./open-design-prompt.md) direction — simple, strict, conservative, minimal styling. Small HTML/CSS (and Bootstrap utility) adjustments so shell, upload, options, preview, and actions match the design; trim leftover template noise. Prefer markup/style finalization over refactors; no new features.
 - Done when: the running page matches the intended design closely enough for ship; layout/states remain intact
 - Commit: `frontend - ui, finalize markup and styles to match design`
