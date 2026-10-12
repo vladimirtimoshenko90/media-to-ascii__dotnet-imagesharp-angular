@@ -33,7 +33,7 @@
   - [✅ 7.2 — Upload zone component](#step-72--upload-zone-component)
   - [✅ 7.3 — Option controls component](#step-73--option-controls-component)
   - [⬜ 7.4 — ASCII preview component](#step-74--ascii-preview-component)
-  - [⬜ 7.5 — Result actions component](#step-75--result-actions-component)
+  - [✅ 7.5 — Result actions component](#step-75--result-actions-component)
   - [⬜ 7.6 — Minimal global styles](#step-76--minimal-global-styles)
 - [⬜ Step 8 — Frontend: wire-up](#step-8--frontend-wire-up)
   - [⬜ 8.1 — Wire image convert flow](#step-81--wire-image-convert-flow)
@@ -403,7 +403,7 @@ One concern per folder so agents can work in parallel. Shell only composes; no c
 
 ### Step 7.5 — Result actions component
 
-- Status: ⬜
+- Status: ✅
 - Needs: 1.4
 - Files: `{Ng}/src/app/components/result-actions/*`
 - Do: copy clipboard + download `.txt` given current text input; use Bootstrap Icons where helpful
