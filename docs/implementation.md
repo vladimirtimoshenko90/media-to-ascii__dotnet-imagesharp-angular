@@ -23,11 +23,11 @@
   - [✅ 5.1 — Add FFMpegCore](#step-51--add-ffmpegcore)
   - [✅ 5.2 — Sequential frame conversion](#step-52--sequential-frame-conversion)
   - [✅ 5.3 — Parallelize frame conversion](#step-53--parallelize-frame-conversion)
-- [⏳ Step 6 — Frontend: contracts and client](#step-6--frontend-contracts-and-client)
+- [✅ Step 6 — Frontend: contracts and client](#step-6--frontend-contracts-and-client)
   - [✅ 6.1 — Options and charset presets](#step-61--options-and-charset-presets)
   - [✅ 6.2 — Convert API client surface](#step-62--convert-api-client-surface)
   - [✅ 6.3 — Image convert HTTP call + HttpClient](#step-63--image-convert-http-call--httpclient)
-  - [⬜ 6.4 — Video convert HTTP call](#step-64--video-convert-http-call)
+  - [✅ 6.4 — Video convert HTTP call](#step-64--video-convert-http-call)
 - [⬜ Step 7 — Frontend: UI components](#step-7--frontend-ui-components)
   - [⬜ 7.1 — App shell](#step-71--app-shell)
   - [⬜ 7.2 — Upload zone component](#step-72--upload-zone-component)
@@ -352,7 +352,7 @@ No UI chrome here — types + HTTP only.
 
 ### Step 6.4 — Video convert HTTP call
 
-- Status: ⬜
+- Status: ✅
 - Needs: 6.3
 - Files: `{Ng}/src/app/conversion/convert-api.service.ts`
 - Do: `convertVideo` → POST `/api/convert/video`, `responseType: 'text'`

@@ -17,6 +17,11 @@ export class ConvertApiService {
   }
 
   convertVideo(file: File, options: ConvertOptions): Observable<string> {
-    throw new Error('Not implemented');
+    const form = new FormData();
+    form.append('file', file);
+    form.append('width', String(options.width));
+    form.append('invert', String(options.invert));
+    form.append('charset', options.charset);
+    return this.http.post('/api/convert/video', form, { responseType: 'text' });
   }
 }
