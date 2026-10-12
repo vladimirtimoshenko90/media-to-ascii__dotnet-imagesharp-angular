@@ -13,8 +13,8 @@
   - [⬜ 2.3 — Image conversion interface](#step-23--image-conversion-interface)
   - [⬜ 2.4 — Video conversion interface](#step-24--video-conversion-interface)
   - [⬜ 2.5 — DI registration (stubs ok)](#step-25--di-registration-stubs-ok)
-- [⬜ Step 3 — Backend: endpoints](#step-3--backend-endpoints)
-  - [⬜ 3.1 — Shared form validation helper](#step-31--shared-form-validation-helper)
+- [⏳ Step 3 — Backend: endpoints](#step-3--backend-endpoints)
+  - [✅ 3.1 — Shared form validation helper](#step-31--shared-form-validation-helper)
   - [⬜ 3.2 — Image convert endpoint](#step-32--image-convert-endpoint)
   - [⬜ 3.3 — Video convert endpoint](#step-33--video-convert-endpoint)
   - [⬜ 3.4 — Map endpoints in Program](#step-34--map-endpoints-in-program)
@@ -249,7 +249,7 @@ Thin Minimal API. Handlers call interfaces only. Prefer endpoint files owning lo
 
 ### Step 3.1 — Shared form validation helper
 
-- Status: ⬜
+- Status: ✅
 - Needs: 2.1
 - Files: `{Api}/Endpoints/ConvertFormValidation.cs`
 - Do: parse/clamp width 20–300; require non-empty file; build `ConvertOptions`; return plain-text error messages for 400s
