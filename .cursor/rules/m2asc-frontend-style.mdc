@@ -1,0 +1,29 @@
+---
+description: m2asc frontend Angular code style ({Ng})
+alwaysApply: true
+---
+
+# m2asc frontend style
+
+Conventions for `{Ng}` (Angular). Keep bullets short; expand only when a pattern is repeated.
+
+## Services
+
+- Injectable services live under `src/app/services/` (not feature folders like `conversion/`)
+- File name matches the service (e.g. `convert-api.service.ts`)
+
+## Models co-located with services
+
+- Small types/DTOs used primarily by one service belong in that service’s file (e.g. `ConvertOptions`, charset presets with `ConvertApiService`)
+- Split a model into its own file only when shared across unrelated features or it grows real behavior
+
+## Components
+
+- Prefer single-file components (inline template/styles in the `.ts` file)
+- Do not nest a single-file component in its own subfolder — place flat under `src/app/components/` (e.g. `components/upload-zone.ts`, not `components/upload-zone/upload-zone.ts`)
+- Use a subfolder only when the component truly has multiple sibling files
+
+## Accessibility markup
+
+- Do not add ARIA / a11y attributes (`aria-*`, `role` for assistive tech, `sr-only` a11y helpers, etc.)
+- Prefer plain semantic HTML and visible labels; skip screen-reader-only affordances in this app
