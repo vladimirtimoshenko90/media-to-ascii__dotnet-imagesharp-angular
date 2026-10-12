@@ -19,36 +19,29 @@ import {
     ResultActionsComponent,
   ],
   template: `
-    <section class="mb-4">
-      <app-upload-zone (fileSelected)="onFileSelected($event)" />
-    </section>
+    <div class="tool-layout">
+      <div class="region region-stack">
+        <app-upload-zone (fileSelected)="onFileSelected($event)" />
+        <app-option-controls (optionsChange)="onOptionsChange($event)" />
+        <button
+          type="button"
+          class="btn btn-convert w-100"
+          [disabled]="!canConvert"
+          (click)="convert()"
+        >
+          Convert
+        </button>
+      </div>
 
-    <section class="mb-4">
-      <app-option-controls (optionsChange)="onOptionsChange($event)" />
-    </section>
-
-    <section class="mb-4">
-      <button
-        type="button"
-        class="btn btn-primary"
-        [disabled]="!canConvert"
-        (click)="convert()"
-      >
-        Convert
-      </button>
-    </section>
-
-    <section class="mb-4">
-      <app-ascii-preview
-        [text]="asciiText"
-        [loading]="loading"
-        [error]="error"
-      />
-    </section>
-
-    <section class="mb-4">
-      <app-result-actions [text]="asciiText ?? ''" />
-    </section>
+      <div class="region">
+        <app-ascii-preview
+          [text]="asciiText"
+          [loading]="loading"
+          [error]="error"
+        />
+        <app-result-actions [text]="asciiText ?? ''" />
+      </div>
+    </div>
   `,
 })
 export class ConvertPage {
@@ -118,8 +111,8 @@ export class ConvertPage {
       if (typeof err.error === 'string' && err.error.trim()) {
         return err.error;
       }
-      return err.message || 'Conversion failed.';
+      return 'Conversion failed. Check the file and try again.';
     }
-    return 'Conversion failed.';
+    return 'Conversion failed. Check the file and try again.';
   }
 }

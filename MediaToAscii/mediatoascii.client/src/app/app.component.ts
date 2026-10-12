@@ -5,10 +5,10 @@ import { RouterOutlet } from '@angular/router';
   selector: 'app-root',
   imports: [RouterOutlet],
   template: `
-    <main class="container py-4">
-      <header class="mb-4">
+    <main class="page-shell">
+      <header class="tool-header">
         <h1>Media to ASCII</h1>
-        <p class="text-secondary mb-0">Convert images and video to ASCII art.</p>
+        <p>Convert images and video to ASCII art.</p>
       </header>
       <router-outlet />
     </main>

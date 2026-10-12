@@ -38,10 +38,10 @@
 - [✅ Step 8 — Frontend: wire-up](#step-8--frontend-wire-up)
   - [✅ 8.1 — Wire image convert flow](#step-81--wire-image-convert-flow)
   - [✅ 8.2 — Wire video convert flow](#step-82--wire-video-convert-flow)
-- [⏳ Step 9 — Finalization](#step-9--finalization)
+- [✅ Step 9 — Finalization](#step-9--finalization)
   - [✅ 9.1 — Write project README](#step-91--write-project-readme)
   - [✅ 9.2 — Generate app favicon](#step-92--generate-app-favicon)
-  - [⬜ 9.3 — Finalize UI to match design](#step-93--finalize-ui-to-match-design)
+  - [✅ 9.3 — Finalize UI to match design](#step-93--finalize-ui-to-match-design)
   - [✅ 9.4 — Backend Conversion folder cleanup](#step-94--backend-conversion-folder-cleanup)
 
 ### Status legend
@@ -475,7 +475,7 @@ Polish after the app works end-to-end: README, favicon, UI design pass, plus a s
 
 ### Step 9.3 — Finalize UI to match design
 
-- Status: ⬜
+- Status: ✅
 - Needs: 8.2
 - Files: `{Ng}/src/app/pages/convert-page.ts`, `{Ng}/src/app/app.component.ts`, `{Ng}/src/app/components/**`, `{Ng}/src/styles.scss` (templates/styles only as needed)
 - Do: align the live UI with the agreed Open Design artifact / [open-design-prompt.md](./open-design-prompt.md) direction — simple, strict, conservative, minimal styling. Small HTML/CSS (and Bootstrap utility) adjustments so shell, upload, options, preview, and actions match the design; trim leftover template noise. Prefer markup/style finalization over refactors; no new features.

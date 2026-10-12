@@ -13,11 +13,12 @@ import {
   selector: 'app-option-controls',
   imports: [FormsModule],
   template: `
-    <div class="option-controls d-flex flex-column gap-3">
+    <div class="opt-row">
       <div>
-        <label class="form-label" for="convert-width">
-          Width: {{ width }}
-        </label>
+        <div class="d-flex justify-content-between align-items-baseline mb-1">
+          <label class="form-label mb-0" for="convert-width">Width</label>
+          <span class="opt-meta">{{ width }}</span>
+        </div>
         <input
           id="convert-width"
           type="range"
@@ -41,10 +42,10 @@ import {
       </div>
 
       <div>
-        <label class="form-label" for="convert-charset">Charset</label>
+        <label class="form-label" for="convert-charset">Character set</label>
         <select
           id="convert-charset"
-          class="form-select"
+          class="form-select form-select-sm"
           [(ngModel)]="charsetName"
           (ngModelChange)="emitOptions()"
         >
@@ -54,6 +55,18 @@ import {
         </select>
       </div>
     </div>
+  `,
+  styles: `
+    .opt-row {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .opt-row label.form-label,
+    .opt-row .form-check-label {
+      color: var(--fg);
+      font-size: 0.9rem;
+    }
   `,
 })
 export class OptionControlsComponent {

@@ -3,23 +3,23 @@ import { Component, input } from '@angular/core';
 @Component({
   selector: 'app-result-actions',
   template: `
-    <div class="d-flex gap-2">
+    <div class="result-actions">
       <button
         type="button"
-        class="btn btn-outline-secondary btn-sm"
+        class="btn btn-sm btn-secondary-action"
         [disabled]="!hasText"
         (click)="copy()"
       >
-        <i class="bi bi-clipboard me-1"></i>
+        <i class="bi bi-clipboard"></i>
         Copy
       </button>
       <button
         type="button"
-        class="btn btn-outline-secondary btn-sm"
+        class="btn btn-sm btn-secondary-action"
         [disabled]="!hasText"
         (click)="download()"
       >
-        <i class="bi bi-download me-1"></i>
+        <i class="bi bi-download"></i>
         Download
       </button>
     </div>
