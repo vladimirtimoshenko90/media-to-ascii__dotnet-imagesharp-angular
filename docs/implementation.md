@@ -10,7 +10,7 @@
 - [⏳ Step 2 — Backend: contracts](#step-2--backend-contracts)
   - [✅ 2.1 — Shared models and charset defaults](#step-21--shared-models-and-charset-defaults)
   - [✅ 2.2 — Pixel → character interface](#step-22--pixel--character-interface)
-  - [⬜ 2.3 — Image conversion interface](#step-23--image-conversion-interface)
+  - [✅ 2.3 — Image conversion interface](#step-23--image-conversion-interface)
   - [⬜ 2.4 — Video conversion interface](#step-24--video-conversion-interface)
   - [⬜ 2.5 — DI registration (stubs ok)](#step-25--di-registration-stubs-ok)
 - [⏳ Step 3 — Backend: endpoints](#step-3--backend-endpoints)
@@ -216,7 +216,7 @@ Interfaces + models + concrete class shells (stub bodies ok) + DI extension. **N
 
 ### Step 2.3 — Image conversion interface
 
-- Status: ⬜
+- Status: ✅
 - Needs: 2.1
 - Files: `{Api}/Conversion/IImageAsciiConverter.cs`, `{Api}/Conversion/ImageAsciiConverter.cs`
 - Do: `Task<string>` or `string` Convert(Stream, ConvertOptions); stub until 4.2
