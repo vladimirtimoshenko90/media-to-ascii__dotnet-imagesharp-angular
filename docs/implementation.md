@@ -32,7 +32,7 @@
   - [✅ 7.1 — App shell](#step-71--app-shell)
   - [✅ 7.2 — Upload zone component](#step-72--upload-zone-component)
   - [✅ 7.3 — Option controls component](#step-73--option-controls-component)
-  - [⬜ 7.4 — ASCII preview component](#step-74--ascii-preview-component)
+  - [✅ 7.4 — ASCII preview component](#step-74--ascii-preview-component)
   - [✅ 7.5 — Result actions component](#step-75--result-actions-component)
   - [⬜ 7.6 — Minimal global styles](#step-76--minimal-global-styles)
 - [⬜ Step 8 — Frontend: wire-up](#step-8--frontend-wire-up)
@@ -394,7 +394,7 @@ One concern per folder so agents can work in parallel. Shell only composes; no c
 
 ### Step 7.4 — ASCII preview component
 
-- Status: ⬜
+- Status: ✅
 - Needs: 1.4
 - Files: `{Ng}/src/app/components/ascii-preview/*`
 - Do: `<pre>` monospace, `line-height: 1`; inputs for text, loading, error
