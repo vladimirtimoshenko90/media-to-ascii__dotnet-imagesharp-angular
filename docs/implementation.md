@@ -4,7 +4,7 @@
 
 - [⏳ Step 1 — Solution: scaffold](#step-1--solution-scaffold)
   - [✅ 1.1 — Create Angular + ASP.NET Core app](#step-11--create-angular--aspnet-core-app)
-  - [⬜ 1.2 — Boilerplate solution cleanup](#step-12--boilerplate-solution-cleanup)
+  - [✅ 1.2 — Boilerplate solution cleanup](#step-12--boilerplate-solution-cleanup)
   - [⬜ 1.3 — Add ImageSharp](#step-13--add-imagesharp)
   - [⬜ 1.4 — Frontend infrastructure setup](#step-14--frontend-infrastructure-setup)
 - [⬜ Step 2 — Backend: contracts](#step-2--backend-contracts)
@@ -163,7 +163,7 @@ Ship **media-to-ascii**: Angular UI uploads image/video + options; ASP.NET Minim
 
 ### Step 1.2 — Boilerplate solution cleanup
 
-- Status: ⏳
+- Status: ✅
 - Needs: 1.1
 - Files: template leftovers under `{Api}/**`, `{Ng}/**`, root `.gitignore`, this plan as needed
 - Do: strip weather demo, unused test infra, template docs/changelogs, consolidate gitignore, trim harmless template extras; keep SPA start scripts and routing intact; app must still run

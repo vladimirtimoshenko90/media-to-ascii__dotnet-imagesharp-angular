@@ -1,38 +1,34 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-
-interface WeatherForecast {
-  date: string;
-  temperatureC: number;
-  temperatureF: number;
-  summary: string;
-}
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
   standalone: false,
-  styleUrl: './app.component.css'
+  template: `
+    <main>
+      <h1>{{ title }}</h1>
+      <p>Convert images and video to ASCII art.</p>
+    </main>
+  `,
+  styles: [`
+    :host {
+      display: block;
+      max-width: 48rem;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      font-family: system-ui, sans-serif;
+    }
+
+    h1 {
+      margin: 0 0 0.5rem;
+      font-size: 1.75rem;
+    }
+
+    p {
+      margin: 0;
+      color: #444;
+    }
+  `]
 })
-export class AppComponent implements OnInit {
-  public forecasts: WeatherForecast[] = [];
-
-  constructor(private http: HttpClient) {}
-
-  ngOnInit() {
-    this.getForecasts();
-  }
-
-  getForecasts() {
-    this.http.get<WeatherForecast[]>('/weatherforecast').subscribe(
-      (result) => {
-        this.forecasts = result;
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-  }
-
-  title = 'mediatoascii.client';
+export class AppComponent {
+  title = 'media-to-ascii';
 }

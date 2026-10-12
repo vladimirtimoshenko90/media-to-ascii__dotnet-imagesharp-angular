@@ -1,6 +1,3 @@
 @MediaToAscii.Server_HostAddress = http://localhost:5252
 
-GET {{MediaToAscii.Server_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
+### Convert endpoints will be added here

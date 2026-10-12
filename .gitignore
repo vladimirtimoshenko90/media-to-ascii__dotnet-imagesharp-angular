@@ -5,19 +5,35 @@ Desktop.ini
 
 # Editors / IDEs
 .vs/
-.vscode/settings.json
+.vscode/
+# Keep Angular SPA debug launch/tasks (VS needs these to start the client)
+!MediaToAscii/mediatoascii.client/.vscode/
+!MediaToAscii/mediatoascii.client/.vscode/launch.json
+!MediaToAscii/mediatoascii.client/.vscode/tasks.json
 .idea/
+.history/
 *.user
 *.suo
+*.launch
+.project
+.classpath
+.settings/
 
 # Secrets / local env
 .env
 .env.*
 *.local.json
 
-# Dependencies & build
-node_modules/
-dist/
+# .NET
 bin/
 obj/
+
+# Node / Angular
+node_modules/
+dist/
+out-tsc/
+.angular/
+coverage/
+npm-debug.log*
+yarn-error.log*
 *.log
