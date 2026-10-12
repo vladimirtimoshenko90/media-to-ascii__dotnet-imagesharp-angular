@@ -5,7 +5,7 @@
 - [⏳ Step 1 — Solution: scaffold](#step-1--solution-scaffold)
   - [✅ 1.1 — Create Angular + ASP.NET Core app](#step-11--create-angular--aspnet-core-app)
   - [✅ 1.2 — Boilerplate solution cleanup](#step-12--boilerplate-solution-cleanup)
-  - [⬜ 1.3 — Add ImageSharp](#step-13--add-imagesharp)
+  - [✅ 1.3 — Add ImageSharp and FFMpegCore](#step-13--add-imagesharp-and-ffmpegcore)
   - [⬜ 1.4 — Frontend infrastructure setup](#step-14--frontend-infrastructure-setup)
 - [⬜ Step 2 — Backend: contracts](#step-2--backend-contracts)
   - [⬜ 2.1 — Shared models and charset defaults](#step-21--shared-models-and-charset-defaults)
@@ -22,7 +22,7 @@
   - [⬜ 4.1 — Pixel → character implementation](#step-41--pixel--character-implementation)
   - [⬜ 4.2 — Image conversion implementation](#step-42--image-conversion-implementation)
 - [⬜ Step 5 — Backend: video processing](#step-5--backend-video-processing)
-  - [⬜ 5.1 — Add FFMpegCore](#step-51--add-ffmpegcore)
+  - [✅ 5.1 — Add FFMpegCore](#step-51--add-ffmpegcore)
   - [⬜ 5.2 — Sequential frame conversion](#step-52--sequential-frame-conversion)
   - [⬜ 5.3 — Parallelize frame conversion](#step-53--parallelize-frame-conversion)
 - [⬜ Step 6 — Frontend: contracts and client](#step-6--frontend-contracts-and-client)
@@ -170,14 +170,14 @@ Ship **media-to-ascii**: Angular UI uploads image/video + options; ASP.NET Minim
 - Done when: no weather residue; template noise removed; `dotnet run` / F5 still starts API + Angular
 - Commit: `solution - cleanup, strip template boilerplate from MediaToAscii app`
 
-### Step 1.3 — Add ImageSharp
+### Step 1.3 — Add ImageSharp and FFMpegCore
 
-- Status: ⬜
+- Status: ✅
 - Needs: 1.2
 - Files: `{Api}/*.csproj`
-- Do: add `SixLabors.ImageSharp`
-- Done when: package referenced; restore ok
-- Commit: `backend - deps, add SixLabors.ImageSharp`
+- Do: add `SixLabors.ImageSharp` and `FFMpegCore` (video frame extraction later; system ffmpeg may still be required at runtime)
+- Done when: both packages referenced; restore ok
+- Commit: `backend - deps, add ImageSharp and FFMpegCore`
 
 ### Step 1.4 — Frontend infrastructure setup
 
@@ -313,12 +313,12 @@ Reuse image/pixel pieces; then parallelize the frame loop only.
 
 ### Step 5.1 — Add FFMpegCore
 
-- Status: ⬜
+- Status: ✅
 - Needs: 1.3
 - Files: `{Api}/*.csproj`
-- Do: add `FFMpegCore` for frame extraction
+- Do: ~~add `FFMpegCore` for frame extraction~~ — done in **1.3** (same csproj PackageReference)
 - Done when: package referenced
-- Commit: `backend - deps, add FFMpegCore`
+- Commit: _(included in 1.3)_
 
 ### Step 5.2 — Sequential frame conversion
 
