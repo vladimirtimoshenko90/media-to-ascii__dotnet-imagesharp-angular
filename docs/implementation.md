@@ -35,9 +35,9 @@
   - [✅ 7.4 — ASCII preview component](#step-74--ascii-preview-component)
   - [✅ 7.5 — Result actions component](#step-75--result-actions-component)
   - [✅ 7.6 — Minimal global styles](#step-76--minimal-global-styles)
-- [⏳ Step 8 — Frontend: wire-up](#step-8--frontend-wire-up)
+- [✅ Step 8 — Frontend: wire-up](#step-8--frontend-wire-up)
   - [✅ 8.1 — Wire image convert flow](#step-81--wire-image-convert-flow)
-  - [⬜ 8.2 — Wire video convert flow](#step-82--wire-video-convert-flow)
+  - [✅ 8.2 — Wire video convert flow](#step-82--wire-video-convert-flow)
 - [⏳ Step 9 — Finalization](#step-9--finalization)
   - [⬜ 9.1 — Write project README](#step-91--write-project-readme)
   - [⬜ 9.2 — Generate app favicon](#step-92--generate-app-favicon)
@@ -440,7 +440,7 @@ Compose components + call convert service. **Only** the app host owns orchestrat
 
 ### Step 8.2 — Wire video convert flow
 
-- Status: ⬜
+- Status: ✅
 - Needs: 6.4, 8.1
 - Files: `{Ng}/src/app/app.component.ts`
 - Do: when file is video, call `convertVideo`; show returned multi-frame text in preview

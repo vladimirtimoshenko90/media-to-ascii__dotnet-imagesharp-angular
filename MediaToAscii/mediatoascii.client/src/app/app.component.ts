@@ -73,10 +73,12 @@ export class AppComponent {
   error: string | null = null;
 
   get canConvert(): boolean {
+    const file = this.selectedFile;
+    if (!file || this.loading) {
+      return false;
+    }
     return (
-      !!this.selectedFile &&
-      this.selectedFile.type.startsWith('image/') &&
-      !this.loading
+      file.type.startsWith('image/') || file.type.startsWith('video/')
     );
   }
 
@@ -92,7 +94,13 @@ export class AppComponent {
 
   convert(): void {
     const file = this.selectedFile;
-    if (!file || !file.type.startsWith('image/') || this.loading) {
+    if (!file || this.loading) {
+      return;
+    }
+
+    const isImage = file.type.startsWith('image/');
+    const isVideo = file.type.startsWith('video/');
+    if (!isImage && !isVideo) {
       return;
     }
 
@@ -100,7 +108,11 @@ export class AppComponent {
     this.error = null;
     this.asciiText = null;
 
-    this.convertApi.convertImage(file, this.options).subscribe({
+    const request = isImage
+      ? this.convertApi.convertImage(file, this.options)
+      : this.convertApi.convertVideo(file, this.options);
+
+    request.subscribe({
       next: (text) => {
         this.asciiText = text;
         this.loading = false;
