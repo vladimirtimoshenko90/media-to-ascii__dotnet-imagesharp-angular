@@ -39,7 +39,7 @@
   - [✅ 8.1 — Wire image convert flow](#step-81--wire-image-convert-flow)
   - [✅ 8.2 — Wire video convert flow](#step-82--wire-video-convert-flow)
 - [⏳ Step 9 — Finalization](#step-9--finalization)
-  - [⬜ 9.1 — Write project README](#step-91--write-project-readme)
+  - [✅ 9.1 — Write project README](#step-91--write-project-readme)
   - [⬜ 9.2 — Generate app favicon](#step-92--generate-app-favicon)
   - [⬜ 9.3 — Finalize UI to match design](#step-93--finalize-ui-to-match-design)
   - [✅ 9.4 — Backend Conversion folder cleanup](#step-94--backend-conversion-folder-cleanup)
@@ -457,7 +457,7 @@ Polish after the app works end-to-end: README, favicon, UI design pass, plus a s
 
 ### Step 9.1 — Write project README
 
-- Status: ⬜
+- Status: ✅
 - Needs: 8.2
 - Files: root `README.md`
 - Do: replace the placeholder README with a short final doc — what the app does, stack, how to run (`dotnet run` / F5), and basic usage
