@@ -35,8 +35,8 @@
   - [✅ 7.4 — ASCII preview component](#step-74--ascii-preview-component)
   - [✅ 7.5 — Result actions component](#step-75--result-actions-component)
   - [✅ 7.6 — Minimal global styles](#step-76--minimal-global-styles)
-- [⬜ Step 8 — Frontend: wire-up](#step-8--frontend-wire-up)
-  - [⬜ 8.1 — Wire image convert flow](#step-81--wire-image-convert-flow)
+- [⏳ Step 8 — Frontend: wire-up](#step-8--frontend-wire-up)
+  - [✅ 8.1 — Wire image convert flow](#step-81--wire-image-convert-flow)
   - [⬜ 8.2 — Wire video convert flow](#step-82--wire-video-convert-flow)
 - [⏳ Step 9 — Finalization](#step-9--finalization)
   - [⬜ 9.1 — Write project README](#step-91--write-project-readme)
@@ -431,7 +431,7 @@ Compose components + call convert service. **Only** the app host owns orchestrat
 
 ### Step 8.1 — Wire image convert flow
 
-- Status: ⬜
+- Status: ✅
 - Needs: 6.3, 7.1–7.5
 - Files: `{Ng}/src/app/app.component.ts`
 - Do: host upload/options/preview/actions + Convert control; on convert (image file) call `convertImage`; set preview/loading/error
