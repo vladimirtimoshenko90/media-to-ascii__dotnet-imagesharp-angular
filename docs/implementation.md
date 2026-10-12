@@ -7,8 +7,8 @@
   - [✅ 1.2 — Boilerplate solution cleanup](#step-12--boilerplate-solution-cleanup)
   - [✅ 1.3 — Add ImageSharp and FFMpegCore](#step-13--add-imagesharp-and-ffmpegcore)
   - [✅ 1.4 — Frontend infrastructure setup](#step-14--frontend-infrastructure-setup)
-- [⬜ Step 2 — Backend: contracts](#step-2--backend-contracts)
-  - [⬜ 2.1 — Shared models and charset defaults](#step-21--shared-models-and-charset-defaults)
+- [⏳ Step 2 — Backend: contracts](#step-2--backend-contracts)
+  - [✅ 2.1 — Shared models and charset defaults](#step-21--shared-models-and-charset-defaults)
   - [⬜ 2.2 — Pixel → character interface](#step-22--pixel--character-interface)
   - [⬜ 2.3 — Image conversion interface](#step-23--image-conversion-interface)
   - [⬜ 2.4 — Video conversion interface](#step-24--video-conversion-interface)
@@ -198,7 +198,7 @@ Interfaces + models + concrete class shells (stub bodies ok) + DI extension. **N
 
 ### Step 2.1 — Shared models and charset defaults
 
-- Status: ⬜
+- Status: ✅
 - Needs: 1.1
 - Files: `{Api}/Conversion/ConvertOptions.cs`, `{Api}/Conversion/VideoAsciiResult.cs`
 - Do: `ConvertOptions` (Width=100, Invert=false, Charset=Classic); `VideoAsciiResult` holding ordered frame strings (endpoint can join with the locked separator)
