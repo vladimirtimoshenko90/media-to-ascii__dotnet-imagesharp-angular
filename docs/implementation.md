@@ -28,13 +28,13 @@
   - [✅ 6.2 — Convert API client surface](#step-62--convert-api-client-surface)
   - [✅ 6.3 — Image convert HTTP call + HttpClient](#step-63--image-convert-http-call--httpclient)
   - [✅ 6.4 — Video convert HTTP call](#step-64--video-convert-http-call)
-- [⏳ Step 7 — Frontend: UI components](#step-7--frontend-ui-components)
+- [✅ Step 7 — Frontend: UI components](#step-7--frontend-ui-components)
   - [✅ 7.1 — App shell](#step-71--app-shell)
   - [✅ 7.2 — Upload zone component](#step-72--upload-zone-component)
   - [✅ 7.3 — Option controls component](#step-73--option-controls-component)
   - [✅ 7.4 — ASCII preview component](#step-74--ascii-preview-component)
   - [✅ 7.5 — Result actions component](#step-75--result-actions-component)
-  - [⬜ 7.6 — Minimal global styles](#step-76--minimal-global-styles)
+  - [✅ 7.6 — Minimal global styles](#step-76--minimal-global-styles)
 - [⬜ Step 8 — Frontend: wire-up](#step-8--frontend-wire-up)
   - [⬜ 8.1 — Wire image convert flow](#step-81--wire-image-convert-flow)
   - [⬜ 8.2 — Wire video convert flow](#step-82--wire-video-convert-flow)
@@ -415,7 +415,7 @@ One concern per folder so agents can work in parallel. Shell only composes; no c
 
 ### Step 7.6 — Minimal global styles
 
-- Status: ⬜
+- Status: ✅
 - Needs: 1.4
 - Files: `{Ng}/src/styles.scss`
 - Do: light page layout on top of SCSS + Bootstrap from 1.4 (no custom design system)

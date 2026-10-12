@@ -1,2 +1,11 @@
 @import "bootstrap/scss/bootstrap";
 @import "bootstrap-icons/font/bootstrap-icons.css";
+
+body {
+  background-color: #f4f4f5;
+  color: #212529;
+}
+
+main.container {
+  max-width: 960px;
+}
