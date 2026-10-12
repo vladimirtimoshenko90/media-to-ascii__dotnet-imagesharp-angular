@@ -1,4 +1,6 @@
-namespace MediaToAscii.Server.Conversion;
+using MediaToAscii.Server.Conversion;
+
+namespace MediaToAscii.Server.Conversion.Services;
 
 public interface IPixelCharMapper
 {

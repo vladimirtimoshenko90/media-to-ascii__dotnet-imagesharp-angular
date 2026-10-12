@@ -38,10 +38,11 @@
 - [⬜ Step 8 — Frontend: wire-up](#step-8--frontend-wire-up)
   - [⬜ 8.1 — Wire image convert flow](#step-81--wire-image-convert-flow)
   - [⬜ 8.2 — Wire video convert flow](#step-82--wire-video-convert-flow)
-- [⬜ Step 9 — Finalization](#step-9--finalization)
+- [⏳ Step 9 — Finalization](#step-9--finalization)
   - [⬜ 9.1 — Write project README](#step-91--write-project-readme)
   - [⬜ 9.2 — Generate app favicon](#step-92--generate-app-favicon)
   - [⬜ 9.3 — Finalize UI to match design](#step-93--finalize-ui-to-match-design)
+  - [✅ 9.4 — Backend Conversion folder cleanup](#step-94--backend-conversion-folder-cleanup)
 
 ### Status legend
 
@@ -71,14 +72,16 @@ After 1.1, resolve `{Api}` = API project folder and `{Ng}` = Angular app root (t
 {Api}/
   Conversion/
     ConvertOptions.cs
-    PixelCharMapper.cs
-    ImageAsciiConverter.cs
-    VideoAsciiConverter.cs
     DependencyInjection.cs
+    Services/
+      PixelCharMapper.cs
+      ImageAsciiConverter.cs
+      VideoAsciiConverter.cs
   Endpoints/
-    ConvertFormValidation.cs
     ImageConvertEndpoint.cs
     VideoConvertEndpoint.cs
+    Helpers/
+      ConvertFormValidation.cs
   Program.cs
 
 {Ng}/src/app/
@@ -123,7 +126,7 @@ After 1.1, resolve `{Api}` = API project folder and `{Ng}` = Angular app root (t
 | C — Frontend client | 6 | `{Ng}/src/app/conversion/**`, `app.config.ts` |
 | D — Frontend UI | 7 (prefer after ✅ 1.4) | `{Ng}/src/app/components/**`, shell, styles |
 | E — Wire-up | 8 (needs 6–7) | app host only |
-| F — Finalization | 9 (needs 8 ✅) | `README.md`, `{Ng}/public/favicon.ico`, `{Ng}` templates/styles |
+| F — Finalization | 9 (9.1–9.3 need 8 ✅; **9.4** needs 5.3 ✅) | README/favicon/UI; `{Api}/Conversion/Services/**` + `{Api}/Endpoints/**` for 9.4 |
 
 ---
 
@@ -447,7 +450,7 @@ Compose components + call convert service. **Only** the app host owns orchestrat
 
 ## Step 9 — Finalization
 
-Polish project presentation after the app works end-to-end: README, favicon, then HTML/CSS UI finalization against the design brief.
+Polish after the app works end-to-end: README, favicon, UI design pass, plus a small backend folder cleanup (can run once Step 5 is ✅).
 
 ### Step 9.1 — Write project README
 
@@ -475,6 +478,15 @@ Polish project presentation after the app works end-to-end: README, favicon, the
 - Do: align the live UI with the agreed Open Design artifact / [open-design-prompt.md](./open-design-prompt.md) direction — simple, strict, conservative, minimal styling. Small HTML/CSS (and Bootstrap utility) adjustments so shell, upload, options, preview, and actions match the design; trim leftover template noise. Prefer markup/style finalization over refactors; no new features.
 - Done when: the running page matches the intended design closely enough for ship; layout/states remain intact
 - Commit: `frontend - ui, finalize markup and styles to match design`
+
+### Step 9.4 — Backend Conversion folder cleanup
+
+- Status: ✅
+- Needs: 5.3
+- Files: `{Api}/Conversion/Services/**`, `{Api}/Endpoints/**` (incl. `Helpers/`), `{Api}/Program.cs` usings as needed
+- Do: fold converters into `Conversion/Services/`; keep endpoint maps at root `{Api}/Endpoints/`; put request-processing helpers (form validation, etc.) under `Endpoints/Helpers/`; update namespaces + `Program.cs` usings; no behavior change
+- Done when: solution builds; routes still `POST /api/convert/image` and `/api/convert/video`
+- Commit: `backend - layout, nest Conversion services and Endpoints helpers`
 
 ---
 

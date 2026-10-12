@@ -1,6 +1,6 @@
 using MediaToAscii.Server.Conversion;
 
-namespace MediaToAscii.Server.Endpoints;
+namespace MediaToAscii.Server.Endpoints.Helpers;
 
 public static class ConvertFormValidation
 {

@@ -1,9 +1,10 @@
 using System.Text;
+using MediaToAscii.Server.Conversion;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-namespace MediaToAscii.Server.Conversion;
+namespace MediaToAscii.Server.Conversion.Services;
 
 public interface IImageAsciiConverter
 {

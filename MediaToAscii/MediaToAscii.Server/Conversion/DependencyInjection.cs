@@ -1,3 +1,5 @@
+using MediaToAscii.Server.Conversion.Services;
+
 namespace MediaToAscii.Server.Conversion;
 
 public static class DependencyInjection

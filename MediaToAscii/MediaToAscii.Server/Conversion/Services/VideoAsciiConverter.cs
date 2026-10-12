@@ -1,8 +1,9 @@
 using FFMpegCore;
 using FFMpegCore.Enums;
 using FFMpegCore.Pipes;
+using MediaToAscii.Server.Conversion;
 
-namespace MediaToAscii.Server.Conversion;
+namespace MediaToAscii.Server.Conversion.Services;
 
 public interface IVideoAsciiConverter
 {

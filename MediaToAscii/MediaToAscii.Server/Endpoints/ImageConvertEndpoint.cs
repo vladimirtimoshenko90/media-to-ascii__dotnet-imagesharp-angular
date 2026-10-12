@@ -1,4 +1,5 @@
-using MediaToAscii.Server.Conversion;
+using MediaToAscii.Server.Conversion.Services;
+using MediaToAscii.Server.Endpoints.Helpers;
 
 namespace MediaToAscii.Server.Endpoints;
 
