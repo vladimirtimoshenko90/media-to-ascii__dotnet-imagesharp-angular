@@ -62,7 +62,7 @@
 5. When done coding: 🔍. After human approves `/m2asc-ship`: commit (code + this plan → ✅) and push.
 6. Commit style: `area - subarea, what was done/introduced/fixed`.
 
-**Hot files** (serialize — never two agents at once): `{Api}/Program.cs`, `{Ng}/src/app/app.ts` (or `app.component.*`), `{Ng}/src/app/app.config.ts`, this `docs/implementation.md` while claiming/shipping.
+**Hot files** (serialize — never two agents at once): `{Api}/Program.cs`, `{Ng}/src/app/app.component.ts`, `{Ng}/src/app/app.config.ts`, this `docs/implementation.md` while claiming/shipping.
 
 ### Locked layout
 
@@ -95,9 +95,10 @@ After 1.1, resolve `{Api}` = API project folder and `{Ng}` = Angular app root (t
     option-controls/
     ascii-preview/
     result-actions/
-  app.ts (or app.component.*)
+  app.component.ts (inline template)
   app.config.ts
-  styles.scss (global; migrated from styles.css in 1.4)
+  app.routes.ts
+  styles.scss (global)
 ```
 
 ### Locked contracts
@@ -139,6 +140,7 @@ Ship **media-to-ascii**: Angular UI uploads image/video + options; ASP.NET Minim
 
 - Name: **media-to-ascii** / **MediaToAscii**
 - Stack: VS Angular + ASP.NET Core template, Minimal API, ImageSharp, FFMpegCore (video)
+- Frontend: **Angular 19** standalone (`app.component.ts` / `app.config.ts` / `app.routes.ts`); no NgModules
 - No media processing in the browser
 - Pixel → character is pure and reused for every video frame
 - Endpoints stay thin; services own processing
@@ -390,7 +392,7 @@ One concern per folder so agents can work in parallel. Shell only composes; no c
 
 - Status: ⬜
 - Needs: 1.4
-- Files: `{Ng}/src/app/app.ts` (or `app.component.*` templates)
+- Files: `{Ng}/src/app/app.component.ts`
 - Do: single-page host with slots/placeholders for upload, options, preview, actions (children may be empty stubs)
 - Done when: shell renders
 - Commit: `frontend - ui, add app shell`
@@ -450,7 +452,7 @@ Compose components + call convert service. **Only** the app host owns orchestrat
 
 - Status: ⬜
 - Needs: 6.3, 7.1–7.5
-- Files: `{Ng}/src/app/app.ts` (or `app.component.*`)
+- Files: `{Ng}/src/app/app.component.ts`
 - Do: host upload/options/preview/actions + Convert control; on convert (image file) call `convertImage`; set preview/loading/error
 - Done when: image path is wired end-to-end in the UI
 - Commit: `frontend - wire, connect image convert flow`
@@ -459,7 +461,7 @@ Compose components + call convert service. **Only** the app host owns orchestrat
 
 - Status: ⬜
 - Needs: 6.4, 8.1
-- Files: `{Ng}/src/app/app.ts` (or `app.component.*`)
+- Files: `{Ng}/src/app/app.component.ts`
 - Do: when file is video, call `convertVideo`; show returned multi-frame text in preview
 - Done when: video path is wired end-to-end in the UI
 - Commit: `frontend - wire, connect video convert flow`
