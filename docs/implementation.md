@@ -25,8 +25,8 @@
   - [✅ 5.1 — Add FFMpegCore](#step-51--add-ffmpegcore)
   - [⬜ 5.2 — Sequential frame conversion](#step-52--sequential-frame-conversion)
   - [⬜ 5.3 — Parallelize frame conversion](#step-53--parallelize-frame-conversion)
-- [⬜ Step 6 — Frontend: contracts and client](#step-6--frontend-contracts-and-client)
-  - [⬜ 6.1 — Options and charset presets](#step-61--options-and-charset-presets)
+- [⏳ Step 6 — Frontend: contracts and client](#step-6--frontend-contracts-and-client)
+  - [✅ 6.1 — Options and charset presets](#step-61--options-and-charset-presets)
   - [⬜ 6.2 — Convert API client surface](#step-62--convert-api-client-surface)
   - [⬜ 6.3 — Image convert HTTP call + HttpClient](#step-63--image-convert-http-call--httpclient)
   - [⬜ 6.4 — Video convert HTTP call](#step-64--video-convert-http-call)
@@ -348,7 +348,7 @@ No UI chrome here — types + HTTP only.
 
 ### Step 6.1 — Options and charset presets
 
-- Status: ⬜
+- Status: ✅
 - Needs: 1.1
 - Files: `{Ng}/src/app/conversion/convert-options.ts`
 - Do: options type; Classic / Detailed / Blocks strings (must match backend); UI defaults (width 100, invert false)
