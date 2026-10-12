@@ -31,7 +31,7 @@
 - [⏳ Step 7 — Frontend: UI components](#step-7--frontend-ui-components)
   - [✅ 7.1 — App shell](#step-71--app-shell)
   - [✅ 7.2 — Upload zone component](#step-72--upload-zone-component)
-  - [⬜ 7.3 — Option controls component](#step-73--option-controls-component)
+  - [✅ 7.3 — Option controls component](#step-73--option-controls-component)
   - [⬜ 7.4 — ASCII preview component](#step-74--ascii-preview-component)
   - [⬜ 7.5 — Result actions component](#step-75--result-actions-component)
   - [⬜ 7.6 — Minimal global styles](#step-76--minimal-global-styles)
@@ -385,7 +385,7 @@ One concern per folder so agents can work in parallel. Shell only composes; no c
 
 ### Step 7.3 — Option controls component
 
-- Status: ⬜
+- Status: ✅
 - Needs: 1.4, 6.1
 - Files: `{Ng}/src/app/components/option-controls/*`
 - Do: width slider 40–200, invert checkbox, charset dropdown; emit options changes
