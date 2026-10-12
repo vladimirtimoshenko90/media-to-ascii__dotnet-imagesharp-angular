@@ -7,12 +7,12 @@
   - [✅ 1.2 — Boilerplate solution cleanup](#step-12--boilerplate-solution-cleanup)
   - [✅ 1.3 — Add ImageSharp and FFMpegCore](#step-13--add-imagesharp-and-ffmpegcore)
   - [✅ 1.4 — Frontend infrastructure setup](#step-14--frontend-infrastructure-setup)
-- [⏳ Step 2 — Backend: contracts](#step-2--backend-contracts)
+- [✅ Step 2 — Backend: contracts](#step-2--backend-contracts)
   - [✅ 2.1 — Shared models and charset defaults](#step-21--shared-models-and-charset-defaults)
   - [✅ 2.2 — Pixel → character interface](#step-22--pixel--character-interface)
   - [✅ 2.3 — Image conversion interface](#step-23--image-conversion-interface)
   - [✅ 2.4 — Video conversion interface](#step-24--video-conversion-interface)
-  - [⬜ 2.5 — DI registration (stubs ok)](#step-25--di-registration-stubs-ok)
+  - [✅ 2.5 — DI registration (stubs ok)](#step-25--di-registration-stubs-ok)
 - [⏳ Step 3 — Backend: endpoints](#step-3--backend-endpoints)
   - [✅ 3.1 — Shared form validation helper](#step-31--shared-form-validation-helper)
   - [⬜ 3.2 — Image convert endpoint](#step-32--image-convert-endpoint)
@@ -79,7 +79,7 @@ After 1.1, resolve `{Api}` = API project folder and `{Ng}` = Angular app root (t
     PixelCharMapper.cs
     ImageAsciiConverter.cs
     VideoAsciiConverter.cs
-    ConversionServiceCollectionExtensions.cs
+    DependencyInjection.cs
   Endpoints/
     ConvertFormValidation.cs
     ImageConvertEndpoint.cs
@@ -234,9 +234,9 @@ Interfaces + models + concrete class shells (stub bodies ok) + DI extension. **N
 
 ### Step 2.5 — DI registration (stubs ok)
 
-- Status: ⬜
+- Status: ✅
 - Needs: 2.2, 2.3, 2.4
-- Files: `{Api}/Conversion/ConversionServiceCollectionExtensions.cs`, `{Api}/Program.cs`
+- Files: `{Api}/Conversion/DependencyInjection.cs`, `{Api}/Program.cs`
 - Do: `AddConversionServices()` registers the three concrete types; call it from `Program.cs`
 - Done when: services resolve from DI
 - Commit: `backend - di, register conversion services`

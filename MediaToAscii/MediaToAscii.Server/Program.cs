@@ -1,4 +1,8 @@
+using MediaToAscii.Server.Conversion;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddConversionServices();
 
 var app = builder.Build();
 
