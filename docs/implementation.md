@@ -27,7 +27,7 @@
   - [⬜ 5.3 — Parallelize frame conversion](#step-53--parallelize-frame-conversion)
 - [⏳ Step 6 — Frontend: contracts and client](#step-6--frontend-contracts-and-client)
   - [✅ 6.1 — Options and charset presets](#step-61--options-and-charset-presets)
-  - [⬜ 6.2 — Convert API client surface](#step-62--convert-api-client-surface)
+  - [✅ 6.2 — Convert API client surface](#step-62--convert-api-client-surface)
   - [⬜ 6.3 — Image convert HTTP call + HttpClient](#step-63--image-convert-http-call--httpclient)
   - [⬜ 6.4 — Video convert HTTP call](#step-64--video-convert-http-call)
 - [⬜ Step 7 — Frontend: UI components](#step-7--frontend-ui-components)
@@ -357,7 +357,7 @@ No UI chrome here — types + HTTP only.
 
 ### Step 6.2 — Convert API client surface
 
-- Status: ⬜
+- Status: ✅
 - Needs: 6.1
 - Files: `{Ng}/src/app/conversion/convert-api.service.ts`
 - Do: injectable service with `convertImage(...)` and `convertVideo(...)` method signatures (bodies can stub/throw until 6.3–6.4)
