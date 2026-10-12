@@ -19,7 +19,7 @@ import { Component, output } from '@angular/core';
         }
       </p>
       <label class="btn btn-outline-secondary btn-sm mb-0">
-        <i class="bi bi-upload me-1" aria-hidden="true"></i>
+        <i class="bi bi-upload me-1"></i>
         Choose file
         <input
           type="file"

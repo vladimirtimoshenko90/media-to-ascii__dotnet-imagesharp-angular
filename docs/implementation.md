@@ -85,14 +85,15 @@ After 1.1, resolve `{Api}` = API project folder and `{Ng}` = Angular app root (t
   Program.cs
 
 {Ng}/src/app/
-  conversion/
-    convert-options.ts
+  constants/
+    ascii-charsets.ts
+  services/
     convert-api.service.ts
   components/
-    upload-zone/          (upload-zone.ts + template/styles as template uses)
-    option-controls/
-    ascii-preview/
-    result-actions/
+    upload-zone.ts
+    option-controls.ts
+    ascii-preview.ts
+    result-actions.ts
   app.component.ts (inline template)
   app.config.ts
   app.routes.ts
@@ -123,7 +124,7 @@ After 1.1, resolve `{Api}` = API project folder and `{Ng}` = Angular app root (t
 |------|-------|----------------|
 | A — Backend contracts/impl | 2 → 4 → 5 | `{Api}/Conversion/**` |
 | B — Backend endpoints | 3 (needs 2.5 ✅) | `{Api}/Endpoints/**`, then `Program.cs` |
-| C — Frontend client | 6 | `{Ng}/src/app/conversion/**`, `app.config.ts` |
+| C — Frontend client | 6 | `{Ng}/src/app/services/**`, `{Ng}/src/app/constants/**`, `app.config.ts` |
 | D — Frontend UI | 7 (prefer after ✅ 1.4) | `{Ng}/src/app/components/**`, shell, styles |
 | E — Wire-up | 8 (needs 6–7) | app host only |
 | F — Finalization | 9 (9.1–9.3 need 8 ✅; **9.4** needs 5.3 ✅) | README/favicon/UI; `{Api}/Conversion/Services/**` + `{Api}/Endpoints/**` for 9.4 |
@@ -330,7 +331,7 @@ No UI chrome here — types + HTTP only.
 
 - Status: ✅
 - Needs: 1.1
-- Files: `{Ng}/src/app/conversion/convert-options.ts`
+- Files: `{Ng}/src/app/constants/ascii-charsets.ts`, `{Ng}/src/app/services/convert-api.service.ts` (options DTO)
 - Do: options type; Classic / Detailed / Blocks strings (must match backend); UI defaults (width 100, invert false)
 - Done when: exported for service + components
 - Commit: `frontend - contracts, add options and charset presets`
@@ -339,7 +340,7 @@ No UI chrome here — types + HTTP only.
 
 - Status: ✅
 - Needs: 6.1
-- Files: `{Ng}/src/app/conversion/convert-api.service.ts`
+- Files: `{Ng}/src/app/services/convert-api.service.ts`
 - Do: injectable service with `convertImage(...)` and `convertVideo(...)` method signatures (bodies can stub/throw until 6.3–6.4)
 - Done when: service injectable skeleton exists
 - Commit: `frontend - contracts, add convert API service surface`
@@ -348,7 +349,7 @@ No UI chrome here — types + HTTP only.
 
 - Status: ✅
 - Needs: 6.2
-- Files: `{Ng}/src/app/conversion/convert-api.service.ts`, `{Ng}/src/app/app.config.ts`
+- Files: `{Ng}/src/app/services/convert-api.service.ts`, `{Ng}/src/app/app.config.ts`
 - Do: provide `HttpClient`; implement `convertImage` → `FormData` POST `/api/convert/image`, `responseType: 'text'`
 - Done when: image method performs the HTTP call
 - Commit: `frontend - api, implement image convert client`
@@ -357,7 +358,7 @@ No UI chrome here — types + HTTP only.
 
 - Status: ✅
 - Needs: 6.3
-- Files: `{Ng}/src/app/conversion/convert-api.service.ts`
+- Files: `{Ng}/src/app/services/convert-api.service.ts`
 - Do: `convertVideo` → POST `/api/convert/video`, `responseType: 'text'`
 - Done when: video method performs the HTTP call
 - Commit: `frontend - api, implement video convert client`
@@ -366,7 +367,7 @@ No UI chrome here — types + HTTP only.
 
 ## Step 7 — Frontend: UI components
 
-One concern per folder so agents can work in parallel. Shell only composes; no convert HTTP in this step. Prefer SCSS + Bootstrap from **1.4**.
+One concern per component so agents can work in parallel. Shell only composes; no convert HTTP in this step. Prefer SCSS + Bootstrap from **1.4**.
 
 ### Step 7.1 — App shell
 
@@ -381,7 +382,7 @@ One concern per folder so agents can work in parallel. Shell only composes; no c
 
 - Status: ✅
 - Needs: 1.4
-- Files: `{Ng}/src/app/components/upload-zone/*`
+- Files: `{Ng}/src/app/components/upload-zone.ts`
 - Do: drag-and-drop + file input; accept image/* and video/*; emit selected `File`
 - Done when: component usable standalone
 - Commit: `frontend - ui, add upload zone component`
@@ -390,7 +391,7 @@ One concern per folder so agents can work in parallel. Shell only composes; no c
 
 - Status: ✅
 - Needs: 1.4, 6.1
-- Files: `{Ng}/src/app/components/option-controls/*`
+- Files: `{Ng}/src/app/components/option-controls.ts`
 - Do: width slider 40–200, invert checkbox, charset dropdown; emit options changes
 - Done when: component binds and emits
 - Commit: `frontend - ui, add option controls component`
@@ -399,7 +400,7 @@ One concern per folder so agents can work in parallel. Shell only composes; no c
 
 - Status: ✅
 - Needs: 1.4
-- Files: `{Ng}/src/app/components/ascii-preview/*`
+- Files: `{Ng}/src/app/components/ascii-preview.ts`
 - Do: `<pre>` monospace, `line-height: 1`; inputs for text, loading, error
 - Done when: shows bound text / loading / error
 - Commit: `frontend - ui, add ASCII preview component`
@@ -408,7 +409,7 @@ One concern per folder so agents can work in parallel. Shell only composes; no c
 
 - Status: ✅
 - Needs: 1.4
-- Files: `{Ng}/src/app/components/result-actions/*`
+- Files: `{Ng}/src/app/components/result-actions.ts`
 - Do: copy clipboard + download `.txt` given current text input; use Bootstrap Icons where helpful
 - Done when: both actions work
 - Commit: `frontend - ui, add result actions component`

@@ -14,8 +14,12 @@ Conventions for `{Ng}` (Angular). Keep bullets short; expand only when a pattern
 
 ## Models co-located with services
 
-- Small types/DTOs used primarily by one service belong in that service’s file (e.g. `ConvertOptions`, charset presets with `ConvertApiService`)
+- Small types/DTOs used primarily by one service belong in that service’s file (e.g. `ConvertOptions` with `ConvertApiService`)
 - Split a model into its own file only when shared across unrelated features or it grows real behavior
+
+## Domain constants
+
+- Shared domain constants (not service DTOs) live under `src/app/constants/` (e.g. `ascii-charsets.ts`)
 
 ## Components
 

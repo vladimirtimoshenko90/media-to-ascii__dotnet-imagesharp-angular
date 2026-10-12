@@ -3,14 +3,10 @@ import { Component, input } from '@angular/core';
 @Component({
   selector: 'app-ascii-preview',
   template: `
-    <div class="ascii-preview border rounded p-3 bg-light" aria-live="polite">
+    <div class="ascii-preview border rounded p-3 bg-light">
       @if (loading()) {
         <p class="mb-0 text-secondary">
-          <span
-            class="spinner-border spinner-border-sm me-2"
-            role="status"
-            aria-hidden="true"
-          ></span>
+          <span class="spinner-border spinner-border-sm me-2"></span>
           Converting…
         </p>
       } @else if (error()) {

@@ -10,7 +10,7 @@ import { Component, input } from '@angular/core';
         [disabled]="!hasText"
         (click)="copy()"
       >
-        <i class="bi bi-clipboard me-1" aria-hidden="true"></i>
+        <i class="bi bi-clipboard me-1"></i>
         Copy
       </button>
       <button
@@ -19,7 +19,7 @@ import { Component, input } from '@angular/core';
         [disabled]="!hasText"
         (click)="download()"
       >
-        <i class="bi bi-download me-1" aria-hidden="true"></i>
+        <i class="bi bi-download me-1"></i>
         Download
       </button>
     </div>

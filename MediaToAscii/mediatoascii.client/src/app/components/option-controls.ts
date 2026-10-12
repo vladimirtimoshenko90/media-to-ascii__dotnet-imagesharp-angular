@@ -3,9 +3,11 @@ import { FormsModule } from '@angular/forms';
 import {
   AsciiCharsets,
   AsciiCharsetName,
+} from '../constants/ascii-charsets';
+import {
   ConvertOptions,
   DEFAULT_CONVERT_OPTIONS,
-} from '../../conversion/convert-options';
+} from '../services/convert-api.service';
 
 @Component({
   selector: 'app-option-controls',

@@ -7,15 +7,3 @@ export const AsciiCharsets = {
 } as const;
 
 export type AsciiCharsetName = keyof typeof AsciiCharsets;
-
-export interface ConvertOptions {
-  width: number;
-  invert: boolean;
-  charset: string;
-}
-
-export const DEFAULT_CONVERT_OPTIONS: ConvertOptions = {
-  width: 100,
-  invert: false,
-  charset: AsciiCharsets.Classic,
-};

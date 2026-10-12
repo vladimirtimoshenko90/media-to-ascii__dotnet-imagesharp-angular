@@ -11,19 +11,19 @@ import { RouterOutlet } from '@angular/router';
         <p class="text-secondary mb-0">Convert images and video to ASCII art.</p>
       </header>
 
-      <section class="mb-4" aria-label="Upload">
+      <section class="mb-4">
         <!-- upload-zone -->
       </section>
 
-      <section class="mb-4" aria-label="Options">
+      <section class="mb-4">
         <!-- option-controls -->
       </section>
 
-      <section class="mb-4" aria-label="Preview">
+      <section class="mb-4">
         <!-- ascii-preview -->
       </section>
 
-      <section class="mb-4" aria-label="Actions">
+      <section class="mb-4">
         <!-- result-actions -->
       </section>
 
