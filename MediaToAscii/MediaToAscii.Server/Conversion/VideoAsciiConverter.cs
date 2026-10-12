@@ -34,21 +34,47 @@ public sealed class VideoAsciiConverter(IImageAsciiConverter imageConverter) : I
             ?? analysis.VideoStreams.FirstOrDefault()?.Index
             ?? 0;
 
-        var frames = new List<string>(timestamps.Count);
-        for (var i = 0; i < timestamps.Count; i++)
+        // Extract sequentially (shared seekable pipe); parallelize ASCII only.
+        var pngBuffers = new MemoryStream[timestamps.Count];
+        try
         {
-            ct.ThrowIfCancellationRequested();
+            for (var i = 0; i < timestamps.Count; i++)
+            {
+                ct.ThrowIfCancellationRequested();
+                pngBuffers[i] = await ExtractFramePng(
+                    videoBuffer,
+                    timestamps[i],
+                    videoStreamIndex,
+                    ct);
+            }
 
-            await using var pngBuffer = await ExtractFramePng(
-                videoBuffer,
-                timestamps[i],
-                videoStreamIndex,
-                ct);
-            var ascii = await imageConverter.Convert(pngBuffer, options, ct);
-            frames.Add(ascii);
+            var frames = new string[timestamps.Count];
+            var parallelOptions = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount),
+                CancellationToken = ct,
+            };
+
+            await Parallel.ForEachAsync(
+                Enumerable.Range(0, pngBuffers.Length),
+                parallelOptions,
+                async (i, token) =>
+                {
+                    frames[i] = await imageConverter.Convert(pngBuffers[i], options, token);
+                });
+
+            return new VideoAsciiResult { Frames = frames };
         }
-
-        return new VideoAsciiResult { Frames = frames };
+        finally
+        {
+            foreach (var png in pngBuffers)
+            {
+                if (png is not null)
+                {
+                    await png.DisposeAsync();
+                }
+            }
+        }
     }
 
     private static async Task<MemoryStream> ExtractFramePng(

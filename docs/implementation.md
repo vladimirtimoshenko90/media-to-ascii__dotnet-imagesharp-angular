@@ -19,10 +19,10 @@
 - [✅ Step 4 — Backend: image processing](#step-4--backend-image-processing)
   - [✅ 4.1 — Pixel → character implementation](#step-41--pixel--character-implementation)
   - [✅ 4.2 — Image conversion implementation](#step-42--image-conversion-implementation)
-- [⏳ Step 5 — Backend: video processing](#step-5--backend-video-processing)
+- [✅ Step 5 — Backend: video processing](#step-5--backend-video-processing)
   - [✅ 5.1 — Add FFMpegCore](#step-51--add-ffmpegcore)
   - [✅ 5.2 — Sequential frame conversion](#step-52--sequential-frame-conversion)
-  - [⬜ 5.3 — Parallelize frame conversion](#step-53--parallelize-frame-conversion)
+  - [✅ 5.3 — Parallelize frame conversion](#step-53--parallelize-frame-conversion)
 - [⏳ Step 6 — Frontend: contracts and client](#step-6--frontend-contracts-and-client)
   - [✅ 6.1 — Options and charset presets](#step-61--options-and-charset-presets)
   - [✅ 6.2 — Convert API client surface](#step-62--convert-api-client-surface)
@@ -310,7 +310,7 @@ Reuse image/pixel pieces; then parallelize the frame loop only.
 
 ### Step 5.3 — Parallelize frame conversion
 
-- Status: ⬜
+- Status: ✅
 - Needs: 5.2
 - Files: `{Api}/Conversion/VideoAsciiConverter.cs`
 - Do: parallelize frame→ASCII only; preserve frame order in the result; do not change `PixelCharMapper`
