@@ -2,11 +2,11 @@
 
 ## Contents
 
-- [⏳ Step 1 — Solution: scaffold](#step-1--solution-scaffold)
+- [✅ Step 1 — Solution: scaffold](#step-1--solution-scaffold)
   - [✅ 1.1 — Create Angular + ASP.NET Core app](#step-11--create-angular--aspnet-core-app)
   - [✅ 1.2 — Boilerplate solution cleanup](#step-12--boilerplate-solution-cleanup)
   - [✅ 1.3 — Add ImageSharp and FFMpegCore](#step-13--add-imagesharp-and-ffmpegcore)
-  - [⬜ 1.4 — Frontend infrastructure setup](#step-14--frontend-infrastructure-setup)
+  - [✅ 1.4 — Frontend infrastructure setup](#step-14--frontend-infrastructure-setup)
 - [⬜ Step 2 — Backend: contracts](#step-2--backend-contracts)
   - [⬜ 2.1 — Shared models and charset defaults](#step-21--shared-models-and-charset-defaults)
   - [⬜ 2.2 — Pixel → character interface](#step-22--pixel--character-interface)
@@ -181,7 +181,7 @@ Ship **media-to-ascii**: Angular UI uploads image/video + options; ASP.NET Minim
 
 ### Step 1.4 — Frontend infrastructure setup
 
-- Status: ⬜
+- Status: ✅
 - Needs: 1.2
 - Files: `{Ng}/angular.json`, `{Ng}/package.json`, `{Ng}/src/styles.css` → `{Ng}/src/styles.scss`
 - Do: switch the Angular app to **SCSS**; add **Bootstrap** and **Bootstrap Icons**; import them in global styles; keep SPA `npm start` scripts intact; app must still run
