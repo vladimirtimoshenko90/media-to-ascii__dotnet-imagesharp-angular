@@ -14,7 +14,7 @@ Living plan: `docs/implementation.md` (see also `docs/spec.md`).
 | `⬜` | pending — not started |
 | `⏳` | in progress — claimed; coding |
 | `🔍` | under review — implementation done; awaiting review |
-| `✅` | completed — approved, committed, pushed |
+| `✅` | completed — approved and committed locally |
 
 Keep the Contents TOC and the leaf body status in sync.
 
@@ -33,6 +33,6 @@ All agents share one folder — status on disk is the lock. Do not commit interm
 
 - `/m2asc-next` — claim + implement next leaf; propose commit message; set `🔍`
 - `/m2asc-review` — review this leaf’s pending diff; do not commit or push
-- `/m2asc-ship` — after human approval: commit, push, mark `✅`
+- `/m2asc-ship` — after human approval: mark `✅`, stage only this leaf (hunk-filter shared files), verify `git diff --cached`, commit locally; **do not push**
 
-Never commit or push unless the user runs `/m2asc-ship` or explicitly asks to ship.
+Never commit unless the user runs `/m2asc-ship` or explicitly asks to commit. Never push unless the user explicitly asks to push.

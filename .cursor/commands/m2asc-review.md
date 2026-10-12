@@ -14,5 +14,6 @@ Review pending changes for the current plan leaf (status `🔍` or the leaf just
    - obvious bugs, missing validation, or messy structure
 4. Report a clear verdict: **approve**, **approve with nits**, or **request changes** (with concrete fixes).
 5. Do **not** commit, push, or mark the leaf `✅`. Leave status at `🔍` unless you must fix blocking issues the user asks you to apply.
+   - Note: `/m2asc-ship` commits locally and does not push.
 
 If nothing is pending, say so.

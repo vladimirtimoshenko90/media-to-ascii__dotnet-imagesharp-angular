@@ -59,7 +59,7 @@
 2. Claim: set leaf (and roll up parent if useful) to ⏳ **before** editing code.
 3. Take the next ⬜ leaf that (a) has all **Needs** leaves ✅, and (b) **Files** do not overlap any ⏳/🔍 leaf.
 4. Implement **only** that leaf; use the **Locked layout** paths below — do not invent alternate folders.
-5. When done coding: 🔍. After human approves `/m2asc-ship`: commit (code + this plan → ✅) and push.
+5. When done coding: 🔍. After human approves `/m2asc-ship`: mark ✅; stage only this leaf (hunk-filter the plan if mixed); verify `git diff --cached`; commit locally; do not push unless asked.
 6. Commit style: `area - subarea, what was done/introduced/fixed`.
 
 **Hot files** (serialize — never two agents at once): `{Api}/Program.cs`, `{Ng}/src/app/app.component.ts`, `{Ng}/src/app/app.config.ts`, this `docs/implementation.md` while claiming/shipping.
