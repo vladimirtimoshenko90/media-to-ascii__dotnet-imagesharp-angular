@@ -9,7 +9,7 @@
   - [✅ 1.4 — Frontend infrastructure setup](#step-14--frontend-infrastructure-setup)
 - [⏳ Step 2 — Backend: contracts](#step-2--backend-contracts)
   - [✅ 2.1 — Shared models and charset defaults](#step-21--shared-models-and-charset-defaults)
-  - [⬜ 2.2 — Pixel → character interface](#step-22--pixel--character-interface)
+  - [✅ 2.2 — Pixel → character interface](#step-22--pixel--character-interface)
   - [⬜ 2.3 — Image conversion interface](#step-23--image-conversion-interface)
   - [⬜ 2.4 — Video conversion interface](#step-24--video-conversion-interface)
   - [⬜ 2.5 — DI registration (stubs ok)](#step-25--di-registration-stubs-ok)
@@ -207,7 +207,7 @@ Interfaces + models + concrete class shells (stub bodies ok) + DI extension. **N
 
 ### Step 2.2 — Pixel → character interface
 
-- Status: ⬜
+- Status: ✅
 - Needs: 2.1
 - Files: `{Api}/Conversion/IPixelCharMapper.cs`, `{Api}/Conversion/PixelCharMapper.cs`
 - Do: interface for mapping luminance/pixels → charset chars; class stub throws until 4.1
