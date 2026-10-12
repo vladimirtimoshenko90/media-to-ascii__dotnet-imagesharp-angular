@@ -11,7 +11,7 @@
   - [✅ 2.1 — Shared models and charset defaults](#step-21--shared-models-and-charset-defaults)
   - [✅ 2.2 — Pixel → character interface](#step-22--pixel--character-interface)
   - [✅ 2.3 — Image conversion interface](#step-23--image-conversion-interface)
-  - [⬜ 2.4 — Video conversion interface](#step-24--video-conversion-interface)
+  - [✅ 2.4 — Video conversion interface](#step-24--video-conversion-interface)
   - [⬜ 2.5 — DI registration (stubs ok)](#step-25--di-registration-stubs-ok)
 - [⏳ Step 3 — Backend: endpoints](#step-3--backend-endpoints)
   - [✅ 3.1 — Shared form validation helper](#step-31--shared-form-validation-helper)
@@ -225,7 +225,7 @@ Interfaces + models + concrete class shells (stub bodies ok) + DI extension. **N
 
 ### Step 2.4 — Video conversion interface
 
-- Status: ⬜
+- Status: ✅
 - Needs: 2.1
 - Files: `{Api}/Conversion/IVideoAsciiConverter.cs`, `{Api}/Conversion/VideoAsciiConverter.cs`
 - Do: Convert(Stream, ConvertOptions) → `VideoAsciiResult`; stub until 5.2
