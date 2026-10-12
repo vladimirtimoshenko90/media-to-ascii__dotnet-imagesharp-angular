@@ -2,9 +2,11 @@
 
 ## Contents
 
-- [⬜ Step 1 — Solution: scaffold](#step-1--solution-scaffold)
-  - [⬜ 1.1 — Create Angular + ASP.NET Core app](#step-11--create-angular--aspnet-core-app)
-  - [⬜ 1.2 — Add ImageSharp](#step-12--add-imagesharp)
+- [⏳ Step 1 — Solution: scaffold](#step-1--solution-scaffold)
+  - [✅ 1.1 — Create Angular + ASP.NET Core app](#step-11--create-angular--aspnet-core-app)
+  - [⬜ 1.2 — Boilerplate solution cleanup](#step-12--boilerplate-solution-cleanup)
+  - [⬜ 1.3 — Add ImageSharp](#step-13--add-imagesharp)
+  - [⬜ 1.4 — Frontend infrastructure setup](#step-14--frontend-infrastructure-setup)
 - [⬜ Step 2 — Backend: contracts](#step-2--backend-contracts)
   - [⬜ 2.1 — Shared models and charset defaults](#step-21--shared-models-and-charset-defaults)
   - [⬜ 2.2 — Pixel → character interface](#step-22--pixel--character-interface)
@@ -38,6 +40,9 @@
 - [⬜ Step 8 — Frontend: wire-up](#step-8--frontend-wire-up)
   - [⬜ 8.1 — Wire image convert flow](#step-81--wire-image-convert-flow)
   - [⬜ 8.2 — Wire video convert flow](#step-82--wire-video-convert-flow)
+- [⬜ Step 9 — Finalization](#step-9--finalization)
+  - [⬜ 9.1 — Write project README](#step-91--write-project-readme)
+  - [⬜ 9.2 — Generate app favicon](#step-92--generate-app-favicon)
 
 ### Status legend
 
@@ -92,7 +97,7 @@ After 1.1, resolve `{Api}` = API project folder and `{Ng}` = Angular app root (t
     result-actions/
   app.ts (or app.component.*)
   app.config.ts
-  styles.css (or styles.scss — global)
+  styles.scss (global; migrated from styles.css in 1.4)
 ```
 
 ### Locked contracts
@@ -120,14 +125,15 @@ After 1.1, resolve `{Api}` = API project folder and `{Ng}` = Angular app root (t
 | A — Backend contracts/impl | 2 → 4 → 5 | `{Api}/Conversion/**` |
 | B — Backend endpoints | 3 (needs 2.5 ✅) | `{Api}/Endpoints/**`, then `Program.cs` |
 | C — Frontend client | 6 | `{Ng}/src/app/conversion/**`, `app.config.ts` |
-| D — Frontend UI | 7 | `{Ng}/src/app/components/**`, shell, styles |
+| D — Frontend UI | 7 (prefer after ✅ 1.4) | `{Ng}/src/app/components/**`, shell, styles |
 | E — Wire-up | 8 (needs 6–7) | app host only |
+| F — Finalization | 9 (needs 8 ✅) | `README.md`, `{Ng}/public/favicon.ico` |
 
 ---
 
 ## Goal
 
-Ship **media-to-ascii**: Angular UI uploads image/video + options; ASP.NET Minimal API converts via ImageSharp (and FFMpegCore for video frames); ASCII returned as plain text; preview / copy / download. Contract-first backend, then image impl, then video + parallel frames. Frontend: client contracts → isolated UI components → wire-up.
+Ship **media-to-ascii**: Angular UI uploads image/video + options; ASP.NET Minimal API converts via ImageSharp (and FFMpegCore for video frames); ASCII returned as plain text; preview / copy / download. Contract-first backend, then image impl, then video + parallel frames. Frontend: client contracts → UI components → wire-up (SCSS + Bootstrap via Step 1.4).
 
 ## Agreed decisions
 
@@ -148,21 +154,39 @@ Ship **media-to-ascii**: Angular UI uploads image/video + options; ASP.NET Minim
 
 ### Step 1.1 — Create Angular + ASP.NET Core app
 
-- Status: ⬜
+- Status: ✅
 - Needs: —
 - Files: repo root (`*.sln`, `{Api}/**`, `{Ng}/**` as template generates)
 - Do: scaffold **MediaToAscii** (Angular + ASP.NET Core) into this repo; keep existing `docs/`, `README.md`, `.gitignore`
 - Done when: solution builds
 - Commit: `solution - scaffold, create MediaToAscii Angular and ASP.NET app`
 
-### Step 1.2 — Add ImageSharp
+### Step 1.2 — Boilerplate solution cleanup
+
+- Status: ⏳
+- Needs: 1.1
+- Files: template leftovers under `{Api}/**`, `{Ng}/**`, root `.gitignore`, this plan as needed
+- Do: strip weather demo, unused test infra, template docs/changelogs, consolidate gitignore, trim harmless template extras; keep SPA start scripts and routing intact; app must still run
+- Done when: no weather residue; template noise removed; `dotnet run` / F5 still starts API + Angular
+- Commit: `solution - cleanup, strip template boilerplate from MediaToAscii app`
+
+### Step 1.3 — Add ImageSharp
 
 - Status: ⬜
-- Needs: 1.1
+- Needs: 1.2
 - Files: `{Api}/*.csproj`
 - Do: add `SixLabors.ImageSharp`
 - Done when: package referenced; restore ok
 - Commit: `backend - deps, add SixLabors.ImageSharp`
+
+### Step 1.4 — Frontend infrastructure setup
+
+- Status: ⬜
+- Needs: 1.2
+- Files: `{Ng}/angular.json`, `{Ng}/package.json`, `{Ng}/src/styles.css` → `{Ng}/src/styles.scss`
+- Do: switch the Angular app to **SCSS**; add **Bootstrap** and **Bootstrap Icons**; import them in global styles; keep SPA `npm start` scripts intact; app must still run
+- Done when: SCSS is the style format; Bootstrap utilities and icons are available globally
+- Commit: `frontend - setup, add SCSS Bootstrap and icons`
 
 ---
 
@@ -275,7 +299,7 @@ Fill stub bodies. **Do not** change endpoint or DI type mappings unless broken.
 ### Step 4.2 — Image conversion implementation
 
 - Status: ⬜
-- Needs: 1.2, 4.1
+- Needs: 1.3, 4.1
 - Files: `{Api}/Conversion/ImageAsciiConverter.cs`
 - Do: ImageSharp load → height `width * (h/w) * 0.5` (comment aspect fix) → resize → row walk via mapper → ASCII string
 - Done when: image endpoint returns real ASCII for a JPG/PNG
@@ -290,7 +314,7 @@ Reuse image/pixel pieces; then parallelize the frame loop only.
 ### Step 5.1 — Add FFMpegCore
 
 - Status: ⬜
-- Needs: 1.2
+- Needs: 1.3
 - Files: `{Api}/*.csproj`
 - Do: add `FFMpegCore` for frame extraction
 - Done when: package referenced
@@ -360,12 +384,12 @@ No UI chrome here — types + HTTP only.
 
 ## Step 7 — Frontend: UI components
 
-One concern per folder so agents can work in parallel. Shell only composes; no convert HTTP in this step.
+One concern per folder so agents can work in parallel. Shell only composes; no convert HTTP in this step. Prefer SCSS + Bootstrap from **1.4**.
 
 ### Step 7.1 — App shell
 
 - Status: ⬜
-- Needs: 1.1
+- Needs: 1.4
 - Files: `{Ng}/src/app/app.ts` (or `app.component.*` templates)
 - Do: single-page host with slots/placeholders for upload, options, preview, actions (children may be empty stubs)
 - Done when: shell renders
@@ -374,7 +398,7 @@ One concern per folder so agents can work in parallel. Shell only composes; no c
 ### Step 7.2 — Upload zone component
 
 - Status: ⬜
-- Needs: 1.1
+- Needs: 1.4
 - Files: `{Ng}/src/app/components/upload-zone/*`
 - Do: drag-and-drop + file input; accept image/* and video/*; emit selected `File`
 - Done when: component usable standalone
@@ -383,7 +407,7 @@ One concern per folder so agents can work in parallel. Shell only composes; no c
 ### Step 7.3 — Option controls component
 
 - Status: ⬜
-- Needs: 6.1
+- Needs: 1.4, 6.1
 - Files: `{Ng}/src/app/components/option-controls/*`
 - Do: width slider 40–200, invert checkbox, charset dropdown; emit options changes
 - Done when: component binds and emits
@@ -392,7 +416,7 @@ One concern per folder so agents can work in parallel. Shell only composes; no c
 ### Step 7.4 — ASCII preview component
 
 - Status: ⬜
-- Needs: 1.1
+- Needs: 1.4
 - Files: `{Ng}/src/app/components/ascii-preview/*`
 - Do: `<pre>` monospace, `line-height: 1`; inputs for text, loading, error
 - Done when: shows bound text / loading / error
@@ -401,18 +425,18 @@ One concern per folder so agents can work in parallel. Shell only composes; no c
 ### Step 7.5 — Result actions component
 
 - Status: ⬜
-- Needs: 1.1
+- Needs: 1.4
 - Files: `{Ng}/src/app/components/result-actions/*`
-- Do: copy clipboard + download `.txt` given current text input
+- Do: copy clipboard + download `.txt` given current text input; use Bootstrap Icons where helpful
 - Done when: both actions work
 - Commit: `frontend - ui, add result actions component`
 
 ### Step 7.6 — Minimal global styles
 
 - Status: ⬜
-- Needs: 1.1
-- Files: `{Ng}/src/styles.css` (or `styles.scss`)
-- Do: plain readable page layout; no UI kit
+- Needs: 1.4
+- Files: `{Ng}/src/styles.scss`
+- Do: light page layout on top of SCSS + Bootstrap from 1.4 (no custom design system)
 - Done when: global styles applied
 - Commit: `frontend - ui, add minimal global styles`
 
@@ -439,6 +463,30 @@ Compose components + call convert service. **Only** the app host owns orchestrat
 - Do: when file is video, call `convertVideo`; show returned multi-frame text in preview
 - Done when: video path is wired end-to-end in the UI
 - Commit: `frontend - wire, connect video convert flow`
+
+---
+
+## Step 9 — Finalization
+
+Polish project presentation after the app works end-to-end.
+
+### Step 9.1 — Write project README
+
+- Status: ⬜
+- Needs: 8.2
+- Files: root `README.md`
+- Do: replace the placeholder README with a short final doc — what the app does, stack, how to run (`dotnet run` / F5), and basic usage
+- Done when: README is accurate for the finished app
+- Commit: `docs - readme, write final project README`
+
+### Step 9.2 — Generate app favicon
+
+- Status: ⬜
+- Needs: 8.2
+- Files: `{Ng}/public/favicon.ico` (and related icon assets if needed)
+- Do: create a simple favicon that fits **media-to-ascii** (ASCII / media theme); wire it in `index.html` if paths change
+- Done when: browser tab shows the new favicon
+- Commit: `frontend - assets, add media-to-ascii favicon`
 
 ---
 
