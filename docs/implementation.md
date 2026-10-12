@@ -18,9 +18,9 @@
   - [⬜ 3.2 — Image convert endpoint](#step-32--image-convert-endpoint)
   - [⬜ 3.3 — Video convert endpoint](#step-33--video-convert-endpoint)
   - [⬜ 3.4 — Map endpoints in Program](#step-34--map-endpoints-in-program)
-- [⏳ Step 4 — Backend: image processing](#step-4--backend-image-processing)
+- [✅ Step 4 — Backend: image processing](#step-4--backend-image-processing)
   - [✅ 4.1 — Pixel → character implementation](#step-41--pixel--character-implementation)
-  - [⬜ 4.2 — Image conversion implementation](#step-42--image-conversion-implementation)
+  - [✅ 4.2 — Image conversion implementation](#step-42--image-conversion-implementation)
 - [⬜ Step 5 — Backend: video processing](#step-5--backend-video-processing)
   - [✅ 5.1 — Add FFMpegCore](#step-51--add-ffmpegcore)
   - [⬜ 5.2 — Sequential frame conversion](#step-52--sequential-frame-conversion)
@@ -300,7 +300,7 @@ Fill stub bodies. **Do not** change endpoint or DI type mappings unless broken.
 
 ### Step 4.2 — Image conversion implementation
 
-- Status: ⬜
+- Status: ✅
 - Needs: 1.3, 4.1
 - Files: `{Api}/Conversion/ImageAsciiConverter.cs`
 - Do: ImageSharp load → height `width * (h/w) * 0.5` (comment aspect fix) → resize → row walk via mapper → ASCII string
