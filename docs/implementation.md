@@ -41,6 +41,7 @@
 - [⬜ Step 9 — Finalization](#step-9--finalization)
   - [⬜ 9.1 — Write project README](#step-91--write-project-readme)
   - [⬜ 9.2 — Generate app favicon](#step-92--generate-app-favicon)
+  - [⬜ 9.3 — Finalize UI to match design](#step-93--finalize-ui-to-match-design)
 
 ### Status legend
 
@@ -446,7 +447,7 @@ Compose components + call convert service. **Only** the app host owns orchestrat
 
 ## Step 9 — Finalization
 
-Polish project presentation after the app works end-to-end.
+Polish project presentation after the app works end-to-end: README, favicon, then HTML/CSS UI finalization against the design brief.
 
 ### Step 9.1 — Write project README
 
@@ -465,6 +466,15 @@ Polish project presentation after the app works end-to-end.
 - Do: create a simple favicon that fits **media-to-ascii** (ASCII / media theme); wire it in `index.html` if paths change
 - Done when: browser tab shows the new favicon
 - Commit: `frontend - assets, add media-to-ascii favicon`
+
+### Step 9.3 — Finalize UI to match design
+
+- Status: ⬜
+- Needs: 8.2
+- Files: `{Ng}/src/app/app.component.ts`, `{Ng}/src/app/components/**`, `{Ng}/src/styles.scss` (templates/styles only as needed)
+- Do: align the live UI with the agreed Open Design artifact / [open-design-prompt.md](./open-design-prompt.md) direction — simple, strict, conservative, minimal styling. Small HTML/CSS (and Bootstrap utility) adjustments so shell, upload, options, preview, and actions match the design; trim leftover template noise. Prefer markup/style finalization over refactors; no new features.
+- Done when: the running page matches the intended design closely enough for ship; layout/states remain intact
+- Commit: `frontend - ui, finalize markup and styles to match design`
 
 ---
 
