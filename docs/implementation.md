@@ -18,8 +18,8 @@
   - [⬜ 3.2 — Image convert endpoint](#step-32--image-convert-endpoint)
   - [⬜ 3.3 — Video convert endpoint](#step-33--video-convert-endpoint)
   - [⬜ 3.4 — Map endpoints in Program](#step-34--map-endpoints-in-program)
-- [⬜ Step 4 — Backend: image processing](#step-4--backend-image-processing)
-  - [⬜ 4.1 — Pixel → character implementation](#step-41--pixel--character-implementation)
+- [⏳ Step 4 — Backend: image processing](#step-4--backend-image-processing)
+  - [✅ 4.1 — Pixel → character implementation](#step-41--pixel--character-implementation)
   - [⬜ 4.2 — Image conversion implementation](#step-42--image-conversion-implementation)
 - [⬜ Step 5 — Backend: video processing](#step-5--backend-video-processing)
   - [✅ 5.1 — Add FFMpegCore](#step-51--add-ffmpegcore)
@@ -291,7 +291,7 @@ Fill stub bodies. **Do not** change endpoint or DI type mappings unless broken.
 
 ### Step 4.1 — Pixel → character implementation
 
-- Status: ⬜
+- Status: ✅
 - Needs: 2.2
 - Files: `{Api}/Conversion/PixelCharMapper.cs`
 - Do: luminance `0.299R+0.587G+0.114B`, normalize, optional invert, charset index; comment the formula
