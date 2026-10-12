@@ -13,11 +13,9 @@
   - [✅ 2.3 — Image conversion interface](#step-23--image-conversion-interface)
   - [✅ 2.4 — Video conversion interface](#step-24--video-conversion-interface)
   - [✅ 2.5 — DI registration (stubs ok)](#step-25--di-registration-stubs-ok)
-- [⏳ Step 3 — Backend: endpoints](#step-3--backend-endpoints)
+- [✅ Step 3 — Backend: endpoints](#step-3--backend-endpoints)
   - [✅ 3.1 — Shared form validation helper](#step-31--shared-form-validation-helper)
-  - [⬜ 3.2 — Image convert endpoint](#step-32--image-convert-endpoint)
-  - [⬜ 3.3 — Video convert endpoint](#step-33--video-convert-endpoint)
-  - [⬜ 3.4 — Map endpoints in Program](#step-34--map-endpoints-in-program)
+  - [✅ 3.2 — Convert endpoints + Program mapping](#step-32--convert-endpoints--program-mapping)
 - [✅ Step 4 — Backend: image processing](#step-4--backend-image-processing)
   - [✅ 4.1 — Pixel → character implementation](#step-41--pixel--character-implementation)
   - [✅ 4.2 — Image conversion implementation](#step-42--image-conversion-implementation)
@@ -124,7 +122,7 @@ After 1.1, resolve `{Api}` = API project folder and `{Ng}` = Angular app root (t
 | C — Frontend client | 6 | `{Ng}/src/app/conversion/**`, `app.config.ts` |
 | D — Frontend UI | 7 (prefer after ✅ 1.4) | `{Ng}/src/app/components/**`, shell, styles |
 | E — Wire-up | 8 (needs 6–7) | app host only |
-| F — Finalization | 9 (needs 8 ✅) | `README.md`, `{Ng}/public/favicon.ico` |
+| F — Finalization | 9 (needs 8 ✅) | `README.md`, `{Ng}/public/favicon.ico`, `{Ng}` templates/styles |
 
 ---
 
@@ -241,7 +239,7 @@ Interfaces + models + concrete class shells (stub bodies ok) + DI extension. **N
 
 ## Step 3 — Backend: endpoints
 
-Thin Minimal API. Handlers call interfaces only. Prefer endpoint files owning logic so `Program.cs` stays a short map call (3.4).
+Thin Minimal API. Handlers call interfaces only. Endpoint files own route logic; `Program.cs` stays short map calls.
 
 ### Step 3.1 — Shared form validation helper
 
@@ -252,32 +250,14 @@ Thin Minimal API. Handlers call interfaces only. Prefer endpoint files owning lo
 - Done when: helper usable by both endpoints
 - Commit: `backend - api, add convert form validation`
 
-### Step 3.2 — Image convert endpoint
+### Step 3.2 — Convert endpoints + Program mapping
 
-- Status: ⬜
-- Needs: 2.3, 2.5, 3.1
-- Files: `{Api}/Endpoints/ImageConvertEndpoint.cs`
-- Do: `MapImageConvert` → `POST /api/convert/image`; multipart → validate → `IImageAsciiConverter` → `text/plain`; 400 on bad input
-- Done when: extension method ready (not necessarily mapped in Program yet)
-- Commit: `backend - api, add image convert endpoint`
-
-### Step 3.3 — Video convert endpoint
-
-- Status: ⬜
-- Needs: 2.4, 2.5, 3.1
-- Files: `{Api}/Endpoints/VideoConvertEndpoint.cs`
-- Do: `MapVideoConvert` → `POST /api/convert/video`; same form fields; join frames with `\n\n----\n\n`; `text/plain`; 400 on bad input
-- Done when: extension method ready
-- Commit: `backend - api, add video convert endpoint`
-
-### Step 3.4 — Map endpoints in Program
-
-- Status: ⬜
-- Needs: 3.2, 3.3
-- Files: `{Api}/Program.cs`
-- Do: `app.MapImageConvert();` `app.MapVideoConvert();` (names as implemented)
-- Done when: both routes registered
-- Commit: `backend - api, map convert endpoints in Program`
+- Status: ✅
+- Needs: 2.3, 2.4, 2.5, 3.1
+- Files: `{Api}/Endpoints/ImageConvertEndpoint.cs`, `{Api}/Endpoints/VideoConvertEndpoint.cs`, `{Api}/Program.cs`
+- Do: `MapImageConvert` → `POST /api/convert/image` (multipart → validate → `IImageAsciiConverter` → `text/plain`); `MapVideoConvert` → `POST /api/convert/video` (same form; join frames with `\n\n----\n\n`); register both in `Program.cs`; 400 plain text on bad input
+- Done when: both routes registered and callable
+- Commit: `backend - api, add convert endpoints and map in Program`
 
 ---
 
