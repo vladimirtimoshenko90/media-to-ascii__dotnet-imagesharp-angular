@@ -13,6 +13,11 @@ Conventions for `{Api}` (ASP.NET). Keep bullets short; expand only when a patter
 - Methods: `Add*Services(this IServiceCollection)`
 - Location: beside the feature (e.g. `Conversion/DependencyInjection.cs`)
 
+## Constants
+
+- Shared domain constants / fixed catalogs live under the feature’s `Constants/` folder (e.g. `Conversion/Constants/AsciiCharsets.cs`)
+- Keep enum + glyph tables (+ `GetGlyphs` extension) there; do not park them on processing option DTOs like `ConvertOptions`
+
 ## CancellationToken
 
 - Parameter name: `ct` (not `cancellationToken`)

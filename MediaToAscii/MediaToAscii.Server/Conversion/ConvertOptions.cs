@@ -1,14 +1,6 @@
+using MediaToAscii.Server.Conversion.Constants;
+
 namespace MediaToAscii.Server.Conversion;
-
-public static class AsciiCharsets
-{
-    public const string Classic = "@%#*+=-:. ";
-
-    public const string Detailed =
-        "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. ";
-
-    public const string Blocks = "█▓▒░ ";
-}
 
 public sealed class ConvertOptions
 {
@@ -16,5 +8,5 @@ public sealed class ConvertOptions
 
     public bool Invert { get; set; } = false;
 
-    public string Charset { get; set; } = AsciiCharsets.Classic;
+    public AsciiCharsetType Charset { get; set; } = AsciiCharsetType.Classic;
 }

@@ -1,4 +1,5 @@
 using MediaToAscii.Server.Conversion;
+using MediaToAscii.Server.Conversion.Constants;
 
 namespace MediaToAscii.Server.Endpoints.Helpers;
 
@@ -51,10 +52,10 @@ public static class ConvertFormValidation
             }
         }
 
-        var charset = form["charset"].ToString();
-        if (string.IsNullOrWhiteSpace(charset))
+        if (!Enum.TryParse(form["charset"].ToString().Trim(), ignoreCase: true, out AsciiCharsetType charset)
+            || !Enum.IsDefined(charset))
         {
-            charset = AsciiCharsets.Classic;
+            return (null, "Charset must be one of: classic, detailed, blocks.");
         }
 
         var parsed = new ParsedConvertForm(

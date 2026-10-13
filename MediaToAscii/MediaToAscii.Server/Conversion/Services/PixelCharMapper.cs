@@ -1,4 +1,5 @@
 using MediaToAscii.Server.Conversion;
+using MediaToAscii.Server.Conversion.Constants;
 
 namespace MediaToAscii.Server.Conversion.Services;
 
@@ -20,9 +21,7 @@ public sealed class PixelCharMapper : IPixelCharMapper
             normalized = 1.0 - normalized;
         }
 
-        var charset = string.IsNullOrEmpty(options.Charset)
-            ? AsciiCharsets.Classic
-            : options.Charset;
+        var charset = options.Charset.GetGlyphs();
 
         var index = (int)Math.Round(normalized * (charset.Length - 1));
         index = Math.Clamp(index, 0, charset.Length - 1);

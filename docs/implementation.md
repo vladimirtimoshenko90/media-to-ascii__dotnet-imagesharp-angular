@@ -110,7 +110,9 @@ Prefer fewer parallel claims over conflicts.
     DependencyInjection.cs
     TempFileUtility.cs                # Step 2.1
   Conversion/
-    ConvertOptions.cs                 # ids + catalog; mapper still gets glyph string
+    Constants/
+      AsciiCharsets.cs                # AsciiCharsetType + glyph tables + GetGlyphs extension
+    ConvertOptions.cs                 # processing params; Charset is AsciiCharsetType
     ConvertResults.cs                 # optional DTOs
     DependencyInjection.cs
     Services/
@@ -121,9 +123,10 @@ Prefer fewer parallel claims over conflicts.
     ImageConvertEndpoint.cs
     VideoConvertEndpoint.cs
     ConvertOptionsEndpoint.cs         # Step 1.2
-    Validation/                       # Step 1.1
-      ConvertFormRequest.cs
-      ValidationFilter.cs
+    Dtos/                             # request/response types (+ co-located validators)
+      ConvertFormRequest.cs           # Step 1.1 (request + ConvertFormRequestValidator)
+    Infrastructure/                   # filters, framework glue (not validators)
+      ValidationFilter.cs             # Step 1.1
     Helpers/
       ConvertFormValidation.cs       # DELETE after 1.1
   Program.cs
@@ -152,7 +155,7 @@ Prefer fewer parallel claims over conflicts.
 | Options route | **`GET /api/convert/options`** |
 | Options JSON | `{ "charsets": [ { "id": "classic", "characters": "..." }, { "id": "detailed", "characters": "..." }, { "id": "blocks", "characters": "..." } ] }` |
 | Charset ids | `classic`, `detailed`, `blocks` (lowercase) |
-| Glyphs | Existing `AsciiCharsets` server constants |
+| Glyphs | `Conversion/Constants/AsciiCharsets` + `AsciiCharsetType` |
 | Image / video routes | `POST /api/convert/image`, `POST /api/convert/video` |
 | Form fields | `file`, `width`, `invert`, `charset` (**id**, not glyphs) |
 | Image JSON | `{ "ascii": "..." }` |
@@ -169,7 +172,7 @@ Prefer fewer parallel claims over conflicts.
 | Preview | Plaintext + CSS fit; no scrollbars |
 | Design | [design-prompt.phase2.md](./design-prompt.phase2.md) |
 
-**Mapper note:** resolve charset **id → glyph string** in the API before calling converters (`ConvertOptions.Charset` remains characters for the mapper).
+**Mapper note:** HTTP parses charset **id → `AsciiCharsetType` once** (validator/form boundary); `ConvertOptions.Charset` is the enum; mapper uses `charset.GetGlyphs()`.
 
 ---
 
@@ -200,8 +203,8 @@ Shared API contract work other features depend on.
 
 - Status: ⬜
 - Needs: —
-- Files: `{Api}/Endpoints/Validation/**`, `{Api}/Endpoints/ImageConvertEndpoint.cs`, `{Api}/Endpoints/VideoConvertEndpoint.cs`, `{Api}/Program.cs`, `{Api}/*.csproj`, delete `Helpers/ConvertFormValidation.cs` when unused
-- Do: FluentValidation package; `ConvertFormRequest` `[FromForm]`; validator (file, width 20–300, invert, charset id ∈ classic|detailed|blocks); `AddAutoValidation`; resolve id→glyphs; keep **text/plain** success until 1.3
+- Files: `{Api}/Endpoints/Dtos/**`, `{Api}/Endpoints/Infrastructure/**`, `{Api}/Endpoints/ImageConvertEndpoint.cs`, `{Api}/Endpoints/VideoConvertEndpoint.cs`, `{Api}/Program.cs`, `{Api}/*.csproj`, delete `Helpers/ConvertFormValidation.cs` when unused
+- Do: FluentValidation package + filter infra already landed; remaining: `ConvertFormRequest` `[FromForm]` + co-located validator under Dtos; `AddAutoValidation`; resolve id→glyphs; keep **text/plain** success until 1.3
 - Done when: TryParse helper gone; invalid → ValidationProblem; valid convert still works
 - Commit: `backend - api, FluentValidation for convert form`
 
