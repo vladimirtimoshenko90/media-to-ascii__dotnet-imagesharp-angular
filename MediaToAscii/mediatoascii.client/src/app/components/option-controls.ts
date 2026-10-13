@@ -1,9 +1,6 @@
-import { Component, inject, input, OnInit, output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  AsciiCharsetOption,
-  ConfigurationApiService,
-} from '../services/configuration-api.service';
+import { AsciiCharsetOption } from '../services/configuration-api.service';
 import { ConvertOptions } from '../services/convert-api.service';
 import { CharsetPickerComponent } from './charset-picker';
 
@@ -40,7 +37,7 @@ import { CharsetPickerComponent } from './charset-picker';
       </div>
 
       <app-charset-picker
-        [options]="charsets"
+        [options]="charsets()"
         [value]="options().charset"
         (valueChange)="emitPatch({ charset: $event })"
       />
@@ -59,17 +56,11 @@ import { CharsetPickerComponent } from './charset-picker';
     }
   `,
 })
-export class OptionControlsComponent implements OnInit {
-  private readonly configurationApi = inject(ConfigurationApiService);
+export class OptionControlsComponent {
+  readonly charsets = input.required<AsciiCharsetOption[]>();
 
   readonly options = input.required<ConvertOptions>();
   readonly optionsChange = output<ConvertOptions>();
-
-  charsets: AsciiCharsetOption[] = [];
-
-  ngOnInit(): void {
-    this.configurationApi.getConvertOptions().subscribe((data) => (this.charsets = data));
-  }
 
   emitPatch(patch: Partial<ConvertOptions>): void {
     this.optionsChange.emit({ ...this.options(), ...patch });

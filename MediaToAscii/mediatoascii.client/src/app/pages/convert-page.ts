@@ -1,9 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { AsciiPreviewComponent } from '../components/ascii-preview';
 import { OptionControlsComponent } from '../components/option-controls';
 import { ResultActionsComponent } from '../components/result-actions';
 import { UploadZoneComponent } from '../components/upload-zone';
+import {
+  AsciiCharsetOption,
+  ConfigurationApiService,
+} from '../services/configuration-api.service';
 import {
   ConvertApiService,
   ConvertOptions,
@@ -22,6 +26,7 @@ import {
       <div class="region region-stack">
         <app-upload-zone (fileSelected)="onFileSelected($event)" />
         <app-option-controls
+          [charsets]="charsets"
           [options]="options"
           (optionsChange)="options = $event"
         />
@@ -46,22 +51,31 @@ import {
     </div>
   `,
 })
-export class ConvertPage {
+export class ConvertPage implements OnInit {
   private readonly convertApi = inject(ConvertApiService);
+  private readonly configurationApi = inject(ConfigurationApiService);
 
   selectedFile: File | null = null;
+  charsets: AsciiCharsetOption[] = [];
   options: ConvertOptions = {
     width: 100,
     invert: false,
-    charset: 'classic',
+    charset: '',
   };
   asciiText: string | null = null;
   loading = false;
   error: string | null = null;
 
+  ngOnInit(): void {
+    this.configurationApi.getConvertOptions().subscribe((data) => {
+      this.charsets = data;
+      this.options = { ...this.options, charset: data[0].id };
+    });
+  }
+
   get canConvert(): boolean {
     const file = this.selectedFile;
-    if (!file || this.loading) {
+    if (!file || this.loading || !this.options.charset) {
       return false;
     }
     return (
@@ -77,7 +91,7 @@ export class ConvertPage {
 
   convert(): void {
     const file = this.selectedFile;
-    if (!file || this.loading) {
+    if (!file || this.loading || !this.options.charset) {
       return;
     }
 

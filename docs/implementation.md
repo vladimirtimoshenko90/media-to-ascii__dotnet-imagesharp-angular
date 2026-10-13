@@ -167,7 +167,7 @@ Prefer fewer parallel claims over conflicts.
 | Video JSON | `{ "frames": [ { "ascii": "..." }, ... ], "durationMs": 5000, "frameDelayMs": 166 }` (`AsciiVideo`) |
 | Validation errors | `Results.ValidationProblem(...)` |
 | Width | API 20–300 (required on convert form); UI 40–200; FE default 100 |
-| Default charset id | FE default `classic` (API requires charset on convert form) |
+| Default charset id | FE uses first id from `GET /api/config/convert-options` (API requires charset on convert form) |
 | Video | max 30 frames; even sample; system ffmpeg |
 | Temp files | Guid path under temp; scoped dispose deletes |
 | FE debounce | Width ~400ms; file/charset/invert immediate |
