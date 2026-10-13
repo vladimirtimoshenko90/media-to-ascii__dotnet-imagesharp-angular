@@ -5,7 +5,7 @@ alwaysApply: true
 
 # m2asc workflow
 
-Living plan: `docs/implementation.md` (see also `docs/spec.md`).
+Living plan: `docs/implementation.md` (see also `docs/__spec.md`).
 
 ## Status icons (plan only)
 

@@ -9,7 +9,7 @@ Review pending changes for the current plan leaf (status `🔍` or the leaf just
 3. Check for:
    - conflicts with other `⏳` / `🔍` leaves (same files or overlapping behavior)
    - duplication vs the rest of the codebase
-   - drift from `docs/spec.md` and the leaf stop criterion
+   - drift from `docs/__spec.md` and the leaf stop criterion
    - thin endpoints / no browser-side image processing
    - obvious bugs, missing validation, or messy structure
 4. Report a clear verdict: **approve**, **approve with nits**, or **request changes** (with concrete fixes).
