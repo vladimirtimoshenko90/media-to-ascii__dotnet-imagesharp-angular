@@ -1,5 +1,7 @@
 using MediaToAscii.Server.Conversion.Services;
-using MediaToAscii.Server.Endpoints.Helpers;
+using MediaToAscii.Server.Endpoints.Dtos;
+using MediaToAscii.Server.Endpoints.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MediaToAscii.Server.Endpoints;
 
@@ -9,23 +11,20 @@ public static class VideoConvertEndpoint
 
     public static IEndpointRouteBuilder MapVideoConvert(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/api/convert/video", ConvertVideo);
+        endpoints.MapPost("/api/convert/video", ConvertVideo)
+            .DisableAntiforgery()
+            .AddAutoValidation<ConvertFormRequest>();
         return endpoints;
     }
 
     private static async Task<IResult> ConvertVideo(
-        HttpRequest request,
+        [FromForm] ConvertFormRequest form,
         IVideoAsciiConverter converter,
         CancellationToken ct)
     {
-        var (parsed, error) = await ConvertFormValidation.TryParse(request, ct);
-        if (error is not null)
-        {
-            return Results.Text(error, contentType: "text/plain", statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        await using var stream = parsed!.File.OpenReadStream();
-        var result = await converter.Convert(stream, parsed.Options, ct);
+        var options = form.ToConvertOptions();
+        await using var stream = form.File!.OpenReadStream();
+        var result = await converter.Convert(stream, options, ct);
         var body = string.Join(FrameSeparator, result.Frames);
         return Results.Text(body, contentType: "text/plain");
     }

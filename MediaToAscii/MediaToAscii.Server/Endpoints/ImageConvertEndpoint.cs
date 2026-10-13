@@ -1,5 +1,7 @@
 using MediaToAscii.Server.Conversion.Services;
-using MediaToAscii.Server.Endpoints.Helpers;
+using MediaToAscii.Server.Endpoints.Dtos;
+using MediaToAscii.Server.Endpoints.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MediaToAscii.Server.Endpoints;
 
@@ -7,23 +9,20 @@ public static class ImageConvertEndpoint
 {
     public static IEndpointRouteBuilder MapImageConvert(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/api/convert/image", ConvertImage);
+        endpoints.MapPost("/api/convert/image", ConvertImage)
+            .DisableAntiforgery()
+            .AddAutoValidation<ConvertFormRequest>();
         return endpoints;
     }
 
     private static async Task<IResult> ConvertImage(
-        HttpRequest request,
+        [FromForm] ConvertFormRequest form,
         IImageAsciiConverter converter,
         CancellationToken ct)
     {
-        var (parsed, error) = await ConvertFormValidation.TryParse(request, ct);
-        if (error is not null)
-        {
-            return Results.Text(error, contentType: "text/plain", statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        await using var stream = parsed!.File.OpenReadStream();
-        var ascii = await converter.Convert(stream, parsed.Options, ct);
+        var options = form.ToConvertOptions();
+        await using var stream = form.File!.OpenReadStream();
+        var ascii = await converter.Convert(stream, options, ct);
         return Results.Text(ascii, contentType: "text/plain");
     }
 }

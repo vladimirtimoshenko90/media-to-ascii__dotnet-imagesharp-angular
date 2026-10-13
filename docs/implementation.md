@@ -6,7 +6,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
 ## Contents
 
 - [⬜ Step 1 — Feature: Convert API cleanup](#step-1--feature-convert-api-cleanup)
-  - [⬜ 1.1 — FluentValidation + convert form request](#step-11--fluentvalidation--convert-form-request)
+  - [✅ 1.1 — FluentValidation + convert form request](#step-11--fluentvalidation--convert-form-request)
   - [✅ 1.2 — Charsets / convert-options GET endpoint](#step-12--charsets--convert-options-get-endpoint)
   - [⬜ 1.3 — Typed JSON convert responses](#step-13--typed-json-convert-responses)
 - [⬜ Step 2 — Feature: Reliable video convert](#step-2--feature-reliable-video-convert)
@@ -127,8 +127,6 @@ Prefer fewer parallel claims over conflicts.
       ConvertFormRequest.cs           # Step 1.1 (request + ConvertFormRequestValidator)
     Infrastructure/                   # filters, framework glue (not validators)
       ValidationFilter.cs             # Step 1.1
-    Helpers/
-      ConvertFormValidation.cs       # DELETE after 1.1
   Program.cs
 
 {Ng}/src/app/
@@ -161,8 +159,8 @@ Prefer fewer parallel claims over conflicts.
 | Image JSON | `{ "ascii": "..." }` |
 | Video JSON | `{ "frames": ["...", "..."] }` |
 | Validation errors | `Results.ValidationProblem(...)` |
-| Width | API 20–300; UI 40–200; default 100 |
-| Default charset id | `classic` |
+| Width | API 20–300 (required on convert form); UI 40–200; FE default 100 |
+| Default charset id | FE default `classic` (API requires charset on convert form) |
 | Video | max 30 frames; even sample; system ffmpeg |
 | Temp files | Guid path under temp; scoped dispose deletes |
 | FE debounce | Width ~400ms; file/charset/invert immediate |
@@ -201,10 +199,10 @@ Shared API contract work other features depend on.
 
 ### Step 1.1 — FluentValidation + convert form request
 
-- Status: ⬜
+- Status: ✅
 - Needs: —
-- Files: `{Api}/Endpoints/Dtos/**`, `{Api}/Endpoints/Infrastructure/**`, `{Api}/Endpoints/ImageConvertEndpoint.cs`, `{Api}/Endpoints/VideoConvertEndpoint.cs`, `{Api}/Program.cs`, `{Api}/*.csproj`, delete `Helpers/ConvertFormValidation.cs` when unused
-- Do: FluentValidation package + filter infra already landed; remaining: `ConvertFormRequest` `[FromForm]` + co-located validator under Dtos; `AddAutoValidation`; resolve id→glyphs; keep **text/plain** success until 1.3
+- Files: `{Api}/Endpoints/Dtos/**`, `{Api}/Endpoints/ImageConvertEndpoint.cs`, `{Api}/Endpoints/VideoConvertEndpoint.cs`, delete `Helpers/ConvertFormValidation.cs` when unused
+- Do: FluentValidation package + filter infra already landed; remaining: `ConvertFormRequest` `[FromForm]` + co-located validator under Dtos; `AddAutoValidation`; form charset id → `AsciiCharsetType` on `ConvertOptions`; keep **text/plain** success until 1.3
 - Done when: TryParse helper gone; invalid → ValidationProblem; valid convert still works
 - Commit: `backend - api, FluentValidation for convert form`
 
