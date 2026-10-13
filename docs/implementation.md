@@ -13,10 +13,10 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
 - [✅ Step 2 — Feature: Reliable video convert](#step-2--feature-reliable-video-convert)
   - [✅ 2.1 — Temp file utility](#step-21--temp-file-utility)
   - [✅ 2.2 — Extract video frames via temp file](#step-22--extract-video-frames-via-temp-file)
-- [⬜ Step 3 — Feature: Charsets from API + sample picker](#step-3--feature-charsets-from-api--sample-picker)
+- [✅ Step 3 — Feature: Charsets from API + sample picker](#step-3--feature-charsets-from-api--sample-picker)
   - [✅ 3.1 — Cleanup: do not hard-code ASCII charsets on FE; load from API](#step-31--cleanup-do-not-hard-code-ascii-charsets-on-fe-load-from-api)
   - [✅ 3.2 — FE consume typed JSON convert results](#step-32--fe-consume-typed-json-convert-results)
-  - [⬜ 3.3 — Charset sample picker UI](#step-33--charset-sample-picker-ui)
+  - [✅ 3.3 — Charset sample picker UI](#step-33--charset-sample-picker-ui)
 - [⏳ Step 4 — Feature: Preview fit + page shell](#step-4--feature-preview-fit--page-shell)
   - [✅ 4.1 — ASCII preview fit (no scrollbars)](#step-41--ascii-preview-fit-no-scrollbars)
   - [⬜ 4.2 — Shell + preview sizing per Open Design](#step-42--shell--preview-sizing-per-open-design)
@@ -291,7 +291,7 @@ Stop hard-coding glyphs on FE; picker shows API samples.
 
 ### Step 3.3 — Charset sample picker UI
 
-- Status: ⬜
+- Status: ✅
 - Needs: 3.1
 - Files: `{Ng}/src/app/components/charset-picker.ts`, `option-controls.ts`
 - Do: match OD — three clickable monospace samples from API `{ id, characters }`; emit id; no name labels (Classic/…); no native radios; no “Character set” heading required; width/invert stay on option-controls

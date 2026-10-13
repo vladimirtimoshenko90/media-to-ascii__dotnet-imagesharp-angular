@@ -6,10 +6,11 @@ import {
   ConfigurationApiService,
 } from '../services/configuration-api.service';
 import { ConvertOptions } from '../services/convert-api.service';
+import { CharsetPickerComponent } from './charset-picker';
 
 @Component({
   selector: 'app-option-controls',
-  imports: [FormsModule],
+  imports: [FormsModule, CharsetPickerComponent],
   template: `
     <div class="opt-row">
       <div>
@@ -39,31 +40,23 @@ import { ConvertOptions } from '../services/convert-api.service';
         <label class="form-check-label" for="convert-invert">Invert</label>
       </div>
 
-      <div>
-        <label class="form-label" for="convert-charset">Character set</label>
-        <select
-          id="convert-charset"
-          class="form-select form-select-sm"
-          [(ngModel)]="charsetId"
-          (ngModelChange)="emitOptions()"
-        >
-          @for (charset of charsets; track charset.id) {
-            <option [value]="charset.id">{{ charset.id }}</option>
-          }
-        </select>
-      </div>
+      <app-charset-picker
+        [options]="charsets"
+        [value]="charsetId"
+        (valueChange)="onCharsetChange($event)"
+      />
     </div>
   `,
   styles: `
     .opt-row {
       display: grid;
       gap: 0.85rem;
-    }
 
-    .opt-row label.form-label,
-    .opt-row .form-check-label {
-      color: var(--fg);
-      font-size: 0.9rem;
+      label.form-label,
+      .form-check-label {
+        color: var(--fg);
+        font-size: 0.9rem;
+      }
     }
   `,
 })
@@ -79,6 +72,11 @@ export class OptionControlsComponent implements OnInit {
 
   ngOnInit(): void {
     this.configurationApi.getConvertOptions().subscribe((data) => (this.charsets = data));
+  }
+
+  onCharsetChange(id: string): void {
+    this.charsetId = id;
+    this.emitOptions();
   }
 
   emitOptions(): void {
