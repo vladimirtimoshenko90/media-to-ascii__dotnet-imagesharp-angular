@@ -10,7 +10,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [⬜ 1.2 — Charsets / convert-options GET endpoint](#step-12--charsets--convert-options-get-endpoint)
   - [⬜ 1.3 — Typed JSON convert responses](#step-13--typed-json-convert-responses)
 - [⬜ Step 2 — Feature: Reliable video convert](#step-2--feature-reliable-video-convert)
-  - [⬜ 2.1 — Temp file utility](#step-21--temp-file-utility)
+  - [✅ 2.1 — Temp file utility](#step-21--temp-file-utility)
   - [⬜ 2.2 — Extract video frames via temp file](#step-22--extract-video-frames-via-temp-file)
 - [⬜ Step 3 — Feature: Charsets from API + sample picker](#step-3--feature-charsets-from-api--sample-picker)
   - [⬜ 3.1 — Cleanup: do not hard-code ASCII charsets on FE; load from API](#step-31--cleanup-do-not-hard-code-ascii-charsets-on-fe-load-from-api)
@@ -57,7 +57,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
 7. Follow `.cursor/rules/` (backend/frontend style, no-commit, no-push).
 
 **Hot files** (one agent at a time):  
-`{Api}/Program.cs`, `{Api}/Conversion/DependencyInjection.cs`, `{Ng}/src/app/pages/convert-page.ts`, `{Ng}/src/app/app.config.ts`, `{Ng}/src/styles.scss`, `{Ng}/src/app/services/convert-api.service.ts`, this `docs/implementation.md` while claiming/shipping.
+`{Api}/Program.cs`, `{Api}/Conversion/DependencyInjection.cs`, `{Api}/Common/DependencyInjection.cs`, `{Ng}/src/app/pages/convert-page.ts`, `{Ng}/src/app/app.config.ts`, `{Ng}/src/styles.scss`, `{Ng}/src/app/services/convert-api.service.ts`, this `docs/implementation.md` while claiming/shipping.
 
 ### Suggested parallel waves (~3 agents)
 
@@ -102,6 +102,9 @@ Prefer fewer parallel claims over conflicts.
 
 ```
 {Api}/
+  Common/                             # shared non-feature utilities
+    DependencyInjection.cs
+    TempFileUtility.cs                # Step 2.1
   Conversion/
     ConvertOptions.cs                 # ids + catalog; mapper still gets glyph string
     ConvertResults.cs                 # optional DTOs
@@ -110,7 +113,6 @@ Prefer fewer parallel claims over conflicts.
       PixelCharMapper.cs
       ImageAsciiConverter.cs
       VideoAsciiConverter.cs
-      TempFileUtility.cs              # Step 2.1
   Endpoints/
     ImageConvertEndpoint.cs
     VideoConvertEndpoint.cs
@@ -224,10 +226,10 @@ Fix exit-69 pipe/seek failure.
 
 ### Step 2.1 — Temp file utility
 
-- Status: ⬜
+- Status: ✅
 - Needs: —
-- Files: `{Api}/Conversion/Services/TempFileUtility.cs`, `{Api}/Conversion/DependencyInjection.cs`
-- Do: `ITempFileUtility` + scoped impl; Persist stream/file with Guid path; dispose deletes
+- Files: `{Api}/Common/TempFileUtility.cs`, `{Api}/Common/DependencyInjection.cs`, `{Api}/Program.cs` (AddCommonServices only)
+- Do: `ITempFileUtility` + scoped impl under Common (not Conversion); Persist stream with Guid path; dispose deletes
 - Done when: DI resolves utility; builds
 - Commit: `backend - io, add scoped temp file utility`
 
