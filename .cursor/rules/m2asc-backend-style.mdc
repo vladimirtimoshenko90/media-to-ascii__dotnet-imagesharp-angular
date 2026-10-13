@@ -26,6 +26,14 @@ Conventions for `{Api}` (ASP.NET). Keep bullets short; expand only when a patter
 - Co-locate small result/DTO types used only by that service in the same file (e.g. `VideoAsciiResult` with `IVideoAsciiConverter` / `VideoAsciiConverter`)
 - Split those types out only when shared across features or they grow real behavior
 
+## Endpoint DTOs + validators
+
+- Request/response types live under `Endpoints/Dtos/`
+- FluentValidation validators live in the **same file** as their DTO (DTO first, validator immediately after); file name matches the DTO (e.g. `ConvertFormRequest.cs` contains `ConvertFormRequest` then `ConvertFormRequestValidator`)
+- Do not put validators in a separate file or under `Infrastructure/`
+- Validation limits / allowed-value sets belong on the validator, not on the DTO
+- Endpoint framework glue (filters, `AddAutoValidation`, etc.) lives under `Endpoints/Infrastructure/`
+
 ## Constructor injection
 
 - Inject dependencies via primary constructors (no separate ctor body for DI wiring)

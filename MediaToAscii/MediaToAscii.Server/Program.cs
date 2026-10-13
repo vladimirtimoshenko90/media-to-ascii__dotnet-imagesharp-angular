@@ -1,11 +1,13 @@
+using MediaToAscii.Server.Common;
 using MediaToAscii.Server.Conversion;
 using MediaToAscii.Server.Endpoints;
-using MediaToAscii.Server.Common;
+using MediaToAscii.Server.Endpoints.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCommonServices();
 builder.Services.AddConversionServices();
+builder.Services.AddEndpointValidation();
 
 var app = builder.Build();
 
