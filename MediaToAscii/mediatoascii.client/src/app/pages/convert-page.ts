@@ -4,10 +4,10 @@ import { AsciiPreviewComponent } from '../components/ascii-preview';
 import { OptionControlsComponent } from '../components/option-controls';
 import { ResultActionsComponent } from '../components/result-actions';
 import { UploadZoneComponent } from '../components/upload-zone';
+import { DEFAULT_CONVERT_OPTIONS } from '../constants/default-convert-options';
 import {
   ConvertApiService,
   ConvertOptions,
-  DEFAULT_CONVERT_OPTIONS,
 } from '../services/convert-api.service';
 
 @Component({

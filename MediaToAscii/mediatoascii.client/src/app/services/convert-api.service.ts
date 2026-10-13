@@ -1,19 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AsciiCharsets } from '../constants/ascii-charsets';
 
 export interface ConvertOptions {
   width: number;
   invert: boolean;
   charset: string;
 }
-
-export const DEFAULT_CONVERT_OPTIONS: ConvertOptions = {
-  width: 100,
-  invert: false,
-  charset: AsciiCharsets.Classic,
-};
 
 @Injectable({ providedIn: 'root' })
 export class ConvertApiService {

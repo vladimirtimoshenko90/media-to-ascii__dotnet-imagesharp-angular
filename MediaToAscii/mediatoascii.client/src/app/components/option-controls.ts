@@ -4,10 +4,8 @@ import {
   AsciiCharsets,
   AsciiCharsetName,
 } from '../constants/ascii-charsets';
-import {
-  ConvertOptions,
-  DEFAULT_CONVERT_OPTIONS,
-} from '../services/convert-api.service';
+import { DEFAULT_CONVERT_OPTIONS } from '../constants/default-convert-options';
+import { ConvertOptions } from '../services/convert-api.service';
 
 @Component({
   selector: 'app-option-controls',
