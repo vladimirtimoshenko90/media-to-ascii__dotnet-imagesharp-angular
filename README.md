@@ -2,6 +2,12 @@
 
 Web app that converts uploaded images and videos into ASCII art. Angular handles upload, options, preview, copy, and download; ASP.NET Core runs all conversion on the server.
 
+## Prerequisites
+
+- **.NET 10 SDK**
+- **Node.js** (LTS)
+- **FFmpeg** (required for video) — e.g. `winget install Gyan.FFmpeg`
+
 ## Stack
 
 | Area | Choice |
@@ -10,7 +16,7 @@ Web app that converts uploaded images and videos into ASCII art. Angular handles
 | Backend | .NET 10 Minimal API |
 | Frontend | Angular 19 |
 | Images | SixLabors.ImageSharp |
-| Video frames | FFMpegCore (system **ffmpeg** required at runtime for video) |
+| Video frames | FFMpegCore (system **ffmpeg** / **ffprobe** required at runtime for video) |
 
 ## Run
 
