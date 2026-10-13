@@ -16,8 +16,8 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [⬜ 3.1 — Cleanup: do not hard-code ASCII charsets on FE; load from API](#step-31--cleanup-do-not-hard-code-ascii-charsets-on-fe-load-from-api)
   - [⬜ 3.2 — FE consume typed JSON convert results](#step-32--fe-consume-typed-json-convert-results)
   - [⬜ 3.3 — Charset sample picker UI](#step-33--charset-sample-picker-ui)
-- [⬜ Step 4 — Feature: Preview fit + page shell](#step-4--feature-preview-fit--page-shell)
-  - [⬜ 4.1 — ASCII preview fit (no scrollbars)](#step-41--ascii-preview-fit-no-scrollbars)
+- [⏳ Step 4 — Feature: Preview fit + page shell](#step-4--feature-preview-fit--page-shell)
+  - [✅ 4.1 — ASCII preview fit (no scrollbars)](#step-41--ascii-preview-fit-no-scrollbars)
   - [⬜ 4.2 — Balanced fluid shell layout](#step-42--balanced-fluid-shell-layout)
 - [⬜ Step 5 — Feature: Image original | ASCII side-by-side](#step-5--feature-image-original--ascii-side-by-side)
   - [⬜ 5.1 — Image compare component](#step-51--image-compare-component)
@@ -36,6 +36,10 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [⬜ 8.3 — README sample ASCII](#step-83--readme-sample-ascii)
   - [⬜ 8.4 — Refresh __spec.md](#step-84--refresh-__specmd)
   - [⬜ 8.5 — Archive this plan as implementation.phase2.md](#step-85--archive-this-plan-as-implementationphase2md)
+
+### Reminders (human — not ship leaves)
+
+- On **5.1** / **6.1**: if ASCII scale-to-fit is copied from `ascii-preview`, extract a shared directive or fitted-`<pre>` component (details under Agreed decisions)
 
 ### Status legend
 
@@ -180,6 +184,7 @@ Feature-complete phase 2: reliable video; API-owned charsets + picker; JSON conv
 - Charset UI: clickable samples only (no name labels, no native radios).
 - Image side-by-side; video = ASCII player only (no raw video pane).
 - Never commit unless asked / `/m2asc-ship`; never push.
+- **Defer:** keep ASCII scale-to-fit inside `ascii-preview` for 4.1; when implementing **5.1** / **6.1**, if fit logic is copied, extract a shared directive (or tiny fitted-`<pre>` component) — do not invent that file until a second consumer needs it.
 
 ## Living plan
 
@@ -283,12 +288,13 @@ No preview/page scrollbars from wide ASCII; balanced layout.
 
 ### Step 4.1 — ASCII preview fit (no scrollbars)
 
-- Status: ⬜
+- Status: ✅
 - Needs: —
 - Files: `{Ng}/src/app/components/ascii-preview.ts`
 - Do: plaintext `<pre>`; uniform CSS scale/fit; overflow hidden; no scrollbars
 - Done when: width 200 ASCII fits pane without scrollbars
 - Commit: `frontend - ui, fit ASCII preview without scrollbars`
+- Later: do **not** extract fit into a directive/service in this leaf — reconsider on **5.1** / **6.1** if duplicated (see Agreed decisions)
 
 ### Step 4.2 — Balanced fluid shell layout
 
@@ -308,7 +314,7 @@ No preview/page scrollbars from wide ASCII; balanced layout.
 - Status: ⬜
 - Needs: 4.1
 - Files: `{Ng}/src/app/components/image-compare.ts`
-- Do: original image URL + ascii side by side; stack on narrow; not used for video
+- Do: original image URL + ascii side by side; stack on narrow; not used for video; reuse 4.1 fit (extract shared fit directive/component only if copying logic — see Agreed decisions)
 - Done when: component demos side-by-side with inputs
 - Commit: `frontend - ui, add image ASCII compare component`
 
@@ -332,7 +338,7 @@ Order: reusable display → page swap → controls → autoplay.
 - Status: ⬜
 - Needs: 4.1
 - Files: `{Ng}/src/app/components/ascii-video-player.ts`
-- Do: inputs `frames`, `currentIndex`; show fitted frame only; **no** transport controls yet
+- Do: inputs `frames`, `currentIndex`; show fitted frame only; **no** transport controls yet; reuse 4.1 fit (extract shared fit directive/component only if copying logic — see Agreed decisions)
 - Done when: mock frames + index render correctly
 - Commit: `frontend - ui, add ASCII video player frame display`
 
