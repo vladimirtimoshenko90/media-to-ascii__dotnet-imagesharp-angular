@@ -35,4 +35,4 @@ All agents share one folder — status on disk is the lock. Do not commit interm
 - `/m2asc-review` — review this leaf’s pending diff; do not commit or push
 - `/m2asc-ship` — after human approval: mark `✅`, stage only this leaf (hunk-filter shared files), verify `git diff --cached`, commit locally; **never push**
 
-Never commit unless the user runs `/m2asc-ship` or explicitly asks to commit. **Never push** — not even if the user asks (see `m2asc-no-push`).
+**Never commit** unless the user runs `/m2asc-ship` or explicitly asks to commit in that message (see `m2asc-no-commit`). Phrases like “separate commits” or “go ahead” alone are not enough. **Never push** — not even if the user asks (see `m2asc-no-push`).

@@ -1,0 +1,24 @@
+---
+description: Never git commit unless the user explicitly requests it
+alwaysApply: true
+---
+
+# m2asc — no commit unless asked
+
+**Never run `git commit` (or stage-for-commit as a prelude to committing) unless the user clearly requests a commit in that message.**
+
+## Counts as permission
+
+- User runs `/m2asc-ship` (after review approval), or
+- User explicitly says to commit (e.g. “commit this”, “create a commit”, “commit the docs rename”)
+
+## Does NOT count as permission
+
+- “We’ll do this in separate commits” / “each step gets a commit” (process preference only)
+- “Go ahead” / “implement” / “rename” / “do the next step” without the word commit/ship
+- Finishing a leaf and setting `🔍` — propose a message; **do not** commit
+- Implied convenience (“cleaner history if I commit now”)
+
+If unclear: **do not commit** — leave changes in the working tree and ask.
+
+See also: `m2asc-no-push` (never push, even if asked).

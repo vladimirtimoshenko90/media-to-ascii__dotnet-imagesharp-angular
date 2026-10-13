@@ -20,6 +20,7 @@ Examples:
 Rules:
 
 - Prefer short, outcome-focused subjects (about one line)
+- **Do not commit** until `/m2asc-ship` or an explicit “commit …” request (see `m2asc-no-commit`)
 - On `/m2asc-ship`, use this format; include this leaf’s plan status → `✅` in the same commit as the code
 - On `/m2asc-ship`, commit locally only — **never push** (even if asked; see `m2asc-no-push`)
 - Stage only this leaf; in shared files (especially `docs/implementation.md`) stage only this leaf’s hunks; verify with `git diff --cached` before committing
