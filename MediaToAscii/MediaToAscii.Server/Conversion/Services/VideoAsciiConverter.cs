@@ -51,7 +51,11 @@ public sealed class VideoAsciiConverter(
                     frames[i] = await imageConverter.Convert(pngBuffers[i], options, token);
                 });
 
-            return new AsciiVideo(frames);
+            var durationMs = (int)Math.Max(0, Math.Round(duration.TotalMilliseconds));
+            var frameDelayMs = frames.Length > 0 && durationMs > 0
+                ? Math.Max(1, (int)Math.Round((double)durationMs / frames.Length))
+                : 0;
+            return new AsciiVideo(frames, durationMs, frameDelayMs);
         }
         finally
         {

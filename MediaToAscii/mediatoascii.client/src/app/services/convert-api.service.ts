@@ -14,6 +14,8 @@ export interface AsciiFrame {
 
 export interface AsciiVideo {
   frames: AsciiFrame[];
+  durationMs: number;
+  frameDelayMs: number;
 }
 
 @Injectable({ providedIn: 'root' })

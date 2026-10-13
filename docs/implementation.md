@@ -9,6 +9,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 1.1 — FluentValidation + convert form request](#step-11--fluentvalidation--convert-form-request)
   - [✅ 1.2 — Charsets / convert-options GET endpoint](#step-12--charsets--convert-options-get-endpoint)
   - [✅ 1.3 — Typed JSON convert responses](#step-13--typed-json-convert-responses)
+  - [✅ 1.4 — AsciiVideo playback timing](#step-14--asciivideo-playback-timing)
 - [✅ Step 2 — Feature: Reliable video convert](#step-2--feature-reliable-video-convert)
   - [✅ 2.1 — Temp file utility](#step-21--temp-file-utility)
   - [✅ 2.2 — Extract video frames via temp file](#step-22--extract-video-frames-via-temp-file)
@@ -118,7 +119,7 @@ Prefer fewer parallel claims over conflicts.
     DependencyInjection.cs
     Entities/
       AsciiFrame.cs                   # Step 1.3
-      AsciiVideo.cs                   # Step 1.3
+      AsciiVideo.cs                   # Steps 1.3 / 1.4
     Services/
       PixelCharMapper.cs
       ImageAsciiConverter.cs          # returns AsciiFrame
@@ -162,7 +163,7 @@ Prefer fewer parallel claims over conflicts.
 | Image / video routes | `POST /api/convert/image`, `POST /api/convert/video` |
 | Form fields | `file`, `width`, `invert`, `charset` (**id**, not glyphs) |
 | Image JSON | `{ "ascii": "..." }` (`AsciiFrame`) |
-| Video JSON | `{ "frames": [ { "ascii": "..." }, ... ] }` (`AsciiVideo`) |
+| Video JSON | `{ "frames": [ { "ascii": "..." }, ... ], "durationMs": 5000, "frameDelayMs": 166 }` (`AsciiVideo`) |
 | Validation errors | `Results.ValidationProblem(...)` |
 | Width | API 20–300 (required on convert form); UI 40–200; FE default 100 |
 | Default charset id | FE default `classic` (API requires charset on convert form) |
@@ -171,7 +172,7 @@ Prefer fewer parallel claims over conflicts.
 | FE debounce | Width ~400ms; file/charset/invert immediate |
 | FE cancel | Cancel prior convert on new request |
 | Copy/Download | Join video frame `.ascii` strings with `\n\n----\n\n` |
-| Player | ~120ms/frame; Play/Pause, Restart, seek; no speed; autoplay on success |
+| Player | use `frameDelayMs` from `AsciiVideo` (FE fallback ~120ms if 0); Play/Pause, Restart, seek; no speed; autoplay on success |
 | Preview | Plaintext + CSS fit; no scrollbars; OD: spacious empty/loading/error, hug on success |
 | Design | [design-prompt.phase2.md](./design-prompt.phase2.md); OD artifact `media-to-ascii-refresh.html` (project **Media to Ascii**) |
 
@@ -231,6 +232,15 @@ Shared API contract work other features depend on.
 - Done when: both routes return locked JSON
 - Commit: `backend - api, return typed JSON convert results`
 
+### Step 1.4 — AsciiVideo playback timing
+
+- Status: ✅
+- Needs: 1.3
+- Files: `{Api}/Conversion/Entities/AsciiVideo.cs`, `{Api}/Conversion/Services/VideoAsciiConverter.cs`, `{Ng}/src/app/services/convert-api.service.ts` (`AsciiVideo` type only)
+- Do: extend `AsciiVideo` with `DurationMs` + `FrameDelayMs` from probed duration and even sample spacing (`durationMs / frameCount`, min 1 when duration > 0; else 0); mirror fields on FE `AsciiVideo`; update Locked contracts; no player wiring here
+- Done when: video convert JSON includes `durationMs` and `frameDelayMs` with frames; FE type matches
+- Commit: `backend - api, add AsciiVideo duration and frame delay`
+
 ---
 
 ## Step 2 — Feature: Reliable video convert
@@ -275,7 +285,7 @@ Stop hard-coding glyphs on FE; picker shows API samples.
 - Status: ✅
 - Needs: 1.3
 - Files: `{Ng}/src/app/services/convert-api.service.ts`, minimal page typing
-- Do: JSON `AsciiFrame` / `AsciiVideo` (`ascii` / `frames[].ascii`); not `responseType: 'text'`; page still compiles
+- Do: JSON `AsciiFrame` / `AsciiVideo` (`ascii` / `frames[].ascii` + `durationMs` / `frameDelayMs`); not `responseType: 'text'`; page still compiles
 - Done when: client parses JSON convert responses
 - Commit: `frontend - api, consume JSON convert responses`
 
@@ -367,7 +377,7 @@ Order: reusable display → page swap → controls → autoplay.
 - Status: ⬜
 - Needs: 6.1
 - Files: `{Ng}/src/app/components/ascii-video-player.ts`
-- Do: match OD frame 4 — Play/Pause, Restart, seek bar under ASCII; ~120ms/frame (OD demo ~220ms is mock-only); no speed
+- Do: match OD frame 4 — Play/Pause, Restart, seek bar under ASCII; advance on `frameDelayMs` from `AsciiVideo` (FE fallback ~120ms if 0; OD demo ~220ms is mock-only); no speed
 - Done when: controls work in component isolation
 - Commit: `frontend - ui, add ASCII video player transport controls`
 
