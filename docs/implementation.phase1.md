@@ -62,7 +62,7 @@
 5. When done coding: 🔍. After human approves `/m2asc-ship`: mark ✅; stage only this leaf (hunk-filter the plan if mixed); verify `git diff --cached`; commit locally; do not push unless asked.
 6. Commit style: `area - subarea, what was done/introduced/fixed`.
 
-**Hot files** (serialize — never two agents at once): `{Api}/Program.cs`, `{Ng}/src/app/app.component.ts`, `{Ng}/src/app/pages/convert-page.ts`, `{Ng}/src/app/app.config.ts`, this `docs/implementation.md` while claiming/shipping.
+**Hot files** (serialize — never two agents at once): `{Api}/Program.cs`, `{Ng}/src/app/app.component.ts`, `{Ng}/src/app/pages/convert-page.ts`, `{Ng}/src/app/app.config.ts`, this `docs/implementation.phase1.md` while claiming/shipping.
 
 ### Locked layout
 
@@ -149,7 +149,7 @@ Ship **media-to-ascii**: Angular UI uploads image/video + options; ASP.NET Minim
 
 ## Living plan
 
-`docs/implementation.md` — implementation leaves only. Icons in Contents and body stay in sync. Prefer committing plan updates on `/m2asc-ship` (⬜→✅), not every ⏳/🔍 flip.
+`docs/implementation.phase1.md` — implementation leaves only (phase 1 archive). Icons in Contents and body stay in sync. Prefer committing plan updates on `/m2asc-ship` (⬜→✅), not every ⏳/🔍 flip.
 
 ---
 
@@ -478,7 +478,7 @@ Polish after the app works end-to-end: README, favicon, UI design pass, plus a s
 - Status: ✅
 - Needs: 8.2
 - Files: `{Ng}/src/app/pages/convert-page.ts`, `{Ng}/src/app/app.component.ts`, `{Ng}/src/app/components/**`, `{Ng}/src/styles.scss` (templates/styles only as needed)
-- Do: align the live UI with the agreed Open Design artifact / [open-design-prompt.md](./open-design-prompt.md) direction — simple, strict, conservative, minimal styling. Small HTML/CSS (and Bootstrap utility) adjustments so shell, upload, options, preview, and actions match the design; trim leftover template noise. Prefer markup/style finalization over refactors; no new features.
+- Do: align the live UI with the agreed Open Design artifact / [design-prompt.phase1.md](./design-prompt.phase1.md) direction — simple, strict, conservative, minimal styling. Small HTML/CSS (and Bootstrap utility) adjustments so shell, upload, options, preview, and actions match the design; trim leftover template noise. Prefer markup/style finalization over refactors; no new features.
 - Done when: the running page matches the intended design closely enough for ship; layout/states remain intact
 - Commit: `frontend - ui, finalize markup and styles to match design`
 
