@@ -1,6 +1,5 @@
-import { Component, inject, OnInit, output } from '@angular/core';
+import { Component, inject, input, OnInit, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DEFAULT_CONVERT_OPTIONS } from '../constants/default-convert-options';
 import {
   AsciiCharsetOption,
   ConfigurationApiService,
@@ -16,7 +15,7 @@ import { CharsetPickerComponent } from './charset-picker';
       <div>
         <div class="d-flex justify-content-between align-items-baseline mb-1">
           <label class="form-label mb-0" for="convert-width">Width</label>
-          <span class="opt-meta">{{ width }}</span>
+          <span class="opt-meta">{{ options().width }}</span>
         </div>
         <input
           id="convert-width"
@@ -24,8 +23,8 @@ import { CharsetPickerComponent } from './charset-picker';
           class="form-range"
           min="40"
           max="200"
-          [(ngModel)]="width"
-          (ngModelChange)="emitOptions()"
+          [ngModel]="options().width"
+          (ngModelChange)="emitPatch({ width: $event })"
         />
       </div>
 
@@ -34,16 +33,16 @@ import { CharsetPickerComponent } from './charset-picker';
           id="convert-invert"
           type="checkbox"
           class="form-check-input"
-          [(ngModel)]="invert"
-          (ngModelChange)="emitOptions()"
+          [ngModel]="options().invert"
+          (ngModelChange)="emitPatch({ invert: $event })"
         />
         <label class="form-check-label" for="convert-invert">Invert</label>
       </div>
 
       <app-charset-picker
         [options]="charsets"
-        [value]="charsetId"
-        (valueChange)="onCharsetChange($event)"
+        [value]="options().charset"
+        (valueChange)="emitPatch({ charset: $event })"
       />
     </div>
   `,
@@ -63,27 +62,16 @@ import { CharsetPickerComponent } from './charset-picker';
 export class OptionControlsComponent implements OnInit {
   private readonly configurationApi = inject(ConfigurationApiService);
 
+  readonly options = input.required<ConvertOptions>();
   readonly optionsChange = output<ConvertOptions>();
 
   charsets: AsciiCharsetOption[] = [];
-  width = DEFAULT_CONVERT_OPTIONS.width;
-  invert = DEFAULT_CONVERT_OPTIONS.invert;
-  charsetId = DEFAULT_CONVERT_OPTIONS.charset;
 
   ngOnInit(): void {
     this.configurationApi.getConvertOptions().subscribe((data) => (this.charsets = data));
   }
 
-  onCharsetChange(id: string): void {
-    this.charsetId = id;
-    this.emitOptions();
-  }
-
-  emitOptions(): void {
-    this.optionsChange.emit({
-      width: this.width,
-      invert: this.invert,
-      charset: this.charsetId,
-    });
+  emitPatch(patch: Partial<ConvertOptions>): void {
+    this.optionsChange.emit({ ...this.options(), ...patch });
   }
 }

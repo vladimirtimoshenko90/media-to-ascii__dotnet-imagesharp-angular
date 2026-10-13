@@ -139,10 +139,9 @@ Prefer fewer parallel claims over conflicts.
 {Ng}/src/app/
   services/convert-api.service.ts
   services/configuration-api.service.ts  # Step 3.1
-  constants/default-convert-options.ts
   components/
     upload-zone.ts
-    option-controls.ts                # width + invert
+    option-controls.ts                # width + invert + charset picker (bound from page)
     charset-picker.ts                 # Step 3.3
     ascii-preview.ts                  # simple preview now; fit/shell in Steps 4.1 / 4.2 (deferred)
     image-compare.ts                  # Step 5.1

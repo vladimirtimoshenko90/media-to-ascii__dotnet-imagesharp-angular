@@ -4,7 +4,6 @@ import { AsciiPreviewComponent } from '../components/ascii-preview';
 import { OptionControlsComponent } from '../components/option-controls';
 import { ResultActionsComponent } from '../components/result-actions';
 import { UploadZoneComponent } from '../components/upload-zone';
-import { DEFAULT_CONVERT_OPTIONS } from '../constants/default-convert-options';
 import {
   ConvertApiService,
   ConvertOptions,
@@ -22,7 +21,10 @@ import {
     <div class="tool-layout">
       <div class="region region-stack">
         <app-upload-zone (fileSelected)="onFileSelected($event)" />
-        <app-option-controls (optionsChange)="onOptionsChange($event)" />
+        <app-option-controls
+          [options]="options"
+          (optionsChange)="options = $event"
+        />
         <button
           type="button"
           class="btn btn-convert w-100"
@@ -48,7 +50,11 @@ export class ConvertPage {
   private readonly convertApi = inject(ConvertApiService);
 
   selectedFile: File | null = null;
-  options: ConvertOptions = { ...DEFAULT_CONVERT_OPTIONS };
+  options: ConvertOptions = {
+    width: 100,
+    invert: false,
+    charset: 'classic',
+  };
   asciiText: string | null = null;
   loading = false;
   error: string | null = null;
@@ -67,10 +73,6 @@ export class ConvertPage {
     this.selectedFile = file;
     this.asciiText = null;
     this.error = null;
-  }
-
-  onOptionsChange(options: ConvertOptions): void {
-    this.options = options;
   }
 
   convert(): void {
