@@ -22,7 +22,7 @@ public static class ImageConvertEndpoint
     {
         var options = form.ToConvertOptions();
         await using var stream = form.File!.OpenReadStream();
-        var ascii = await converter.Convert(stream, options, ct);
-        return Results.Text(ascii, contentType: "text/plain");
+        var frame = await converter.Convert(stream, options, ct);
+        return Results.Json(frame);
     }
 }

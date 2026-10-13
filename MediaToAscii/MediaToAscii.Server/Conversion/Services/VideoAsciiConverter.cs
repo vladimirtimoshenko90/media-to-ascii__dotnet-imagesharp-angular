@@ -2,18 +2,13 @@ using FFMpegCore;
 using FFMpegCore.Enums;
 using FFMpegCore.Pipes;
 using MediaToAscii.Server.Common;
-using MediaToAscii.Server.Conversion;
+using MediaToAscii.Server.Conversion.Entities;
 
 namespace MediaToAscii.Server.Conversion.Services;
 
 public interface IVideoAsciiConverter
 {
-    Task<VideoAsciiResult> Convert(Stream stream, ConvertOptions options, CancellationToken ct);
-}
-
-public sealed class VideoAsciiResult
-{
-    public IReadOnlyList<string> Frames { get; init; } = [];
+    Task<AsciiVideo> Convert(Stream stream, ConvertOptions options, CancellationToken ct);
 }
 
 public sealed class VideoAsciiConverter(
@@ -22,7 +17,7 @@ public sealed class VideoAsciiConverter(
 {
     public const int MaxFrames = 30;
 
-    public async Task<VideoAsciiResult> Convert(Stream stream, ConvertOptions options, CancellationToken ct)
+    public async Task<AsciiVideo> Convert(Stream stream, ConvertOptions options, CancellationToken ct)
     {
         // Seekable temp file — pipe+seek fails with FFmpeg exit 69 on many phone MP4s.
         var videoPath = await tempFiles.Persist(stream, extension: string.Empty, ct);
@@ -41,7 +36,7 @@ public sealed class VideoAsciiConverter(
                 pngBuffers[i] = await ExtractFramePng(videoPath, timestamps[i], ct);
             }
 
-            var frames = new string[timestamps.Count];
+            var frames = new AsciiFrame[timestamps.Count];
             var parallelOptions = new ParallelOptions
             {
                 MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount),
@@ -56,7 +51,7 @@ public sealed class VideoAsciiConverter(
                     frames[i] = await imageConverter.Convert(pngBuffers[i], options, token);
                 });
 
-            return new VideoAsciiResult { Frames = frames };
+            return new AsciiVideo(frames);
         }
         finally
         {

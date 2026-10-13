@@ -1,19 +1,19 @@
-using System.Text;
-using MediaToAscii.Server.Conversion;
+using MediaToAscii.Server.Conversion.Entities;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System.Text;
 
 namespace MediaToAscii.Server.Conversion.Services;
 
 public interface IImageAsciiConverter
 {
-    Task<string> Convert(Stream stream, ConvertOptions options, CancellationToken ct);
+    Task<AsciiFrame> Convert(Stream stream, ConvertOptions options, CancellationToken ct);
 }
 
 public sealed class ImageAsciiConverter(IPixelCharMapper mapper) : IImageAsciiConverter
 {
-    public async Task<string> Convert(Stream stream, ConvertOptions options, CancellationToken ct)
+    public async Task<AsciiFrame> Convert(Stream stream, ConvertOptions options, CancellationToken ct)
     {
         using var image = await Image.LoadAsync<Rgba32>(stream, ct);
 
@@ -43,6 +43,6 @@ public sealed class ImageAsciiConverter(IPixelCharMapper mapper) : IImageAsciiCo
             }
         });
 
-        return sb.ToString();
+        return new AsciiFrame(sb.ToString());
     }
 }

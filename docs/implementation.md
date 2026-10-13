@@ -8,7 +8,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
 - [⬜ Step 1 — Feature: Convert API cleanup](#step-1--feature-convert-api-cleanup)
   - [✅ 1.1 — FluentValidation + convert form request](#step-11--fluentvalidation--convert-form-request)
   - [✅ 1.2 — Charsets / convert-options GET endpoint](#step-12--charsets--convert-options-get-endpoint)
-  - [⬜ 1.3 — Typed JSON convert responses](#step-13--typed-json-convert-responses)
+  - [✅ 1.3 — Typed JSON convert responses](#step-13--typed-json-convert-responses)
 - [⬜ Step 2 — Feature: Reliable video convert](#step-2--feature-reliable-video-convert)
   - [✅ 2.1 — Temp file utility](#step-21--temp-file-utility)
   - [✅ 2.2 — Extract video frames via temp file](#step-22--extract-video-frames-via-temp-file)
@@ -113,16 +113,18 @@ Prefer fewer parallel claims over conflicts.
     Constants/
       AsciiCharsets.cs                # AsciiCharsetType + glyph tables + GetGlyphs extension
     ConvertOptions.cs                 # processing params; Charset is AsciiCharsetType
-    ConvertResults.cs                 # optional DTOs
     DependencyInjection.cs
+    Entities/
+      AsciiFrame.cs                   # Step 1.3
+      AsciiVideo.cs                   # Step 1.3
     Services/
       PixelCharMapper.cs
-      ImageAsciiConverter.cs
-      VideoAsciiConverter.cs
+      ImageAsciiConverter.cs          # returns AsciiFrame
+      VideoAsciiConverter.cs          # returns AsciiVideo
   Endpoints/
-    ImageConvertEndpoint.cs
-    VideoConvertEndpoint.cs
-    ConfigurationEndpoints.cs         # Step 1.2 — options route + response records
+    ImageConvertEndpoint.cs           # Step 1.3 — returns AsciiFrame JSON
+    VideoConvertEndpoint.cs           # Step 1.3 — returns AsciiVideo JSON
+    ConfigurationEndpoints.cs         # Step 1.2 — options route + AsciiCharsetOption
     Dtos/                             # request/response types (+ co-located validators)
       ConvertFormRequest.cs           # Step 1.1 (request + ConvertFormRequestValidator)
     Infrastructure/                   # filters, framework glue (not validators)
@@ -156,8 +158,8 @@ Prefer fewer parallel claims over conflicts.
 | Glyphs | `Conversion/Constants/AsciiCharsets` + `AsciiCharsetType` |
 | Image / video routes | `POST /api/convert/image`, `POST /api/convert/video` |
 | Form fields | `file`, `width`, `invert`, `charset` (**id**, not glyphs) |
-| Image JSON | `{ "ascii": "..." }` |
-| Video JSON | `{ "frames": ["...", "..."] }` |
+| Image JSON | `{ "ascii": "..." }` (`AsciiFrame`) |
+| Video JSON | `{ "frames": [ { "ascii": "..." }, ... ] }` (`AsciiVideo`) |
 | Validation errors | `Results.ValidationProblem(...)` |
 | Width | API 20–300 (required on convert form); UI 40–200; FE default 100 |
 | Default charset id | FE default `classic` (API requires charset on convert form) |
@@ -165,7 +167,7 @@ Prefer fewer parallel claims over conflicts.
 | Temp files | Guid path under temp; scoped dispose deletes |
 | FE debounce | Width ~400ms; file/charset/invert immediate |
 | FE cancel | Cancel prior convert on new request |
-| Copy/Download | Join video frames with `\n\n----\n\n` |
+| Copy/Download | Join video frame `.ascii` strings with `\n\n----\n\n` |
 | Player | ~120ms/frame; Play/Pause, Restart, seek; no speed; autoplay on success |
 | Preview | Plaintext + CSS fit; no scrollbars |
 | Design | [design-prompt.phase2.md](./design-prompt.phase2.md) |
@@ -217,10 +219,10 @@ Shared API contract work other features depend on.
 
 ### Step 1.3 — Typed JSON convert responses
 
-- Status: ⬜
+- Status: ✅
 - Needs: 1.1
-- Files: `{Api}/Endpoints/ImageConvertEndpoint.cs`, `{Api}/Endpoints/VideoConvertEndpoint.cs`, DTO type(s)
-- Do: image `{ ascii }`; video `{ frames }` (no server-side `----` join)
+- Files: `{Api}/Conversion/Entities/**`, `{Api}/Conversion/Services/ImageAsciiConverter.cs`, `{Api}/Conversion/Services/VideoAsciiConverter.cs`, `{Api}/Endpoints/ImageConvertEndpoint.cs`, `{Api}/Endpoints/VideoConvertEndpoint.cs`
+- Do: return domain `AsciiFrame` / `AsciiVideo` as JSON (no separate endpoint response DTOs; no server-side `----` join)
 - Done when: both routes return locked JSON
 - Commit: `backend - api, return typed JSON convert results`
 
@@ -268,7 +270,7 @@ Stop hard-coding glyphs on FE; picker shows API samples.
 - Status: ⬜
 - Needs: 1.3
 - Files: `{Ng}/src/app/services/convert-api.service.ts`, minimal page typing
-- Do: JSON `ascii` / `frames` (not `responseType: 'text'`); page still compiles
+- Do: JSON `AsciiFrame` / `AsciiVideo` (`ascii` / `frames[].ascii`); not `responseType: 'text'`; page still compiles
 - Done when: client parses JSON convert responses
 - Commit: `frontend - api, consume JSON convert responses`
 

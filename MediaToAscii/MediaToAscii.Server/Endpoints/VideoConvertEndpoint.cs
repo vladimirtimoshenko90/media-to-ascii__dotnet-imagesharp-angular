@@ -7,8 +7,6 @@ namespace MediaToAscii.Server.Endpoints;
 
 public static class VideoConvertEndpoint
 {
-    public const string FrameSeparator = "\n\n----\n\n";
-
     public static IEndpointRouteBuilder MapVideoConvert(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPost("/api/convert/video", ConvertVideo)
@@ -24,8 +22,7 @@ public static class VideoConvertEndpoint
     {
         var options = form.ToConvertOptions();
         await using var stream = form.File!.OpenReadStream();
-        var result = await converter.Convert(stream, options, ct);
-        var body = string.Join(FrameSeparator, result.Frames);
-        return Results.Text(body, contentType: "text/plain");
+        var video = await converter.Convert(stream, options, ct);
+        return Results.Json(video);
     }
 }
