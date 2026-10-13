@@ -13,7 +13,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 2.1 — Temp file utility](#step-21--temp-file-utility)
   - [✅ 2.2 — Extract video frames via temp file](#step-22--extract-video-frames-via-temp-file)
 - [⬜ Step 3 — Feature: Charsets from API + sample picker](#step-3--feature-charsets-from-api--sample-picker)
-  - [⬜ 3.1 — Cleanup: do not hard-code ASCII charsets on FE; load from API](#step-31--cleanup-do-not-hard-code-ascii-charsets-on-fe-load-from-api)
+  - [✅ 3.1 — Cleanup: do not hard-code ASCII charsets on FE; load from API](#step-31--cleanup-do-not-hard-code-ascii-charsets-on-fe-load-from-api)
   - [⬜ 3.2 — FE consume typed JSON convert results](#step-32--fe-consume-typed-json-convert-results)
   - [⬜ 3.3 — Charset sample picker UI](#step-33--charset-sample-picker-ui)
 - [⏳ Step 4 — Feature: Preview fit + page shell](#step-4--feature-preview-fit--page-shell)
@@ -133,7 +133,8 @@ Prefer fewer parallel claims over conflicts.
 
 {Ng}/src/app/
   services/convert-api.service.ts
-  constants/ascii-charsets.ts         # DELETE in 3.1
+  services/configuration-api.service.ts  # Step 3.1
+  constants/default-convert-options.ts
   components/
     upload-zone.ts
     option-controls.ts                # width + invert
@@ -258,10 +259,10 @@ Stop hard-coding glyphs on FE; picker shows API samples.
 
 ### Step 3.1 — Cleanup: do not hard-code ASCII charsets on FE; load from API
 
-- Status: ⬜
+- Status: ✅
 - Needs: 1.2
-- Files: `{Ng}/src/app/services/convert-api.service.ts`, delete `constants/ascii-charsets.ts`, update callers
-- Do: `getConvertOptions()`; `charset` option = **id**; FormData sends id; delete all hard-coded glyph tables under `{Ng}/src`
+- Files: `{Ng}/src/app/services/configuration-api.service.ts`, delete `constants/ascii-charsets.ts`, update callers (`option-controls`, `default-convert-options`)
+- Do: load charsets via `ConfigurationApiService`; send charset **id** (not glyphs); delete hard-coded FE glyph tables
 - Done when: no hard-coded charset glyphs in FE; options from API
 - Commit: `frontend - cleanup, load charsets from API not hard-coded`
 

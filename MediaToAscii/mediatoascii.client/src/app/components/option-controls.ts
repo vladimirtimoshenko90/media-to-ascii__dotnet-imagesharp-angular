@@ -1,10 +1,10 @@
-import { Component, output } from '@angular/core';
+import { Component, inject, OnInit, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  AsciiCharsets,
-  AsciiCharsetName,
-} from '../constants/ascii-charsets';
 import { DEFAULT_CONVERT_OPTIONS } from '../constants/default-convert-options';
+import {
+  AsciiCharsetOption,
+  ConfigurationApiService,
+} from '../services/configuration-api.service';
 import { ConvertOptions } from '../services/convert-api.service';
 
 @Component({
@@ -44,11 +44,11 @@ import { ConvertOptions } from '../services/convert-api.service';
         <select
           id="convert-charset"
           class="form-select form-select-sm"
-          [(ngModel)]="charsetName"
+          [(ngModel)]="charsetId"
           (ngModelChange)="emitOptions()"
         >
-          @for (name of charsetNames; track name) {
-            <option [value]="name">{{ name }}</option>
+          @for (charset of charsets; track charset.id) {
+            <option [value]="charset.id">{{ charset.id }}</option>
           }
         </select>
       </div>
@@ -67,20 +67,25 @@ import { ConvertOptions } from '../services/convert-api.service';
     }
   `,
 })
-export class OptionControlsComponent {
+export class OptionControlsComponent implements OnInit {
+  private readonly configurationApi = inject(ConfigurationApiService);
+
   readonly optionsChange = output<ConvertOptions>();
 
-  readonly charsetNames = Object.keys(AsciiCharsets) as AsciiCharsetName[];
-
+  charsets: AsciiCharsetOption[] = [];
   width = DEFAULT_CONVERT_OPTIONS.width;
   invert = DEFAULT_CONVERT_OPTIONS.invert;
-  charsetName: AsciiCharsetName = 'Classic';
+  charsetId = DEFAULT_CONVERT_OPTIONS.charset;
+
+  ngOnInit(): void {
+    this.configurationApi.getConvertOptions().subscribe((data) => (this.charsets = data));
+  }
 
   emitOptions(): void {
     this.optionsChange.emit({
       width: this.width,
       invert: this.invert,
-      charset: AsciiCharsets[this.charsetName],
+      charset: this.charsetId,
     });
   }
 }
