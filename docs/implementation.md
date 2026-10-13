@@ -14,7 +14,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 2.2 — Extract video frames via temp file](#step-22--extract-video-frames-via-temp-file)
 - [⬜ Step 3 — Feature: Charsets from API + sample picker](#step-3--feature-charsets-from-api--sample-picker)
   - [✅ 3.1 — Cleanup: do not hard-code ASCII charsets on FE; load from API](#step-31--cleanup-do-not-hard-code-ascii-charsets-on-fe-load-from-api)
-  - [⬜ 3.2 — FE consume typed JSON convert results](#step-32--fe-consume-typed-json-convert-results)
+  - [✅ 3.2 — FE consume typed JSON convert results](#step-32--fe-consume-typed-json-convert-results)
   - [⬜ 3.3 — Charset sample picker UI](#step-33--charset-sample-picker-ui)
 - [⏳ Step 4 — Feature: Preview fit + page shell](#step-4--feature-preview-fit--page-shell)
   - [✅ 4.1 — ASCII preview fit (no scrollbars)](#step-41--ascii-preview-fit-no-scrollbars)
@@ -272,7 +272,7 @@ Stop hard-coding glyphs on FE; picker shows API samples.
 
 ### Step 3.2 — FE consume typed JSON convert results
 
-- Status: ⬜
+- Status: ✅
 - Needs: 1.3
 - Files: `{Ng}/src/app/services/convert-api.service.ts`, minimal page typing
 - Do: JSON `AsciiFrame` / `AsciiVideo` (`ascii` / `frames[].ascii`); not `responseType: 'text'`; page still compiles

@@ -89,21 +89,29 @@ export class ConvertPage {
     this.error = null;
     this.asciiText = null;
 
-    const request = isImage
-      ? this.convertApi.convertImage(file, this.options)
-      : this.convertApi.convertVideo(file, this.options);
+    if (isImage) {
+      this.convertApi.convertImage(file, this.options).subscribe({
+        next: (frame) => {
+          this.asciiText = frame.ascii;
+          this.loading = false;
+        },
+        error: (err: unknown) => this.onConvertError(err),
+      });
+    } else if (isVideo) {
+      this.convertApi.convertVideo(file, this.options).subscribe({
+        next: (video) => {
+          this.asciiText = video.frames[0]?.ascii ?? null;
+          this.loading = false;
+        },
+        error: (err: unknown) => this.onConvertError(err),
+      });
+    }
+  }
 
-    request.subscribe({
-      next: (text) => {
-        this.asciiText = text;
-        this.loading = false;
-      },
-      error: (err: unknown) => {
-        this.loading = false;
-        this.asciiText = null;
-        this.error = this.errorMessage(err);
-      },
-    });
+  private onConvertError(err: unknown): void {
+    this.loading = false;
+    this.asciiText = null;
+    this.error = this.errorMessage(err);
   }
 
   private errorMessage(err: unknown): string {
