@@ -26,6 +26,6 @@ Deliver (local commit only) the current plan leaf **only after the human has app
 5. Commit with: `area - subarea, what was done/introduced/fixed`
    - Prefer the message proposed at the end of `/m2asc-next` unless the user gave another.
 6. Run `git status`. Report the commit hash and list anything still unstaged/untracked.
-7. **Do not push.** Stop here unless the user explicitly asks to push.
+7. **Never push** — even if the user asks. Stop after the local commit. Push is human-only (see rule `m2asc-no-push`).
 
 Do not ship unrelated dirty files. Do not mark other leaves completed. `/m2asc-ship` never pushes.

@@ -1,0 +1,12 @@
+---
+description: Never push to remote — local commits only; push is human-only
+alwaysApply: true
+---
+
+# m2asc — no push
+
+**Never run `git push` or any other command that publishes commits to a remote** (including `push --force`, push of tags, or push via `gh`/other wrappers).
+
+This holds **even if the user explicitly asks to push**. Do not push “just this once.” Do not offer to push. If they ask, remind them that push is human-only so mistakes are not published automatically, and stop after a local commit (when a commit was requested).
+
+Allowed when asked: local `git commit` (and staging for that commit). Not allowed: anything that updates `origin` or another remote with new commits/refs.

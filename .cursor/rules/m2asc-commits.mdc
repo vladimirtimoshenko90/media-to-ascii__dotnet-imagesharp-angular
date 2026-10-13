@@ -21,6 +21,6 @@ Rules:
 
 - Prefer short, outcome-focused subjects (about one line)
 - On `/m2asc-ship`, use this format; include this leaf’s plan status → `✅` in the same commit as the code
-- On `/m2asc-ship`, commit locally only — never push unless the user explicitly asks
+- On `/m2asc-ship`, commit locally only — **never push** (even if asked; see `m2asc-no-push`)
 - Stage only this leaf; in shared files (especially `docs/implementation.md`) stage only this leaf’s hunks; verify with `git diff --cached` before committing
 - Do not invent Conventional Commit prefixes (`feat:`, `fix:`) unless the user asks
