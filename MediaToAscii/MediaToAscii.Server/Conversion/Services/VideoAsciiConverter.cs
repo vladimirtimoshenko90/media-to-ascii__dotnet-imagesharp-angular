@@ -1,6 +1,7 @@
 using FFMpegCore;
 using FFMpegCore.Enums;
 using FFMpegCore.Pipes;
+using MediaToAscii.Server.Common;
 using MediaToAscii.Server.Conversion;
 
 namespace MediaToAscii.Server.Conversion.Services;
@@ -15,38 +16,29 @@ public sealed class VideoAsciiResult
     public IReadOnlyList<string> Frames { get; init; } = [];
 }
 
-public sealed class VideoAsciiConverter(IImageAsciiConverter imageConverter) : IVideoAsciiConverter
+public sealed class VideoAsciiConverter(
+    IImageAsciiConverter imageConverter,
+    ITempFileUtility tempFiles) : IVideoAsciiConverter
 {
     public const int MaxFrames = 30;
 
     public async Task<VideoAsciiResult> Convert(Stream stream, ConvertOptions options, CancellationToken ct)
     {
-        await using var videoBuffer = new MemoryStream();
-        await stream.CopyToAsync(videoBuffer, ct);
-        videoBuffer.Position = 0;
+        // Seekable temp file — pipe+seek fails with FFmpeg exit 69 on many phone MP4s.
+        var videoPath = await tempFiles.Persist(stream, extension: string.Empty, ct);
 
-        var analysis = await FFProbe.AnalyseAsync(videoBuffer, cancellationToken: ct);
-        videoBuffer.Position = 0;
-
+        var analysis = await FFProbe.AnalyseAsync(videoPath, cancellationToken: ct);
         var duration = analysis.Duration;
         var frameCount = ResolveFrameCount(analysis, duration);
         var timestamps = SampleTimestamps(duration, frameCount);
-        var videoStreamIndex = analysis.PrimaryVideoStream?.Index
-            ?? analysis.VideoStreams.FirstOrDefault()?.Index
-            ?? 0;
 
-        // Extract sequentially (shared seekable pipe); parallelize ASCII only.
         var pngBuffers = new MemoryStream[timestamps.Count];
         try
         {
             for (var i = 0; i < timestamps.Count; i++)
             {
                 ct.ThrowIfCancellationRequested();
-                pngBuffers[i] = await ExtractFramePng(
-                    videoBuffer,
-                    timestamps[i],
-                    videoStreamIndex,
-                    ct);
+                pngBuffers[i] = await ExtractFramePng(videoPath, timestamps[i], ct);
             }
 
             var frames = new string[timestamps.Count];
@@ -79,18 +71,16 @@ public sealed class VideoAsciiConverter(IImageAsciiConverter imageConverter) : I
     }
 
     private static async Task<MemoryStream> ExtractFramePng(
-        MemoryStream videoBuffer,
+        string videoPath,
         TimeSpan captureTime,
-        int videoStreamIndex,
         CancellationToken ct)
     {
-        videoBuffer.Position = 0;
         var pngBuffer = new MemoryStream();
 
         await FFMpegArguments
-            .FromPipeInput(new StreamPipeSource(videoBuffer), opts => opts.Seek(captureTime))
+            .FromFileInput(videoPath, verifyExists: true, opts => opts.Seek(captureTime))
             .OutputToPipe(new StreamPipeSink(pngBuffer), opts => opts
-                .SelectStream(videoStreamIndex, 0)
+                .WithCustomArgument("-map 0:v:0")
                 .WithVideoCodec(VideoCodec.Image.Png)
                 .WithFrameOutputCount(1)
                 .ForceFormat("image2"))

@@ -11,7 +11,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [⬜ 1.3 — Typed JSON convert responses](#step-13--typed-json-convert-responses)
 - [⬜ Step 2 — Feature: Reliable video convert](#step-2--feature-reliable-video-convert)
   - [✅ 2.1 — Temp file utility](#step-21--temp-file-utility)
-  - [⬜ 2.2 — Extract video frames via temp file](#step-22--extract-video-frames-via-temp-file)
+  - [✅ 2.2 — Extract video frames via temp file](#step-22--extract-video-frames-via-temp-file)
 - [⬜ Step 3 — Feature: Charsets from API + sample picker](#step-3--feature-charsets-from-api--sample-picker)
   - [⬜ 3.1 — Cleanup: do not hard-code ASCII charsets on FE; load from API](#step-31--cleanup-do-not-hard-code-ascii-charsets-on-fe-load-from-api)
   - [⬜ 3.2 — FE consume typed JSON convert results](#step-32--fe-consume-typed-json-convert-results)
@@ -240,9 +240,9 @@ Fix exit-69 pipe/seek failure.
 
 ### Step 2.2 — Extract video frames via temp file
 
-- Status: ⬜
+- Status: ✅
 - Needs: 2.1
-- Files: `{Api}/Conversion/Services/VideoAsciiConverter.cs`
+- Files: `{Api}/Conversion/Services/VideoAsciiConverter.cs`, `{Api}/Conversion/DependencyInjection.cs` (scoped registration)
 - Do: persist upload; probe/extract from file path; `-map 0:v:0`; no pipe+seek; max 30 frames; parallel ASCII; no temp leaks
 - Done when: phone MP4 converts with system ffmpeg
 - Commit: `backend - video, extract frames from temp file`
