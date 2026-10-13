@@ -7,7 +7,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
 
 - [⬜ Step 1 — Feature: Convert API cleanup](#step-1--feature-convert-api-cleanup)
   - [⬜ 1.1 — FluentValidation + convert form request](#step-11--fluentvalidation--convert-form-request)
-  - [⬜ 1.2 — Charsets / convert-options GET endpoint](#step-12--charsets--convert-options-get-endpoint)
+  - [✅ 1.2 — Charsets / convert-options GET endpoint](#step-12--charsets--convert-options-get-endpoint)
   - [⬜ 1.3 — Typed JSON convert responses](#step-13--typed-json-convert-responses)
 - [⬜ Step 2 — Feature: Reliable video convert](#step-2--feature-reliable-video-convert)
   - [✅ 2.1 — Temp file utility](#step-21--temp-file-utility)
@@ -122,7 +122,7 @@ Prefer fewer parallel claims over conflicts.
   Endpoints/
     ImageConvertEndpoint.cs
     VideoConvertEndpoint.cs
-    ConvertOptionsEndpoint.cs         # Step 1.2
+    ConfigurationEndpoints.cs         # Step 1.2 — options route + response records
     Dtos/                             # request/response types (+ co-located validators)
       ConvertFormRequest.cs           # Step 1.1 (request + ConvertFormRequestValidator)
     Infrastructure/                   # filters, framework glue (not validators)
@@ -152,8 +152,8 @@ Prefer fewer parallel claims over conflicts.
 
 | Item | Value |
 |------|--------|
-| Options route | **`GET /api/convert/options`** |
-| Options JSON | `{ "charsets": [ { "id": "classic", "characters": "..." }, { "id": "detailed", "characters": "..." }, { "id": "blocks", "characters": "..." } ] }` |
+| Options route | **`GET /api/config/convert-options`** |
+| Options JSON | `[ { "id": "classic", "characters": "..." }, { "id": "detailed", "characters": "..." }, { "id": "blocks", "characters": "..." } ]` |
 | Charset ids | `classic`, `detailed`, `blocks` (lowercase) |
 | Glyphs | `Conversion/Constants/AsciiCharsets` + `AsciiCharsetType` |
 | Image / video routes | `POST /api/convert/image`, `POST /api/convert/video` |
@@ -210,10 +210,10 @@ Shared API contract work other features depend on.
 
 ### Step 1.2 — Charsets / convert-options GET endpoint
 
-- Status: ⬜
+- Status: ✅
 - Needs: —
-- Files: `{Api}/Conversion/ConvertOptions.cs`, `{Api}/Endpoints/ConvertOptionsEndpoint.cs`, `{Api}/Program.cs`
-- Do: `GET /api/convert/options` → locked JSON charset catalog from `AsciiCharsets`
+- Files: `{Api}/Endpoints/ConfigurationEndpoints.cs`, `{Api}/Program.cs`, `{Api}/Endpoints/Infrastructure/DependencyInjection.cs` (AddEndpointJson)
+- Do: `GET /api/config/convert-options` via `ConfigurationEndpoints` (response records co-located); locked JSON from `AsciiCharsetType` + `GetGlyphs()`; global camelCase enum JSON
 - Done when: GET returns classic/detailed/blocks with correct glyphs
 - Commit: `backend - api, add convert options charsets endpoint`
 
