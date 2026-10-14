@@ -30,7 +30,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [⏸️ 6.4 — Rework video player UI](#step-64--rework-video-player-ui)
 - [⏳ Step 7 — Feature: Result views decomposition](#step-7--feature-result-views-decomposition)
   - [✅ 7.1 — Shared ascii-frame-viewer component](#step-71--shared-ascii-frame-viewer-component)
-  - [⬜ 7.2 — Image compare uses ascii-frame-viewer](#step-72--image-compare-uses-ascii-frame-viewer)
+  - [✅ 7.2 — Image compare uses ascii-frame-viewer](#step-72--image-compare-uses-ascii-frame-viewer)
   - [✅ 7.3 — Video player uses ascii-frame-viewer](#step-73--video-player-uses-ascii-frame-viewer)
   - [⬜ 7.4 — Convert page result host](#step-74--convert-page-result-host)
 - [⬜ Step 8 — Feature: Preview fit + page shell](#step-8--feature-preview-fit--page-shell)
@@ -94,8 +94,8 @@ Feature steps can advance in parallel when Needs/Files allow.
 - Angular 19 + ASP.NET Minimal API (.NET 10); ImageSharp; FFMpegCore; system `ffmpeg`/`ffprobe` on PATH.
 - `{Api}` = `MediaToAscii/MediaToAscii.Server`, `{Ng}` = `MediaToAscii/mediatoascii.client`.
 - **Shipped backend (Steps 1–2):** FluentValidation convert form (charset **id** → `AsciiCharsetType`); `GET /api/config/convert-options`; JSON convert (`AsciiFrame` / `AsciiVideo`); video frames via temp file (exit-69 pipe/seek fixed).
-- **Shipped FE:** **3.x** charsets/JSON/picker; **4.x** auto-convert; **5.1** image-compare (own `<pre>`); **6.1/6.2/6.3** video player (component-only, own `<pre>`); **7.1** `ascii-frame-viewer`. Page still uses kitchen-sink `ascii-preview` for all results.
-- **Still to build:** **7.2–7.4** compose compare/player + page result host; then fit/shell (**8**, incl. compact actions **8.3**); polish/docs (**9**). Postponed UI: **5.2**, **6.4**.
+- **Shipped FE:** **3.x** charsets/JSON/picker; **4.x** auto-convert; **5.1** / **7.2** image-compare (`ascii-frame-viewer`); **6.1/6.2/6.3** / **7.3** video player (`ascii-frame-viewer`); **7.1** `ascii-frame-viewer`. Page still uses kitchen-sink `ascii-preview` for all results.
+- **Still to build:** **7.4** page result host; then fit/shell (**8**, incl. compact actions **8.3**); polish/docs (**9**). Postponed UI: **5.2**, **6.4**.
 - **UI target (later):** OD `media-to-ascii-refresh.html`. Brief: [design-prompt.phase2.md](./design-prompt.phase2.md).
 
 ### Video runtime note
@@ -416,10 +416,10 @@ Shared frame → compose consumers in parallel → one page host leaf.
 
 ### Step 7.2 — Image compare uses ascii-frame-viewer
 
-- Status: ⬜
+- Status: ✅
 - Needs: 7.1, 5.1
 - Files: `{Ng}/src/app/components/image-compare.ts` only
-- Do: replace inner ASCII `<pre>` with `<app-ascii-frame-viewer [frame]="…" />` (pass `AsciiFrame`; adjust compare input if needed); keep original image pane + responsive grid sizing/scroll; do not touch player or `convert-page`
+- Do: replace inner ASCII `<pre>` with `<app-ascii-frame-viewer [frame]="frame()" />`; compare inputs `imageUrl` + `frame` (`AsciiFrame`); keep original image pane + responsive grid sizing/scroll; do not touch player (page call-site may bind `frame`)
 - Done when: compare still side-by-side; ASCII comes only from `ascii-frame-viewer`
 - Commit: `frontend - ui, compose image compare with ascii-frame-viewer`
 

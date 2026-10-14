@@ -1,14 +1,17 @@
 import { Component, input } from '@angular/core';
+import { AsciiFrame } from '../services/convert-api.service';
+import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
 
 @Component({
   selector: 'app-image-compare',
+  imports: [AsciiFrameViewerComponent],
   template: `
     <div class="image-compare">
       <div class="pane pane-original">
         <img [src]="imageUrl()" />
       </div>
       <div class="pane pane-ascii">
-        <pre>{{ ascii() }}</pre>
+        <app-ascii-frame-viewer [frame]="frame()" />
       </div>
     </div>
   `,
@@ -56,15 +59,6 @@ import { Component, input } from '@angular/core';
     .pane-ascii {
       padding: 0.75rem;
 
-      pre {
-        margin: 0;
-        font-family: var(--font-mono);
-        font-size: 11px;
-        line-height: 1;
-        white-space: pre;
-        color: var(--fg);
-      }
-
       @media (max-width: 640px) {
         max-height: 320px;
       }
@@ -73,5 +67,5 @@ import { Component, input } from '@angular/core';
 })
 export class ImageCompareComponent {
   readonly imageUrl = input.required<string>();
-  readonly ascii = input.required<string>();
+  readonly frame = input.required<AsciiFrame>();
 }
