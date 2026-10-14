@@ -21,7 +21,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [⬜ 7.1 — Remove Convert button; convert on file/charset/invert](#step-71--remove-convert-button-convert-on-filecharsetinvert)
   - [✅ 7.2 — Width debounce + cancel in-flight convert](#step-72--width-debounce--cancel-in-flight-convert)
 - [⬜ Step 5 — Feature: Image original | ASCII side-by-side](#step-5--feature-image-original--ascii-side-by-side)
-  - [⬜ 5.1 — Image compare component](#step-51--image-compare-component)
+  - [✅ 5.1 — Image compare component](#step-51--image-compare-component)
   - [⬜ 5.2 — Wire image compare on convert page](#step-52--wire-image-compare-on-convert-page)
 - [⬜ Step 6 — Feature: ASCII video player](#step-6--feature-ascii-video-player)
   - [⬜ 6.1 — Reusable player: frame display](#step-61--reusable-player-frame-display)
@@ -332,7 +332,7 @@ Do this feature before Steps **5** / **6** page wiring (owns `convert-page.ts`).
 
 ### Step 5.1 — Image compare component
 
-- Status: ⬜
+- Status: ✅
 - Needs: —
 - Files: `{Ng}/src/app/components/image-compare.ts`
 - Do: match OD frame 3 layout — original image URL + ASCII side by side; stack on narrow (frame 6); not used for video. Use a simple scrollable `<pre>` for ASCII for now (fit is deferred **Step 4**). Component-only — do not touch `convert-page` here.
