@@ -1,21 +1,21 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { AsciiVideoPlayerComponent } from '../components/ascii-video-player';
-import { ImageAsciiResultComponent } from '../components/image-ascii-result';
-import { OptionControlsComponent } from '../components/option-controls';
-import { ResultActionsComponent } from '../components/result-actions';
-import { UploadZoneComponent } from '../components/upload-zone';
+import { UploadZoneComponent } from '@components/upload-zone';
 import {
   AsciiCharsetOption,
   ConfigurationApiService,
-} from '../services/configuration-api.service';
+} from '@services/configuration-api.service';
 import {
   AsciiFrame,
   AsciiVideo,
   ConvertApiService,
   ConvertOptions,
-} from '../services/convert-api.service';
+} from '@services/convert-api.service';
+import { AsciiVideoPlayerComponent } from './results/ascii-video-player';
+import { ImageAsciiResultComponent } from './results/image-ascii-result';
+import { ResultActionsComponent } from './results/result-actions';
+import { OptionControlsComponent } from './sidebar/option-controls';
 
 @Component({
   selector: 'app-convert-page',

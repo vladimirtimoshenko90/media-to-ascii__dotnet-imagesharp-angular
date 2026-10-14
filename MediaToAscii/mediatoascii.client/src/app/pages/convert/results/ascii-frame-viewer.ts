@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { AsciiFrame } from '../services/convert-api.service';
+import { AsciiFrame } from '@services/convert-api.service';
 
 @Component({
   selector: 'app-ascii-frame-viewer',

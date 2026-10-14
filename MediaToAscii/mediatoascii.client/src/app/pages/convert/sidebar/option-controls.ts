@@ -7,8 +7,8 @@ import {
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { debounceTime, filter } from 'rxjs';
-import { AsciiCharsetOption } from '../services/configuration-api.service';
-import { ConvertOptions } from '../services/convert-api.service';
+import { AsciiCharsetOption } from '@services/configuration-api.service';
+import { ConvertOptions } from '@services/convert-api.service';
 import { CharsetPickerComponent } from './charset-picker';
 
 @Component({

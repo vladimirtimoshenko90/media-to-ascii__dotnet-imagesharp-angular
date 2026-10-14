@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { AsciiCharsetOption } from '../services/configuration-api.service';
+import { AsciiCharsetOption } from '@services/configuration-api.service';
 
 @Component({
   selector: 'app-charset-picker',

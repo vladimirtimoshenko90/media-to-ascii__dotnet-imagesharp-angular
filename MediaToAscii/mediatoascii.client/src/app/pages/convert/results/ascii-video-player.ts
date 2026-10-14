@@ -1,6 +1,6 @@
 import { Component, computed, effect, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AsciiFrame, AsciiVideo } from '../services/convert-api.service';
+import { AsciiFrame, AsciiVideo } from '@services/convert-api.service';
 import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
 
 @Component({
