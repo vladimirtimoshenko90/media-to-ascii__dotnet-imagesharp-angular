@@ -49,8 +49,8 @@ import {
           <div class="result-status">
             <p class="error-msg">{{ error }}</p>
           </div>
-        } @else if (imageUrl && imageFrame) {
-          <app-image-compare [imageUrl]="imageUrl" [frame]="imageFrame" />
+        } @else if (imageUrl && imageResult) {
+          <app-image-compare [imageUrl]="imageUrl" [frame]="imageResult" />
         } @else if (videoResult) {
           <app-ascii-video-player [video]="videoResult" />
         } @else {
@@ -116,12 +116,12 @@ export class ConvertPage implements OnInit, OnDestroy {
   loading = false;
   error: string | null = null;
   imageUrl: string | null = null;
-  imageFrame: AsciiFrame | null = null;
+  imageResult: AsciiFrame | null = null;
   videoResult: AsciiVideo | null = null;
 
   get exportText(): string {
-    if (this.imageFrame) {
-      return this.imageFrame.ascii;
+    if (this.imageResult) {
+      return this.imageResult.ascii;
     }
     if (this.videoResult) {
       return this.videoResult.frames
@@ -180,7 +180,7 @@ export class ConvertPage implements OnInit, OnDestroy {
         .subscribe({
           next: (frame) => {
             this.imageUrl = URL.createObjectURL(file);
-            this.imageFrame = frame;
+            this.imageResult = frame;
             this.loading = false;
           },
           error: (err: unknown) => this.onConvertError(err),
@@ -208,7 +208,7 @@ export class ConvertPage implements OnInit, OnDestroy {
 
   private clearResult(): void {
     this.revokeImageUrl();
-    this.imageFrame = null;
+    this.imageResult = null;
     this.videoResult = null;
   }
 
