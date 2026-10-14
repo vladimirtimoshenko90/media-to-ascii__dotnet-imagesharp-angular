@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { AsciiVideoPlayerComponent } from '../components/ascii-video-player';
-import { ImageCompareComponent } from '../components/image-compare';
+import { ImageAsciiResultComponent } from '../components/image-ascii-result';
 import { OptionControlsComponent } from '../components/option-controls';
 import { ResultActionsComponent } from '../components/result-actions';
 import { UploadZoneComponent } from '../components/upload-zone';
@@ -22,7 +22,7 @@ import {
   imports: [
     UploadZoneComponent,
     OptionControlsComponent,
-    ImageCompareComponent,
+    ImageAsciiResultComponent,
     AsciiVideoPlayerComponent,
     ResultActionsComponent,
   ],
@@ -50,7 +50,7 @@ import {
             <p class="error-msg">{{ error }}</p>
           </div>
         } @else if (imageUrl && imageResult) {
-          <app-image-compare [imageUrl]="imageUrl" [frame]="imageResult" />
+          <app-image-ascii-result [imageUrl]="imageUrl" [frame]="imageResult" />
         } @else if (videoResult) {
           <app-ascii-video-player [video]="videoResult" />
         } @else {

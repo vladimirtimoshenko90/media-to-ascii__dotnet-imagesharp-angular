@@ -21,8 +21,8 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 4.1 — Remove Convert button; convert on file/charset/invert](#step-41--remove-convert-button-convert-on-filecharsetinvert)
   - [✅ 4.2 — Width debounce + cancel in-flight convert](#step-42--width-debounce--cancel-in-flight-convert)
 - [⏳ Step 5 — Feature: Image original | ASCII side-by-side](#step-5--feature-image-original--ascii-side-by-side)
-  - [✅ 5.1 — Image compare component](#step-51--image-compare-component)
-  - [⏸️ 5.2 — Rework image compare UI](#step-52--rework-image-compare-ui)
+  - [✅ 5.1 — Image ASCII result component](#step-51--image-ascii-result-component)
+  - [⏸️ 5.2 — Rework image ASCII result UI](#step-52--rework-image-ascii-result-ui)
 - [⏳ Step 6 — Feature: ASCII video player](#step-6--feature-ascii-video-player)
   - [✅ 6.1 — Reusable player: frame display](#step-61--reusable-player-frame-display)
   - [✅ 6.2 — Autoplay in player](#step-62--autoplay-in-player)
@@ -30,7 +30,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [⏸️ 6.4 — Rework video player UI](#step-64--rework-video-player-ui)
 - [✅ Step 7 — Feature: Result views decomposition](#step-7--feature-result-views-decomposition)
   - [✅ 7.1 — Shared ascii-frame-viewer component](#step-71--shared-ascii-frame-viewer-component)
-  - [✅ 7.2 — Image compare uses ascii-frame-viewer](#step-72--image-compare-uses-ascii-frame-viewer)
+  - [✅ 7.2 — Image ASCII result uses ascii-frame-viewer](#step-72--image-ascii-result-uses-ascii-frame-viewer)
   - [✅ 7.3 — Video player uses ascii-frame-viewer](#step-73--video-player-uses-ascii-frame-viewer)
   - [✅ 7.4 — Convert page result host](#step-74--convert-page-result-host)
 - [⬜ Step 8 — Feature: Preview fit + page shell](#step-8--feature-preview-fit--page-shell)
@@ -75,7 +75,7 @@ Feature steps can advance in parallel when Needs/Files allow.
 | Wave | Agent A | Agent B | Agent C |
 |------|---------|---------|---------|
 | ✅ | **1.x** API cleanup | **2.x** Video temp | **3.x** charsets / JSON / picker |
-| ✅ | **4.x** auto-convert | **5.1** compare | **6.1 → 6.2 → 6.3** player (component) |
+| ✅ | **4.x** auto-convert | **5.1** image-ascii-result | **6.1 → 6.2 → 6.3** player (component) |
 | ✅ | **7.x** viewer + compose + page host | — | — |
 | now | **8.1 → 8.2 → 8.3** fit + shell + icon actions (Needs **7.4** ✅) | — | — |
 | then | **5.2** / **6.4** UI rework (⏸️; Needs **8.2**; prefer un-postpone after **8.3**) | — | — |
@@ -92,7 +92,7 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 - Angular 19 + ASP.NET Minimal API (.NET 10); ImageSharp; FFMpegCore; system `ffmpeg`/`ffprobe` on PATH.
 - `{Api}` = `MediaToAscii/MediaToAscii.Server`, `{Ng}` = `MediaToAscii/mediatoascii.client`.
 - **Shipped backend (Steps 1–2):** FluentValidation convert form (charset **id** → `AsciiCharsetType`); `GET /api/config/convert-options`; JSON convert (`AsciiFrame` / `AsciiVideo`); video frames via temp file (exit-69 pipe/seek fixed).
-- **Shipped FE:** **3.x** charsets/JSON/picker; **4.x** auto-convert; **5.1** / **7.2** image-compare; **6.1/6.2/6.3** / **7.3** video player; **7.1** `ascii-frame-viewer`; **7.4** convert-page result host (compare | player; `ascii-preview` removed).
+- **Shipped FE:** **3.x** charsets/JSON/picker; **4.x** auto-convert; **5.1** / **7.2** image-ascii-result; **6.1/6.2/6.3** / **7.3** video player; **7.1** `ascii-frame-viewer`; **7.4** convert-page result host (result | player; `ascii-preview` removed).
 - **Still to build:** fit/shell/actions (**8.x**); polish/docs (**9**). Postponed UI polish: **5.2**, **6.4** (look locked — see **Locked UI (OD)**).
 - **UI target (locked):** OD project **Media to Ascii** / `media-to-ascii-refresh.html` (HTML top comment **D1–D5** + 10 frames). Older [design-prompt.phase2.md](./design-prompt.phase2.md) is historical; **OD HTML wins** on any conflict. **No further OD clarification needed** to implement remaining leaves.
 
@@ -144,7 +144,7 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
     option-controls.ts                # width debounce (toObservable) + invert + charset picker
     charset-picker.ts                 # Step 3.3
     ascii-frame-viewer.ts             # Step 7.1 — AsciiFrame input; fit in 8.1
-    image-compare.ts                  # Steps 5.1 / 7.2 — original + ascii-frame-viewer
+    image-ascii-result.ts                  # Steps 5.1 / 7.2 — original + ascii-frame-viewer
     ascii-video-player.ts             # Steps 6.x / 7.3 — AsciiVideo + transport; renders ascii-frame-viewer
     result-actions.ts                 # Copy / Download; icon-only + placement in 8.3
   pages/convert-page.ts               # Steps 4.x / 7.4 — result host; actions placement with 8.3
@@ -177,7 +177,7 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 | Charset UI | Segmented strip (shared outer border); selected = inset accent + subtle fill; monospace glyphs; no name labels |
 | Player | input `AsciiVideo`; owns index/timing via `frameDelayMs` (FE fallback ~120ms if 0); **icon-only** Play/Pause toggle + Restart + seek on one row under ASCII; no speed; no loop (stop on last frame; Play from end → frame 0); autoplay on new `video`; renders via `ascii-frame-viewer` |
 | ascii-frame-viewer | input `AsciiFrame`; monospace `<pre>` only (no intrinsic size); parent sizes/scrolls until **8.1** fit |
-| Result host | convert-page: loading \| error \| `image-compare` (image) \| `ascii-video-player` (video); no success via `ascii-preview` |
+| Result host | convert-page: loading \| error \| `image-ascii-result` (image) \| `ascii-video-player` (video); no success via `ascii-preview` |
 | Preview / fit | **Step 8**: fit on `ascii-frame-viewer`; OD spacious empty / hug success |
 | Design | OD `media-to-ascii-refresh.html` (project **Media to Ascii**); D1–D5 in HTML comment; frames 1–10 |
 
@@ -189,7 +189,7 @@ Source: OD **Media to Ascii** / `media-to-ascii-refresh.html` (decision comment 
 
 | ID | Decision |
 |----|----------|
-| **D1** | Image compare: pair **hugs as one unit** (not full-bleed); **one shared stage border**; photo **height-matched** to fitted ASCII; **no** Original/ASCII labels; top-aligned when sizes differ. OD frames **3** (typical), **4** (wide), **5** (narrow), **9** (mobile stack). |
+| **D1** | Image ASCII result: original | ASCII pair **hugs as one unit** (not full-bleed); **one shared stage border**; photo **height-matched** to fitted ASCII; **no** Original/ASCII labels; top-aligned when sizes differ. OD frames **3** (typical), **4** (wide), **5** (narrow), **9** (mobile stack). |
 | **D2** | Video transport: single Play/Pause **toggle** + Restart + flex seek on **one row under ASCII**; **icons only** (no button text; `title` OK); stop on last frame (**no loop**); Play from end restarts at 0; no frame counter. OD frames **6** (playing), **7** (ended), **10** (mobile). |
 | **D3** | Result actions: icon-only **`bi-copy`** + **`bi-download`**; **top-right** of result region (or hugged stage); not a full-width row under preview; disabled on empty/loading/error. Transport stays under ASCII; actions stay in the corner. |
 | **D4** | Shell/fit: empty/loading/error **spacious** (~360px min); success **hugs** content; wide ASCII uniform scale-to-fit (**no** pane/page scrollbars); equal L/R page padding; controls left \| preview right. |
@@ -197,7 +197,7 @@ Source: OD **Media to Ascii** / `media-to-ascii-refresh.html` (decision comment 
 
 **OD frame map (gallery):** 1 Empty · 2 Loading · 3 Image typical · 4 Image wide ASCII · 5 Image narrow ASCII · 6 Video playing · 7 Video ended · 8 Error · 9 Mobile image · 10 Mobile video.
 
-**Angular map (from OD):** header · upload · options (width/invert/charset) · result-host · `ascii-frame-viewer` · `image-compare` · `ascii-video-player` · `result-actions`.
+**Angular map (from OD):** header · upload · options (width/invert/charset) · result-host · `ascii-frame-viewer` · `image-ascii-result` · `ascii-video-player` · `result-actions`.
 
 ---
 
@@ -213,11 +213,12 @@ Feature-complete phase 2: reliable video; API-owned charsets + picker; JSON conv
 - Image side-by-side; video = ASCII player only (no raw video pane).
 - Never commit unless asked / `/m2asc-ship`; never push.
 - **UI locked:** OD `media-to-ascii-refresh.html` + **Locked UI (OD)** above. Do **not** block on further OD work unless product intent changes. No open design clarification questions remain.
-- **Result decomposition (Step 7):** ✅ one shared `ascii-frame-viewer`; compare + player compose it; convert-page hosts loading | error | compare | player.
+- **Result decomposition (Step 7):** ✅ one shared `ascii-frame-viewer`; `image-ascii-result` + player compose it; convert-page hosts loading | error | image result | player.
+- **Rename:** `image-compare` → `image-ascii-result` (file / selector / class).
 - **Functional first:** **7.x** done before **8.x**. Prior fit code was reverted; claim **8.1** next.
 - **Postponed polish:** **5.2** / **6.4** stay ⏸️ until a human un-postpones to ⬜. **Needs: 8.2** (prefer claim after **8.3**). Look is **locked** (D1 / D2) — not TBD.
 - **Shell / preview / actions (Step 8):** match OD **D3–D4**. Do **not** interpret “fluid” as always full-bleed empty preview.
-- **Fit one place:** **8.1** fits `ascii-frame-viewer` only; compare/player get fit for free.
+- **Fit one place:** **8.1** fits `ascii-frame-viewer` only; image-ascii-result/player get fit for free.
 
 ## Living plan
 
@@ -353,23 +354,23 @@ Owns `convert-page.ts` for convert triggers (done before result-host wiring in *
 
 **5.1** / **7.2** shipped. **5.2** is deferred UI polish to **D1** (Needs **8.2**; prefer after **8.3**).
 
-### Step 5.1 — Image compare component
+### Step 5.1 — Image ASCII result component
 
 - Status: ✅
 - Needs: —
-- Files: `{Ng}/src/app/components/image-compare.ts`
+- Files: `{Ng}/src/app/components/image-ascii-result.ts` (was `image-compare.ts`)
 - Do: match OD image success — original image URL + ASCII side by side; stack on narrow; not used for video. Use a simple scrollable `<pre>` for ASCII for now (fit deferred **Step 8**). Component-only — do not touch `convert-page` here.
 - Done when: component demos side-by-side with inputs
-- Commit: `frontend - ui, add image ASCII compare component`
+- Commit: `frontend - ui, add image ASCII result component`
 
-### Step 5.2 — Rework image compare UI
+### Step 5.2 — Rework image ASCII result UI
 
 - Status: ⏸️
 - Needs: 8.2
-- Files: `{Ng}/src/app/components/image-compare.ts` (and styles only if required)
+- Files: `{Ng}/src/app/components/image-ascii-result.ts` (and styles only if required)
 - Do: match **D1** / OD frames **3**, **4**, **5**, **9** — hug pair as one unit; one shared stage border; photo height-matched to fitted ASCII; no Original/ASCII labels; top-aligned when sizes differ; stack on narrow. Uses **8.1** fit via `ascii-frame-viewer` + **8.2** hug shell. Do not claim while ⏸️; human un-postpones to ⬜ (prefer after **8.3** so actions chrome is settled).
-- Done when: compare matches OD D1 frames (desktop + mobile stack)
-- Commit: `frontend - ui, rework image compare layout`
+- Done when: result layout matches OD D1 frames (desktop + mobile stack)
+- Commit: `frontend - ui, rework image ASCII result layout`
 
 ---
 
@@ -428,21 +429,21 @@ Shared frame → compose consumers in parallel → one page host leaf.
 - Done when: component renders a mock `AsciiFrame` in isolation
 - Commit: `frontend - ui, add shared ascii-frame-viewer component`
 
-### Step 7.2 — Image compare uses ascii-frame-viewer
+### Step 7.2 — Image ASCII result uses ascii-frame-viewer
 
 - Status: ✅
 - Needs: 7.1, 5.1
-- Files: `{Ng}/src/app/components/image-compare.ts` only
-- Do: replace inner ASCII `<pre>` with `<app-ascii-frame-viewer [frame]="frame()" />`; compare inputs `imageUrl` + `frame` (`AsciiFrame`); keep original image pane + responsive grid sizing/scroll; do not touch player (page call-site may bind `frame`)
-- Done when: compare still side-by-side; ASCII comes only from `ascii-frame-viewer`
-- Commit: `frontend - ui, compose image compare with ascii-frame-viewer`
+- Files: `{Ng}/src/app/components/image-ascii-result.ts` only (was `image-compare.ts`)
+- Do: replace inner ASCII `<pre>` with `<app-ascii-frame-viewer [frame]="frame()" />`; inputs `imageUrl` + `frame` (`AsciiFrame`); keep original image pane + responsive grid sizing/scroll; do not touch player (page call-site may bind `frame`)
+- Done when: still side-by-side; ASCII comes only from `ascii-frame-viewer`
+- Commit: `frontend - ui, compose image ASCII result with ascii-frame-viewer`
 
 ### Step 7.3 — Video player uses ascii-frame-viewer
 
 - Status: ✅
 - Needs: 7.1, 6.3
 - Files: `{Ng}/src/app/components/ascii-video-player.ts` only
-- Do: replace frame-pane `<pre>` with `<app-ascii-frame-viewer [frame]="…" />` (current `AsciiFrame` from `video.frames`); keep transport/autoplay + pane sizing/scroll; do not touch compare or `convert-page`
+- Do: replace frame-pane `<pre>` with `<app-ascii-frame-viewer [frame]="…" />` (current `AsciiFrame` from `video.frames`); keep transport/autoplay + pane sizing/scroll; do not touch `image-ascii-result` or `convert-page`
 - Done when: player still plays; ASCII comes only from `ascii-frame-viewer`
 - Commit: `frontend - ui, compose video player with ascii-frame-viewer`
 
@@ -451,9 +452,9 @@ Shared frame → compose consumers in parallel → one page host leaf.
 - Status: ✅
 - Needs: 7.2, 7.3, 4.2
 - Files: `{Ng}/src/app/pages/convert-page.ts` (**hot**); delete `{Ng}/src/app/components/ascii-preview.ts` if unused
-- Do: stop using `ascii-preview` for success. Page shows **loading** | **error** | empty hint | **`image-compare`** (image success: object URL + `AsciiFrame`; revoke URL on file change / destroy) | **`ascii-video-player`** (video success: bind `AsciiVideo`). Keep Copy/Download flatten for video (`\n\n----\n\n`). Loading/error/empty can live inline on the page (or a tiny host) — not a second ASCII renderer.
-- Done when: image → compare; video → player; loading/error work; `ascii-preview` gone or unused
-- Commit: `frontend - wire, convert page result host for compare and player`
+- Do: stop using `ascii-preview` for success. Page shows **loading** | **error** | empty hint | **`image-ascii-result`** (image success: object URL + `AsciiFrame`; revoke URL on file change / destroy) | **`ascii-video-player`** (video success: bind `AsciiVideo`). Keep Copy/Download flatten for video (`\n\n----\n\n`). Loading/error/empty can live inline on the page (or a tiny host) — not a second ASCII renderer.
+- Done when: image → `image-ascii-result`; video → player; loading/error work; `ascii-preview` gone or unused
+- Commit: `frontend - wire, convert page result host for image result and player`
 
 ---
 
@@ -470,15 +471,15 @@ No preview/page scrollbars from wide ASCII; shell + preview + actions match OD *
 - Status: ⬜
 - Needs: 7.4
 - Files: `{Ng}/src/app/components/ascii-frame-viewer.ts`
-- Do: plaintext `<pre>` inside `ascii-frame-viewer`; uniform CSS scale/fit into the parent-allocated box; overflow hidden; no scrollbars. Compare/player inherit via composition — do not re-fit in those parents. Prove against OD frame **4** (wide) behavior.
-- Done when: width ~200 ASCII fits pane without scrollbars in compare and player
+- Do: plaintext `<pre>` inside `ascii-frame-viewer`; uniform CSS scale/fit into the parent-allocated box; overflow hidden; no scrollbars. Image-ascii-result/player inherit via composition — do not re-fit in those parents. Prove against OD frame **4** (wide) behavior.
+- Done when: width ~200 ASCII fits pane without scrollbars in image result and player
 - Commit: `frontend - ui, fit ascii-frame-viewer without scrollbars`
 
 ### Step 8.2 — Shell + preview sizing per Open Design
 
 - Status: ⬜
 - Needs: 8.1
-- Files: `{Ng}/src/styles.scss`, `{Ng}/src/app/components/ascii-frame-viewer.ts`, optionally `convert-page.ts` / `app.component.ts` / compare / player
+- Files: `{Ng}/src/styles.scss`, `{Ng}/src/app/components/ascii-frame-viewer.ts`, optionally `convert-page.ts` / `app.component.ts` / `image-ascii-result` / player
 - Do: match **D4** / OD frames **1**, **2**, **3**, **5**, **8** — equal L/R page padding; spacious empty/loading/error (~360px min feel); on success hug ASCII (no large empty field beside narrow art — frame **5**); keep uniform scale within viewport; overflow hidden / no ASCII scrollbars; no asymmetric page overflow. Reference OD `is-spacious` vs `is-hug` ideas (class names need not match).
 - Done when: empty feels like a real workspace; narrow success hugs; wide/tall ASCII fits without preview or page scrollbars; layout balanced vs OD
 - Commit: `frontend - layout, shell and preview sizing per Open Design`
@@ -501,7 +502,7 @@ No preview/page scrollbars from wide ASCII; shell + preview + actions match OD *
 - Status: ⬜
 - Needs: 7.4, 4.2, 8.3
 - Files: `{Ng}/src/app/pages/**`, `components/**`, `styles.scss`
-- Do: final pass vs OD `media-to-ascii-refresh.html` + **Locked UI (OD)** (D1–D5); verify charset **D5**, transport **D2**, actions **D3**, shell **D4**, compare **D1** if **5.2**/**6.4** still ⏸️ note remaining gaps or finish them first; no new features
+- Do: final pass vs OD `media-to-ascii-refresh.html` + **Locked UI (OD)** (D1–D5); verify charset **D5**, transport **D2**, actions **D3**, shell **D4**, image-ascii-result **D1** if **5.2**/**6.4** still ⏸️ note remaining gaps or finish them first; no new features
 - Done when: UI shippable vs locked OD mockup
 - Commit: `frontend - ui, polish to phase2 Open Design`
 

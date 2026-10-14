@@ -3,10 +3,10 @@ import { AsciiFrame } from '../services/convert-api.service';
 import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
 
 @Component({
-  selector: 'app-image-compare',
+  selector: 'app-image-ascii-result',
   imports: [AsciiFrameViewerComponent],
   template: `
-    <div class="image-compare">
+    <div class="image-ascii-result">
       <div class="pane pane-original">
         <img [src]="imageUrl()" />
       </div>
@@ -16,7 +16,7 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
     </div>
   `,
   styles: `
-    .image-compare {
+    .image-ascii-result {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.75rem;
@@ -65,7 +65,7 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
     }
   `,
 })
-export class ImageCompareComponent {
+export class ImageAsciiResultComponent {
   readonly imageUrl = input.required<string>();
   readonly frame = input.required<AsciiFrame>();
 }
