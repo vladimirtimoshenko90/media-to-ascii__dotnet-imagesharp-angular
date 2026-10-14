@@ -26,7 +26,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
 - [⬜ Step 6 — Feature: ASCII video player](#step-6--feature-ascii-video-player)
   - [✅ 6.1 — Reusable player: frame display](#step-61--reusable-player-frame-display)
   - [✅ 6.4 — Autoplay in player](#step-64--autoplay-in-player)
-  - [⬜ 6.3 — Transport controls on player](#step-63--transport-controls-on-player)
+  - [✅ 6.3 — Transport controls on player](#step-63--transport-controls-on-player)
   - [⬜ 6.2 — Replace page video result with player](#step-62--replace-page-video-result-with-player)
 - [⬜ Step 4 — Feature: Preview fit + page shell (deferred)](#step-4--feature-preview-fit--page-shell)
   - [⬜ 4.1 — ASCII preview fit (no scrollbars)](#step-41--ascii-preview-fit-no-scrollbars)
@@ -374,7 +374,7 @@ Order: reusable display → autoplay → controls → page mount. **6.1 / 6.4 / 
 
 ### Step 6.3 — Transport controls on player
 
-- Status: ⬜
+- Status: ✅
 - Needs: 6.4
 - Files: `{Ng}/src/app/components/ascii-video-player.ts`
 - Do: match OD frame 4 — Play/Pause, Restart, seek bar under ASCII; drive existing `playing` / frame index; no speed; **no** page mount

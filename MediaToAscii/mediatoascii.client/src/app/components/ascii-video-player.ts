@@ -1,13 +1,51 @@
 import { Component, computed, effect, input, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { AsciiVideo } from '../services/convert-api.service';
 
 @Component({
   selector: 'app-ascii-video-player',
+  imports: [FormsModule],
   template: `
     <div class="ascii-video-player">
       <div class="frame-pane">
         <pre>{{ currentFrame() }}</pre>
       </div>
+
+      @if (frameCount()) {
+        <div class="transport">
+          <div class="transport-buttons">
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary-action"
+              (click)="togglePlay()"
+            >
+              <i
+                class="bi"
+                [class.bi-pause-fill]="playing()"
+                [class.bi-play-fill]="!playing()"
+              ></i>
+              {{ playing() ? 'Pause' : 'Play' }}
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary-action"
+              (click)="currentFrameIndex.set(0)"
+            >
+              <i class="bi bi-skip-start-fill"></i>
+              Restart
+            </button>
+          </div>
+
+          <input
+            type="range"
+            class="form-range"
+            min="0"
+            [max]="frameCount() - 1"
+            [ngModel]="currentFrameIndex()"
+            (ngModelChange)="currentFrameIndex.set(+$event)"
+          />
+        </div>
+      }
     </div>
   `,
   styles: `
@@ -36,6 +74,18 @@ import { AsciiVideo } from '../services/convert-api.service';
         white-space: pre;
         color: var(--fg);
       }
+    }
+
+    .transport {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .transport-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
   `,
 })
@@ -68,5 +118,16 @@ export class AsciiVideoPlayerComponent {
         onCleanup(() => clearInterval(intervalId));
       }
     });
+  }
+
+  togglePlay(): void {
+    if (this.playing()) {
+      this.playing.set(false);
+    } else {
+      if (this.currentFrameIndex() >= this.frameCount() - 1) {
+        this.currentFrameIndex.set(0);
+      }
+      this.playing.set(true);
+    }
   }
 }
