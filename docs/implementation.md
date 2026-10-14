@@ -139,11 +139,9 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 {Ng}/src/app/
   services/convert-api.service.ts
   services/configuration-api.service.ts  # Step 3.1
-  utils/
-    debounced-signal.ts               # Step 4.2
   components/
     upload-zone.ts
-    option-controls.ts                # width + invert + charset picker (bound from page)
+    option-controls.ts                # width debounce (toObservable) + invert + charset picker
     charset-picker.ts                 # Step 3.3
     ascii-frame-viewer.ts             # Step 7.1 — AsciiFrame input; fit in 8.1
     image-compare.ts                  # Steps 5.1 / 7.2 — original + ascii-frame-viewer
@@ -344,8 +342,8 @@ Owns `convert-page.ts` for convert triggers (done before result-host wiring in *
 
 - Status: ✅
 - Needs: —
-- Files: `{Ng}/src/app/utils/debounced-signal.ts`, `{Ng}/src/app/components/option-controls.ts`, `{Ng}/src/app/pages/convert-page.ts` (**hot**)
-- Do: ~400ms width debounce via `debouncedSignal` in option-controls (charset/invert emit immediately with live width); cancel prior HTTP on new convert
+- Files: `{Ng}/src/app/components/option-controls.ts`, `{Ng}/src/app/pages/convert-page.ts` (**hot**)
+- Do: ~400ms width debounce in option-controls via `toObservable` + `debounceTime` (charset/invert emit immediately with live width); cancel prior HTTP on new convert
 - Done when: rapid width changes don’t stack; latest wins on convert
 - Commit: `frontend - wire, debounce width and cancel in-flight convert`
 

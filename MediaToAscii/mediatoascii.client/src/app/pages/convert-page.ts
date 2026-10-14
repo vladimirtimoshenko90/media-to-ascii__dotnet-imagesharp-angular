@@ -171,7 +171,6 @@ export class ConvertPage implements OnInit, OnDestroy {
     this.cancelConvert$.next();
     this.loading = true;
     this.error = null;
-    this.clearResult();
 
     if (isImage) {
       this.convertApi
@@ -179,6 +178,7 @@ export class ConvertPage implements OnInit, OnDestroy {
         .pipe(takeUntil(this.cancelConvert$))
         .subscribe({
           next: (frame) => {
+            this.revokeImageUrl();
             this.imageUrl = URL.createObjectURL(file);
             this.imageResult = frame;
             this.loading = false;

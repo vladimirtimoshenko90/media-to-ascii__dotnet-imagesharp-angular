@@ -1,15 +1,14 @@
 import {
   Component,
-  effect,
   input,
   linkedSignal,
   output,
-  untracked,
 } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { debounceTime, filter } from 'rxjs';
 import { AsciiCharsetOption } from '../services/configuration-api.service';
 import { ConvertOptions } from '../services/convert-api.service';
-import { debouncedSignal } from '../utils/debounced-signal';
 import { CharsetPickerComponent } from './charset-picker';
 
 @Component({
@@ -71,15 +70,15 @@ export class OptionControlsComponent {
   readonly optionsChange = output<ConvertOptions>();
 
   readonly liveWidth = linkedSignal(() => this.options().width);
-  private readonly settledWidth = debouncedSignal(this.liveWidth, 400);
 
   constructor() {
-    effect(() => {
-      const width = this.settledWidth();
-      if (width !== untracked(() => this.options().width)) {
-        this.emitPatch({ width });
-      }
-    });
+    toObservable(this.liveWidth)
+      .pipe(
+        debounceTime(400),
+        filter((width) => width !== this.options().width),
+        takeUntilDestroyed(),
+      )
+      .subscribe((width) => this.emitPatch({ width }));
   }
 
   emitPatch(patch: Partial<ConvertOptions>): void {
