@@ -1,7 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { AsciiPreviewComponent } from '../components/ascii-preview';
+import { AsciiVideoPlayerComponent } from '../components/ascii-video-player';
+import { ImageCompareComponent } from '../components/image-compare';
 import { OptionControlsComponent } from '../components/option-controls';
 import { ResultActionsComponent } from '../components/result-actions';
 import { UploadZoneComponent } from '../components/upload-zone';
@@ -10,6 +11,8 @@ import {
   ConfigurationApiService,
 } from '../services/configuration-api.service';
 import {
+  AsciiFrame,
+  AsciiVideo,
   ConvertApiService,
   ConvertOptions,
 } from '../services/convert-api.service';
@@ -19,7 +22,8 @@ import {
   imports: [
     UploadZoneComponent,
     OptionControlsComponent,
-    AsciiPreviewComponent,
+    ImageCompareComponent,
+    AsciiVideoPlayerComponent,
     ResultActionsComponent,
   ],
   template: `
@@ -34,14 +38,67 @@ import {
       </div>
 
       <div class="region">
-        <app-ascii-preview
-          [text]="asciiText"
-          [loading]="loading"
-          [error]="error"
-        />
-        <app-result-actions [text]="asciiText ?? ''" />
+        @if (loading) {
+          <div class="result-status">
+            <p class="loading-msg">
+              <span class="spinner-border spinner-border-sm"></span>
+              Converting…
+            </p>
+          </div>
+        } @else if (error) {
+          <div class="result-status">
+            <p class="error-msg">{{ error }}</p>
+          </div>
+        } @else if (imageUrl && imageFrame) {
+          <app-image-compare [imageUrl]="imageUrl" [frame]="imageFrame" />
+        } @else if (videoResult) {
+          <app-ascii-video-player [video]="videoResult" />
+        } @else {
+          <div class="result-status">
+            <p class="hint">ASCII output will appear here.</p>
+          </div>
+        }
+        <app-result-actions [text]="exportText" />
       </div>
     </div>
+  `,
+  styles: `
+    .result-status {
+      min-height: 280px;
+      max-height: 520px;
+      overflow: auto;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 0.25rem;
+      padding: 0.75rem;
+    }
+
+    .hint,
+    .error-msg,
+    .loading-msg {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin: 0;
+      font-family: var(--font-body);
+      line-height: 1.45;
+    }
+
+    .error-msg {
+      color: var(--error);
+    }
+
+    .loading-msg {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .spinner-border-sm {
+      width: 0.9rem;
+      height: 0.9rem;
+      border-width: 0.12em;
+      color: var(--muted);
+    }
   `,
 })
 export class ConvertPage implements OnInit, OnDestroy {
@@ -56,9 +113,23 @@ export class ConvertPage implements OnInit, OnDestroy {
     invert: false,
     charset: '',
   };
-  asciiText: string | null = null;
   loading = false;
   error: string | null = null;
+  imageUrl: string | null = null;
+  imageFrame: AsciiFrame | null = null;
+  videoResult: AsciiVideo | null = null;
+
+  get exportText(): string {
+    if (this.imageFrame) {
+      return this.imageFrame.ascii;
+    }
+    if (this.videoResult) {
+      return this.videoResult.frames
+        .map((frame) => frame.ascii)
+        .join('\n\n----\n\n');
+    }
+    return '';
+  }
 
   ngOnInit(): void {
     this.configurationApi.getConvertOptions().subscribe((data) => {
@@ -70,12 +141,13 @@ export class ConvertPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.cancelConvert$.next();
     this.cancelConvert$.complete();
+    this.revokeImageUrl();
   }
 
   onFileSelected(file: File): void {
     this.selectedFile = file;
-    this.asciiText = null;
     this.error = null;
+    this.clearResult();
     this.convert();
   }
 
@@ -99,7 +171,7 @@ export class ConvertPage implements OnInit, OnDestroy {
     this.cancelConvert$.next();
     this.loading = true;
     this.error = null;
-    this.asciiText = null;
+    this.clearResult();
 
     if (isImage) {
       this.convertApi
@@ -107,7 +179,8 @@ export class ConvertPage implements OnInit, OnDestroy {
         .pipe(takeUntil(this.cancelConvert$))
         .subscribe({
           next: (frame) => {
-            this.asciiText = frame.ascii;
+            this.imageUrl = URL.createObjectURL(file);
+            this.imageFrame = frame;
             this.loading = false;
           },
           error: (err: unknown) => this.onConvertError(err),
@@ -120,7 +193,7 @@ export class ConvertPage implements OnInit, OnDestroy {
       .pipe(takeUntil(this.cancelConvert$))
       .subscribe({
         next: (video) => {
-          this.asciiText = video.frames[0]?.ascii ?? null;
+          this.videoResult = video;
           this.loading = false;
         },
         error: (err: unknown) => this.onConvertError(err),
@@ -129,8 +202,21 @@ export class ConvertPage implements OnInit, OnDestroy {
 
   private onConvertError(err: unknown): void {
     this.loading = false;
-    this.asciiText = null;
+    this.clearResult();
     this.error = this.errorMessage(err);
+  }
+
+  private clearResult(): void {
+    this.revokeImageUrl();
+    this.imageFrame = null;
+    this.videoResult = null;
+  }
+
+  private revokeImageUrl(): void {
+    if (this.imageUrl) {
+      URL.revokeObjectURL(this.imageUrl);
+      this.imageUrl = null;
+    }
   }
 
   private errorMessage(err: unknown): string {

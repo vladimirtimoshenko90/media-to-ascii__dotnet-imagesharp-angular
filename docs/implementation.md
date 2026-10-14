@@ -28,11 +28,11 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 6.2 — Autoplay in player](#step-62--autoplay-in-player)
   - [✅ 6.3 — Transport controls on player](#step-63--transport-controls-on-player)
   - [⏸️ 6.4 — Rework video player UI](#step-64--rework-video-player-ui)
-- [⏳ Step 7 — Feature: Result views decomposition](#step-7--feature-result-views-decomposition)
+- [✅ Step 7 — Feature: Result views decomposition](#step-7--feature-result-views-decomposition)
   - [✅ 7.1 — Shared ascii-frame-viewer component](#step-71--shared-ascii-frame-viewer-component)
   - [✅ 7.2 — Image compare uses ascii-frame-viewer](#step-72--image-compare-uses-ascii-frame-viewer)
   - [✅ 7.3 — Video player uses ascii-frame-viewer](#step-73--video-player-uses-ascii-frame-viewer)
-  - [⬜ 7.4 — Convert page result host](#step-74--convert-page-result-host)
+  - [✅ 7.4 — Convert page result host](#step-74--convert-page-result-host)
 - [⬜ Step 8 — Feature: Preview fit + page shell](#step-8--feature-preview-fit--page-shell)
   - [⬜ 8.1 — ASCII frame-viewer fit (no scrollbars)](#step-81--ascii-frame-viewer-fit-no-scrollbars)
   - [⬜ 8.2 — Shell + preview sizing per Open Design](#step-82--shell--preview-sizing-per-open-design)
@@ -94,8 +94,8 @@ Feature steps can advance in parallel when Needs/Files allow.
 - Angular 19 + ASP.NET Minimal API (.NET 10); ImageSharp; FFMpegCore; system `ffmpeg`/`ffprobe` on PATH.
 - `{Api}` = `MediaToAscii/MediaToAscii.Server`, `{Ng}` = `MediaToAscii/mediatoascii.client`.
 - **Shipped backend (Steps 1–2):** FluentValidation convert form (charset **id** → `AsciiCharsetType`); `GET /api/config/convert-options`; JSON convert (`AsciiFrame` / `AsciiVideo`); video frames via temp file (exit-69 pipe/seek fixed).
-- **Shipped FE:** **3.x** charsets/JSON/picker; **4.x** auto-convert; **5.1** / **7.2** image-compare (`ascii-frame-viewer`); **6.1/6.2/6.3** / **7.3** video player (`ascii-frame-viewer`); **7.1** `ascii-frame-viewer`. Page still uses kitchen-sink `ascii-preview` for all results.
-- **Still to build:** **7.4** page result host; then fit/shell (**8**, incl. compact actions **8.3**); polish/docs (**9**). Postponed UI: **5.2**, **6.4**.
+- **Shipped FE:** **3.x** charsets/JSON/picker; **4.x** auto-convert; **5.1** / **7.2** image-compare; **6.1/6.2/6.3** / **7.3** video player; **7.1** `ascii-frame-viewer`; **7.4** convert-page result host (compare | player; `ascii-preview` removed).
+- **Still to build:** fit/shell (**8**, incl. compact actions **8.3**); polish/docs (**9**). Postponed UI: **5.2**, **6.4**.
 - **UI target (later):** OD `media-to-ascii-refresh.html`. Brief: [design-prompt.phase2.md](./design-prompt.phase2.md).
 
 ### Video runtime note
@@ -151,7 +151,6 @@ Feature steps can advance in parallel when Needs/Files allow.
     image-compare.ts                  # Steps 5.1 / 7.2 — original + ascii-frame-viewer
     ascii-video-player.ts             # Steps 6.x / 7.3 — AsciiVideo + transport; renders ascii-frame-viewer
     result-actions.ts                 # Copy / Download; compact in 8.3
-    ascii-preview.ts                  # retire on 7.4 (was loading|error|text kitchen sink)
   pages/convert-page.ts               # Steps 4.x / 7.4 — result host
   app.component.ts
   app.config.ts
@@ -434,10 +433,10 @@ Shared frame → compose consumers in parallel → one page host leaf.
 
 ### Step 7.4 — Convert page result host
 
-- Status: ⬜
+- Status: ✅
 - Needs: 7.2, 7.3, 4.2
 - Files: `{Ng}/src/app/pages/convert-page.ts` (**hot**); delete `{Ng}/src/app/components/ascii-preview.ts` if unused
-- Do: stop using `ascii-preview` for success. Page shows **loading** | **error** | empty hint | **`image-compare`** (image success: object URL + ascii; revoke URL on file change / destroy) | **`ascii-video-player`** (video success: bind `AsciiVideo`). Keep Copy/Download flatten for video (`\n\n----\n\n`). Loading/error/empty can live inline on the page (or a tiny host) — not a second ASCII renderer.
+- Do: stop using `ascii-preview` for success. Page shows **loading** | **error** | empty hint | **`image-compare`** (image success: object URL + `AsciiFrame`; revoke URL on file change / destroy) | **`ascii-video-player`** (video success: bind `AsciiVideo`). Keep Copy/Download flatten for video (`\n\n----\n\n`). Loading/error/empty can live inline on the page (or a tiny host) — not a second ASCII renderer.
 - Done when: image → compare; video → player; loading/error work; `ascii-preview` gone or unused
 - Commit: `frontend - wire, convert page result host for compare and player`
 
