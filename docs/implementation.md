@@ -25,9 +25,9 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [⬜ 5.2 — Wire image compare on convert page](#step-52--wire-image-compare-on-convert-page)
 - [⬜ Step 6 — Feature: ASCII video player](#step-6--feature-ascii-video-player)
   - [✅ 6.1 — Reusable player: frame display](#step-61--reusable-player-frame-display)
-  - [⬜ 6.2 — Replace page video result with player](#step-62--replace-page-video-result-with-player)
+  - [✅ 6.4 — Autoplay in player](#step-64--autoplay-in-player)
   - [⬜ 6.3 — Transport controls on player](#step-63--transport-controls-on-player)
-  - [⬜ 6.4 — Autoplay on video convert success](#step-64--autoplay-on-video-convert-success)
+  - [⬜ 6.2 — Replace page video result with player](#step-62--replace-page-video-result-with-player)
 - [⬜ Step 4 — Feature: Preview fit + page shell (deferred)](#step-4--feature-preview-fit--page-shell)
   - [⬜ 4.1 — ASCII preview fit (no scrollbars)](#step-41--ascii-preview-fit-no-scrollbars)
   - [⬜ 4.2 — Shell + preview sizing per Open Design](#step-42--shell--preview-sizing-per-open-design)
@@ -76,8 +76,8 @@ Feature steps can advance in parallel when Needs/Files allow.
 |------|---------|---------|---------|
 | ✅ | **1.x** API cleanup | **2.x** Video temp | **3.x** charsets / JSON / picker |
 | now | **7.1 → 7.2** auto-convert (`convert-page`) | — | — |
-| then | **5.1** Image compare | **6.1** Player frames | **6.3** controls (after 6.1) |
-| then | **5.2** / **6.2** page wire (after **7.2**) | **6.4** autoplay | — |
+| then | **5.1** Image compare | **6.1** Player frames | **6.4** autoplay (after 6.1) |
+| then | **5.2** page wire (after **7.2**) | **6.3** controls (after 6.4) | **6.2** mount player (after 6.3) |
 | UI | **4.1 → 4.2** fit + shell per OD (after **5.2** + **6.4**) | — | — |
 | last | **8.x** Finalization (needs **4.2**) | — | — |
 
@@ -147,9 +147,9 @@ Prefer fewer parallel claims over conflicts.
     charset-picker.ts                 # Step 3.3
     ascii-preview.ts                  # simple preview now; fit/shell in Steps 4.1 / 4.2 (deferred)
     image-compare.ts                  # Step 5.1
-    ascii-video-player.ts             # Steps 6.1 / 6.3
+    ascii-video-player.ts             # Steps 6.1 / 6.4 / 6.3 (component only; no page mount)
     result-actions.ts                 # Copy / Download (phase 1; keep)
-  pages/convert-page.ts               # Steps 5.2, 6.2, 6.4, 7.x
+  pages/convert-page.ts               # Steps 5.2, 6.2, 7.x
   app.component.ts
   app.config.ts
   styles.scss                         # Step 4.2 (+ polish 8.1) when UI pass runs
@@ -352,43 +352,43 @@ Do this feature before Steps **5** / **6** page wiring (owns `convert-page.ts`).
 
 ## Step 6 — Feature: ASCII video player
 
-Order: reusable display → page swap → controls → autoplay. Page wire waits for **7.2**.
+Order: reusable display → autoplay → controls → page mount. **6.1 / 6.4 / 6.3** are component-only (no page inject). **6.2** mounts the finished player. Page wire waits for **7.2**.
 
 ### Step 6.1 — Reusable player: frame display
 
 - Status: ✅
 - Needs: —
 - Files: `{Ng}/src/app/components/ascii-video-player.ts`
-- Do: match OD frame 4 preview structure — input `video` (`AsciiVideo`); player owns `currentIndex` (start at 0); show current frame in a simple scrollable `<pre>`; **no** transport controls yet. Fit/hug comes later in deferred **Step 4**.
+- Do: match OD frame 4 preview structure — input `video` (`AsciiVideo`); player owns `currentFrameIndex` (start at 0); show current frame in a simple scrollable `<pre>`; **no** transport controls yet. Fit/hug comes later in deferred **Step 4**.
 - Done when: mock `AsciiVideo` shows frame 0
 - Commit: `frontend - ui, add ASCII video player frame display`
 
-### Step 6.2 — Replace page video result with player
+### Step 6.4 — Autoplay in player
 
-- Status: ⬜
-- Needs: 6.1, 3.2, 7.2
-- Files: `{Ng}/src/app/pages/convert-page.ts` (**hot**)
-- Do: video success binds `AsciiVideo` into player instead of one joined `<pre>` blob; Copy/Download still flatten with `\n\n----\n\n`
-- Done when: video convert shows player frame view on the page
-- Commit: `frontend - wire, show video results in ASCII player`
+- Status: ✅
+- Needs: 6.1
+- Files: `{Ng}/src/app/components/ascii-video-player.ts`
+- Do: on new `video` input, reset to frame 0 and set `playing`; while `playing`, advance `currentFrameIndex` on `video.frameDelayMs`; stop at last frame (no loop); **no** transport UI yet; **no** page mount
+- Done when: mock `AsciiVideo` advances frames automatically in isolation
+- Commit: `frontend - ui, autoplay ASCII video player`
 
 ### Step 6.3 — Transport controls on player
 
 - Status: ⬜
-- Needs: 6.1
+- Needs: 6.4
 - Files: `{Ng}/src/app/components/ascii-video-player.ts`
-- Do: match OD frame 4 — Play/Pause, Restart, seek bar under ASCII; advance owned index on `video.frameDelayMs` (FE fallback ~120ms if 0; OD demo ~220ms is mock-only); no speed
+- Do: match OD frame 4 — Play/Pause, Restart, seek bar under ASCII; drive existing `playing` / frame index; no speed; **no** page mount
 - Done when: controls work in component isolation
 - Commit: `frontend - ui, add ASCII video player transport controls`
 
-### Step 6.4 — Autoplay on video convert success
+### Step 6.2 — Replace page video result with player
 
 - Status: ⬜
-- Needs: 6.2, 6.3
-- Files: `{Ng}/src/app/pages/convert-page.ts`, `ascii-video-player.ts`
-- Do: on new video result, start playback without clicking Play
-- Done when: convert video → autoplay
-- Commit: `frontend - wire, autoplay ASCII video on convert`
+- Needs: 6.3, 3.2, 7.2
+- Files: `{Ng}/src/app/pages/convert-page.ts` (**hot**)
+- Do: video success binds `AsciiVideo` into player instead of one joined `<pre>` blob; Copy/Download still flatten with `\n\n----\n\n`
+- Done when: video convert shows player on the page
+- Commit: `frontend - wire, show video results in ASCII player`
 
 ---
 

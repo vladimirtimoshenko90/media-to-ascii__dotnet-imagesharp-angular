@@ -41,23 +41,32 @@ import { AsciiVideo } from '../services/convert-api.service';
 })
 export class AsciiVideoPlayerComponent {
   readonly video = input.required<AsciiVideo>();
+  readonly playing = signal(false);
 
-  /** Owned by the player; transport (6.3) will advance this. */
-  readonly currentIndex = signal(0);
-
-  readonly currentFrame = computed(() => {
-    const frames = this.video().frames;
-    const i = this.currentIndex();
-    if (i < 0 || i >= frames.length) {
-      return '';
-    }
-    return frames[i]?.ascii ?? '';
-  });
+  readonly frameCount = computed(() => this.video().frames.length);
+  readonly currentFrameIndex = signal(0);
+  readonly currentFrame = computed(
+    () => this.video().frames[this.currentFrameIndex()]?.ascii ?? '',
+  );
 
   constructor() {
     effect(() => {
       this.video();
-      this.currentIndex.set(0);
+      this.currentFrameIndex.set(0);
+      this.playing.set(this.frameCount() > 0);
+    });
+
+    effect((onCleanup) => {
+      if (this.playing()) {
+        const intervalId = setInterval(() => {
+          if (this.currentFrameIndex() >= this.frameCount() - 1) {
+            this.playing.set(false);
+          } else {
+            this.currentFrameIndex.update((i) => i + 1);
+          }
+        }, this.video().frameDelayMs);
+        onCleanup(() => clearInterval(intervalId));
+      }
     });
   }
 }
