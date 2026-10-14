@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { AsciiPreviewComponent } from '../components/ascii-preview';
 import { OptionControlsComponent } from '../components/option-controls';
 import { ResultActionsComponent } from '../components/result-actions';
@@ -51,9 +52,10 @@ import {
     </div>
   `,
 })
-export class ConvertPage implements OnInit {
+export class ConvertPage implements OnInit, OnDestroy {
   private readonly convertApi = inject(ConvertApiService);
   private readonly configurationApi = inject(ConfigurationApiService);
+  private readonly cancelConvert$ = new Subject<void>();
 
   selectedFile: File | null = null;
   charsets: AsciiCharsetOption[] = [];
@@ -73,9 +75,14 @@ export class ConvertPage implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.cancelConvert$.next();
+    this.cancelConvert$.complete();
+  }
+
   get canConvert(): boolean {
     const file = this.selectedFile;
-    if (!file || this.loading || !this.options.charset) {
+    if (!file || !this.options.charset) {
       return false;
     }
     return (
@@ -91,7 +98,7 @@ export class ConvertPage implements OnInit {
 
   convert(): void {
     const file = this.selectedFile;
-    if (!file || this.loading || !this.options.charset) {
+    if (!file || !this.options.charset) {
       return;
     }
 
@@ -101,27 +108,35 @@ export class ConvertPage implements OnInit {
       return;
     }
 
+    this.cancelConvert$.next();
     this.loading = true;
     this.error = null;
     this.asciiText = null;
 
     if (isImage) {
-      this.convertApi.convertImage(file, this.options).subscribe({
-        next: (frame) => {
-          this.asciiText = frame.ascii;
-          this.loading = false;
-        },
-        error: (err: unknown) => this.onConvertError(err),
-      });
-    } else if (isVideo) {
-      this.convertApi.convertVideo(file, this.options).subscribe({
+      this.convertApi
+        .convertImage(file, this.options)
+        .pipe(takeUntil(this.cancelConvert$))
+        .subscribe({
+          next: (frame) => {
+            this.asciiText = frame.ascii;
+            this.loading = false;
+          },
+          error: (err: unknown) => this.onConvertError(err),
+        });
+      return;
+    }
+
+    this.convertApi
+      .convertVideo(file, this.options)
+      .pipe(takeUntil(this.cancelConvert$))
+      .subscribe({
         next: (video) => {
           this.asciiText = video.frames[0]?.ascii ?? null;
           this.loading = false;
         },
         error: (err: unknown) => this.onConvertError(err),
       });
-    }
   }
 
   private onConvertError(err: unknown): void {

@@ -19,7 +19,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 3.3 — Charset sample picker UI](#step-33--charset-sample-picker-ui)
 - [⬜ Step 7 — Feature: Auto-convert UX](#step-7--feature-auto-convert-ux)
   - [⬜ 7.1 — Remove Convert button; convert on file/charset/invert](#step-71--remove-convert-button-convert-on-filecharsetinvert)
-  - [⬜ 7.2 — Width debounce + cancel in-flight convert](#step-72--width-debounce--cancel-in-flight-convert)
+  - [✅ 7.2 — Width debounce + cancel in-flight convert](#step-72--width-debounce--cancel-in-flight-convert)
 - [⬜ Step 5 — Feature: Image original | ASCII side-by-side](#step-5--feature-image-original--ascii-side-by-side)
   - [⬜ 5.1 — Image compare component](#step-51--image-compare-component)
   - [⬜ 5.2 — Wire image compare on convert page](#step-52--wire-image-compare-on-convert-page)
@@ -139,6 +139,8 @@ Prefer fewer parallel claims over conflicts.
 {Ng}/src/app/
   services/convert-api.service.ts
   services/configuration-api.service.ts  # Step 3.1
+  utils/
+    debounced-signal.ts               # Step 7.2
   components/
     upload-zone.ts
     option-controls.ts                # width + invert + charset picker (bound from page)
@@ -317,11 +319,11 @@ Do this feature before Steps **5** / **6** page wiring (owns `convert-page.ts`).
 
 ### Step 7.2 — Width debounce + cancel in-flight convert
 
-- Status: ⬜
-- Needs: 7.1
-- Files: `{Ng}/src/app/pages/convert-page.ts` (**hot**)
-- Do: ~400ms width debounce; cancel prior HTTP on new convert
-- Done when: rapid width changes don’t stack; latest wins
+- Status: ✅
+- Needs: —
+- Files: `{Ng}/src/app/utils/debounced-signal.ts`, `{Ng}/src/app/components/option-controls.ts`, `{Ng}/src/app/pages/convert-page.ts` (**hot**)
+- Do: ~400ms width debounce via `debouncedSignal` in option-controls (charset/invert emit immediately with live width); cancel prior HTTP on new convert
+- Done when: rapid width changes don’t stack; latest wins on convert
 - Commit: `frontend - wire, debounce width and cancel in-flight convert`
 
 ---

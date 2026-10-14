@@ -1,7 +1,15 @@
-import { Component, input, output } from '@angular/core';
+import {
+  Component,
+  effect,
+  input,
+  linkedSignal,
+  output,
+  untracked,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AsciiCharsetOption } from '../services/configuration-api.service';
 import { ConvertOptions } from '../services/convert-api.service';
+import { debouncedSignal } from '../utils/debounced-signal';
 import { CharsetPickerComponent } from './charset-picker';
 
 @Component({
@@ -12,7 +20,7 @@ import { CharsetPickerComponent } from './charset-picker';
       <div>
         <div class="d-flex justify-content-between align-items-baseline mb-1">
           <label class="form-label mb-0" for="convert-width">Width</label>
-          <span class="opt-meta">{{ options().width }}</span>
+          <span class="opt-meta">{{ liveWidth() }}</span>
         </div>
         <input
           id="convert-width"
@@ -20,8 +28,8 @@ import { CharsetPickerComponent } from './charset-picker';
           class="form-range"
           min="40"
           max="200"
-          [ngModel]="options().width"
-          (ngModelChange)="emitPatch({ width: $event })"
+          [ngModel]="liveWidth()"
+          (ngModelChange)="liveWidth.set(Number($event))"
         />
       </div>
 
@@ -62,7 +70,23 @@ export class OptionControlsComponent {
   readonly options = input.required<ConvertOptions>();
   readonly optionsChange = output<ConvertOptions>();
 
+  readonly liveWidth = linkedSignal(() => this.options().width);
+  private readonly settledWidth = debouncedSignal(this.liveWidth, 400);
+
+  constructor() {
+    effect(() => {
+      const width = this.settledWidth();
+      if (width !== untracked(() => this.options().width)) {
+        this.emitPatch({ width });
+      }
+    });
+  }
+
   emitPatch(patch: Partial<ConvertOptions>): void {
-    this.optionsChange.emit({ ...this.options(), ...patch });
+    this.optionsChange.emit({
+      ...this.options(),
+      width: this.liveWidth(),
+      ...patch,
+    });
   }
 }
