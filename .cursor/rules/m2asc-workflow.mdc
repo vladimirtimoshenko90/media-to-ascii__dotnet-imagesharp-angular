@@ -14,6 +14,7 @@ Living plan: `docs/implementation.md` (see also `docs/__spec.md`). Docs/process 
 | `⬜` | pending — not started |
 | `⏳` | in progress — claimed; coding |
 | `🔍` | under review — implementation done; awaiting review |
+| `⏸️` | postponed — scheduled later; do not claim yet |
 | `✅` | completed — approved and committed locally |
 
 Keep the Contents TOC and the leaf body status in sync.
@@ -23,7 +24,7 @@ Keep the Contents TOC and the leaf body status in sync.
 Follow the plan’s **Agent playbook**, **Needs**, **Files**, **Hot files**, and **Locked layout**.
 
 1. Read the plan; note every leaf that is `⏳` or `🔍` and the **Files** it owns.
-2. Pick the next `⬜` leaf that (a) has all **Needs** leaves `✅`, and (b) **Files** do not overlap any `⏳`/`🔍` leaf (respect **Hot files** — one agent at a time).
+2. Pick the next `⬜` leaf that (a) has all **Needs** leaves `✅`, and (b) **Files** do not overlap any `⏳`/`🔍` leaf (respect **Hot files** — one agent at a time). Never claim a `⏸️` leaf until a human un-postpones it to `⬜`.
 3. Set that leaf to `⏳` in Contents and body **before** editing code.
 4. Implement **only** that leaf; put new code on the **Locked layout** paths.
 

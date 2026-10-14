@@ -28,6 +28,7 @@ Do **not** delete historical docs. Add new files; archive completed plans by ren
 | `⬜` | pending |
 | `⏳` | in progress (claimed) |
 | `🔍` | under review |
+| `⏸️` | postponed — scheduled later; do not claim yet |
 | `✅` | completed (approved + committed locally) |
 
 Keep Contents TOC and leaf body icons in sync. Status on disk is the multi-agent lock.
