@@ -17,8 +17,8 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 3.1 — Cleanup: do not hard-code ASCII charsets on FE; load from API](#step-31--cleanup-do-not-hard-code-ascii-charsets-on-fe-load-from-api)
   - [✅ 3.2 — FE consume typed JSON convert results](#step-32--fe-consume-typed-json-convert-results)
   - [✅ 3.3 — Charset sample picker UI](#step-33--charset-sample-picker-ui)
-- [⬜ Step 7 — Feature: Auto-convert UX](#step-7--feature-auto-convert-ux)
-  - [⬜ 7.1 — Remove Convert button; convert on file/charset/invert](#step-71--remove-convert-button-convert-on-filecharsetinvert)
+- [✅ Step 7 — Feature: Auto-convert UX](#step-7--feature-auto-convert-ux)
+  - [✅ 7.1 — Remove Convert button; convert on file/charset/invert](#step-71--remove-convert-button-convert-on-filecharsetinvert)
   - [✅ 7.2 — Width debounce + cancel in-flight convert](#step-72--width-debounce--cancel-in-flight-convert)
 - [⬜ Step 5 — Feature: Image original | ASCII side-by-side](#step-5--feature-image-original--ascii-side-by-side)
   - [✅ 5.1 — Image compare component](#step-51--image-compare-component)
@@ -310,7 +310,7 @@ Do this feature before Steps **5** / **6** page wiring (owns `convert-page.ts`).
 
 ### Step 7.1 — Remove Convert button; convert on file/charset/invert
 
-- Status: ⬜
+- Status: ✅
 - Needs: 3.2, 3.3
 - Files: `{Ng}/src/app/pages/convert-page.ts` (**hot**)
 - Do: remove Convert button; convert immediately on file / charset / invert; leave width debounce to 7.2

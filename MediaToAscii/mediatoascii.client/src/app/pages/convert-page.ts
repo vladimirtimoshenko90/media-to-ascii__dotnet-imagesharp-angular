@@ -29,16 +29,8 @@ import {
         <app-option-controls
           [charsets]="charsets"
           [options]="options"
-          (optionsChange)="options = $event"
+          (optionsChange)="onOptionsChange($event)"
         />
-        <button
-          type="button"
-          class="btn btn-convert w-100"
-          [disabled]="!canConvert"
-          (click)="convert()"
-        >
-          Convert
-        </button>
       </div>
 
       <div class="region">
@@ -80,23 +72,19 @@ export class ConvertPage implements OnInit, OnDestroy {
     this.cancelConvert$.complete();
   }
 
-  get canConvert(): boolean {
-    const file = this.selectedFile;
-    if (!file || !this.options.charset) {
-      return false;
-    }
-    return (
-      file.type.startsWith('image/') || file.type.startsWith('video/')
-    );
-  }
-
   onFileSelected(file: File): void {
     this.selectedFile = file;
     this.asciiText = null;
     this.error = null;
+    this.convert();
   }
 
-  convert(): void {
+  onOptionsChange(options: ConvertOptions): void {
+    this.options = options;
+    this.convert();
+  }
+
+  private convert(): void {
     const file = this.selectedFile;
     if (!file || !this.options.charset) {
       return;
