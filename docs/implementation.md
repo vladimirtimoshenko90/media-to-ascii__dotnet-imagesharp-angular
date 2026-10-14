@@ -31,7 +31,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
 - [⏳ Step 7 — Feature: Result views decomposition](#step-7--feature-result-views-decomposition)
   - [✅ 7.1 — Shared ascii-frame-viewer component](#step-71--shared-ascii-frame-viewer-component)
   - [⬜ 7.2 — Image compare uses ascii-frame-viewer](#step-72--image-compare-uses-ascii-frame-viewer)
-  - [⬜ 7.3 — Video player uses ascii-frame-viewer](#step-73--video-player-uses-ascii-frame-viewer)
+  - [✅ 7.3 — Video player uses ascii-frame-viewer](#step-73--video-player-uses-ascii-frame-viewer)
   - [⬜ 7.4 — Convert page result host](#step-74--convert-page-result-host)
 - [⬜ Step 8 — Feature: Preview fit + page shell](#step-8--feature-preview-fit--page-shell)
   - [⬜ 8.1 — ASCII frame-viewer fit (no scrollbars)](#step-81--ascii-frame-viewer-fit-no-scrollbars)
@@ -425,7 +425,7 @@ Shared frame → compose consumers in parallel → one page host leaf.
 
 ### Step 7.3 — Video player uses ascii-frame-viewer
 
-- Status: ⬜
+- Status: ✅
 - Needs: 7.1, 6.3
 - Files: `{Ng}/src/app/components/ascii-video-player.ts` only
 - Do: replace frame-pane `<pre>` with `<app-ascii-frame-viewer [frame]="…" />` (current `AsciiFrame` from `video.frames`); keep transport/autoplay + pane sizing/scroll; do not touch compare or `convert-page`

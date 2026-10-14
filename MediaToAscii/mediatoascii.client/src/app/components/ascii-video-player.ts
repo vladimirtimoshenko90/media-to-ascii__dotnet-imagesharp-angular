@@ -1,14 +1,15 @@
 import { Component, computed, effect, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AsciiVideo } from '../services/convert-api.service';
+import { AsciiFrame, AsciiVideo } from '../services/convert-api.service';
+import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
 
 @Component({
   selector: 'app-ascii-video-player',
-  imports: [FormsModule],
+  imports: [FormsModule, AsciiFrameViewerComponent],
   template: `
     <div class="ascii-video-player">
       <div class="frame-pane">
-        <pre>{{ currentFrame() }}</pre>
+        <app-ascii-frame-viewer [frame]="currentFrame()" />
       </div>
 
       @if (frameCount()) {
@@ -65,15 +66,6 @@ import { AsciiVideo } from '../services/convert-api.service';
       border: 1px solid var(--border);
       border-radius: 0.25rem;
       padding: 0.75rem;
-
-      pre {
-        margin: 0;
-        font-family: var(--font-mono);
-        font-size: 11px;
-        line-height: 1;
-        white-space: pre;
-        color: var(--fg);
-      }
     }
 
     .transport {
@@ -95,8 +87,8 @@ export class AsciiVideoPlayerComponent {
 
   readonly frameCount = computed(() => this.video().frames.length);
   readonly currentFrameIndex = signal(0);
-  readonly currentFrame = computed(
-    () => this.video().frames[this.currentFrameIndex()]?.ascii ?? '',
+  readonly currentFrame = computed<AsciiFrame>(
+    () => this.video().frames[this.currentFrameIndex()] ?? { ascii: '' },
   );
 
   constructor() {
