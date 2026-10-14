@@ -29,7 +29,7 @@ import { CharsetPickerComponent } from './charset-picker';
           min="40"
           max="200"
           [ngModel]="liveWidth()"
-          (ngModelChange)="liveWidth.set(Number($event))"
+          (ngModelChange)="liveWidth.set(+$event)"
         />
       </div>
 
