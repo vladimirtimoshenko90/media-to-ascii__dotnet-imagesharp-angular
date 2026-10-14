@@ -24,7 +24,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 5.1 — Image compare component](#step-51--image-compare-component)
   - [⬜ 5.2 — Wire image compare on convert page](#step-52--wire-image-compare-on-convert-page)
 - [⬜ Step 6 — Feature: ASCII video player](#step-6--feature-ascii-video-player)
-  - [⬜ 6.1 — Reusable player: frame display](#step-61--reusable-player-frame-display)
+  - [✅ 6.1 — Reusable player: frame display](#step-61--reusable-player-frame-display)
   - [⬜ 6.2 — Replace page video result with player](#step-62--replace-page-video-result-with-player)
   - [⬜ 6.3 — Transport controls on player](#step-63--transport-controls-on-player)
   - [⬜ 6.4 — Autoplay on video convert success](#step-64--autoplay-on-video-convert-success)
@@ -175,7 +175,7 @@ Prefer fewer parallel claims over conflicts.
 | FE debounce | Width ~400ms; file/charset/invert immediate |
 | FE cancel | Cancel prior convert on new request |
 | Copy/Download | Join video frame `.ascii` strings with `\n\n----\n\n` |
-| Player | use `frameDelayMs` from `AsciiVideo` (FE fallback ~120ms if 0); Play/Pause, Restart, seek; no speed; autoplay on success |
+| Player | input `AsciiVideo`; owns index/timing via `frameDelayMs` (FE fallback ~120ms if 0); Play/Pause, Restart, seek; no speed; autoplay on success |
 | Preview | Plaintext now (may scroll). **Step 4** (after **5.2** + **6.4**): CSS fit, no scrollbars; OD spacious empty / hug success |
 | Design | [design-prompt.phase2.md](./design-prompt.phase2.md); OD artifact `media-to-ascii-refresh.html` (project **Media to Ascii**) |
 
@@ -356,11 +356,11 @@ Order: reusable display → page swap → controls → autoplay. Page wire waits
 
 ### Step 6.1 — Reusable player: frame display
 
-- Status: ⬜
+- Status: ✅
 - Needs: —
 - Files: `{Ng}/src/app/components/ascii-video-player.ts`
-- Do: match OD frame 4 preview structure — inputs `frames` (ascii strings), `currentIndex`; show current frame in a simple scrollable `<pre>`; **no** transport controls yet. Fit/hug comes later in deferred **Step 4**.
-- Done when: mock frames + index render correctly
+- Do: match OD frame 4 preview structure — input `video` (`AsciiVideo`); player owns `currentIndex` (start at 0); show current frame in a simple scrollable `<pre>`; **no** transport controls yet. Fit/hug comes later in deferred **Step 4**.
+- Done when: mock `AsciiVideo` shows frame 0
 - Commit: `frontend - ui, add ASCII video player frame display`
 
 ### Step 6.2 — Replace page video result with player
@@ -368,7 +368,7 @@ Order: reusable display → page swap → controls → autoplay. Page wire waits
 - Status: ⬜
 - Needs: 6.1, 3.2, 7.2
 - Files: `{Ng}/src/app/pages/convert-page.ts` (**hot**)
-- Do: video success binds `frames[].ascii` into player instead of one joined `<pre>` blob; Copy/Download still flatten with `\n\n----\n\n`
+- Do: video success binds `AsciiVideo` into player instead of one joined `<pre>` blob; Copy/Download still flatten with `\n\n----\n\n`
 - Done when: video convert shows player frame view on the page
 - Commit: `frontend - wire, show video results in ASCII player`
 
@@ -377,7 +377,7 @@ Order: reusable display → page swap → controls → autoplay. Page wire waits
 - Status: ⬜
 - Needs: 6.1
 - Files: `{Ng}/src/app/components/ascii-video-player.ts`
-- Do: match OD frame 4 — Play/Pause, Restart, seek bar under ASCII; advance on `frameDelayMs` from `AsciiVideo` (FE fallback ~120ms if 0; OD demo ~220ms is mock-only); no speed
+- Do: match OD frame 4 — Play/Pause, Restart, seek bar under ASCII; advance owned index on `video.frameDelayMs` (FE fallback ~120ms if 0; OD demo ~220ms is mock-only); no speed
 - Done when: controls work in component isolation
 - Commit: `frontend - ui, add ASCII video player transport controls`
 
