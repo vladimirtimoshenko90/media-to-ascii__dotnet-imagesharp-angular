@@ -55,7 +55,7 @@ import { OptionControlsComponent } from './sidebar/option-controls';
           <app-ascii-video-player [video]="videoResult" />
         } @else {
           <div class="result-status">
-            <p class="hint">ASCII output will appear here.</p>
+            <p class="hint">Choose an image or video to see ASCII here.</p>
           </div>
         }
         <app-result-actions [text]="exportText" />

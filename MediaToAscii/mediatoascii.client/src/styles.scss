@@ -36,29 +36,13 @@ body {
   width: fit-content;
   min-width: min(var(--page-shell-min), 100%);
   margin-inline: auto;
-  padding: 1.5rem 1rem 3rem;
-}
-
-.tool-header {
-  h1 {
-    font-size: 1.35rem;
-    font-weight: 600;
-    margin: 0 0 0.2rem;
-    letter-spacing: -0.01em;
-  }
-
-  p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.95rem;
-  }
+  padding: 1rem 1rem 3rem;
 }
 
 .tool-layout {
   display: grid;
   grid-template-columns: minmax(260px, 340px) minmax(24rem, max-content);
   gap: 1rem;
-  margin-top: 1.25rem;
   align-items: start;
   width: max-content;
   max-width: none;

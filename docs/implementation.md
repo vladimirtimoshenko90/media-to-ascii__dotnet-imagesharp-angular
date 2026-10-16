@@ -38,6 +38,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 8.1 — Natural-size ASCII + growable page shell](#step-81--natural-size-ascii--growable-page-shell)
   - [⬜ 8.2 — Shell polish (spacious empty / hug success)](#step-82--shell-polish-spacious-empty--hug-success)
   - [⬜ 8.3 — Icon-only Copy / Download (top-right)](#step-83--icon-only-copy--download-top-right)
+  - [✅ 8.4 — Drop page header; empty-state result hint](#step-84--drop-page-header-empty-state-result-hint)
 - [⬜ Step 9 — Finalization](#step-9--finalization)
   - [⬜ 9.1 — UI polish to match Open Design](#step-91--ui-polish-to-match-open-design)
   - [⬜ 9.2 — README adjust for new behavior](#step-92--readme-adjust-for-new-behavior)
@@ -78,7 +79,7 @@ Feature steps can advance in parallel when Needs/Files allow.
 | ✅ | **1.x** API cleanup | **2.x** Video temp | **3.x** charsets / JSON / picker |
 | ✅ | **4.x** auto-convert | **5.1** image-ascii-result | **6.1 → 6.2 → 6.3** player (component) |
 | ✅ | **7.x** viewer + compose + page host | — | — |
-| now | **8.1 → 8.2 → 8.3** natural ASCII + growable shell + icon actions (Needs **7.4** ✅) | — | — |
+| now | **8.2 → 8.3**; **8.4** drop header (Needs **8.1** ✅; can ship before 8.2) | — | — |
 | then | **5.2** / **6.4** UI rework (⏸️; Needs **8.2**; prefer un-postpone after **8.3**) | — | — |
 | last | **9.x** Finalization (needs **8.3**; may run while **5.2**/**6.4** still ⏸️) | — | — |
 
@@ -201,7 +202,7 @@ Source: OD **Media to Ascii** / `media-to-ascii-refresh.html` (decision comment 
 
 **OD frame map (gallery):** 1 Empty · 2 Loading · 3 Image typical · 4 Image wide ASCII · 5 Image narrow ASCII · 6 Video playing · 7 Video ended · 8 Error · 9 Mobile image · 10 Mobile video.
 
-**Angular map (from OD):** header · upload · options (width/invert/charset) · result-host · `ascii-frame-viewer` · `image-ascii-result` · `ascii-video-player` · `result-actions`.
+**Angular map:** upload · options (width/invert/charset) · result-host · `ascii-frame-viewer` · `image-ascii-result` · `ascii-video-player` · `result-actions`. Brand via document `<title>` only (**8.4** — no on-page tool-header).
 
 ---
 
@@ -478,7 +479,7 @@ Gated by **Needs: 7.4** (✅). Scale-to-fit was tried and rolled back — **do n
 
 ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working area grows with wide ASCII until L/R padding ≈ 0. Actions match **D3**.
 
-**Split:** **8.1** = natural-size ASCII + growable centered shell (**D4** core). **8.2** = spacious empty / hug polish. **8.3** = icon-only Copy/Download top-right (**D3**).
+**Split:** **8.1** = natural-size ASCII + growable centered shell (**D4** core). **8.2** = spacious empty / hug polish. **8.3** = icon-only Copy/Download top-right (**D3**). **8.4** = drop on-page tool-header; empty-state hint only in the result pane (no sidebar footer copy).
 
 ### Step 8.1 — Natural-size ASCII + growable page shell
 
@@ -506,6 +507,15 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 - Do: match **D3** — icon-only **`bi-copy`** + **`bi-download`** (NOT `bi-clipboard`); optional `title="Copy"` / `title="Download"`; place **top-right** of the result region (or hugged stage), not a full-width band under the preview; disabled on empty/loading/error; do not put actions in the video transport row. Leave vertical space for ASCII.
 - Done when: actions match OD corner icon chrome on empty/loading/success/error (and video frames)
 - Commit: `frontend - ui, icon-only copy and download top-right`
+
+### Step 8.4 — Drop page header; empty-state result hint
+
+- Status: ✅
+- Needs: 8.1
+- Files: `{Ng}/src/app/app.component.ts`, `{Ng}/src/styles.scss`, `{Ng}/src/app/pages/convert/convert-page.ts`
+- Do: remove on-page `.tool-header` (h1 + subtitle) so the working area starts at the tool layout — reclaim vertical space for ASCII. Keep brand in the document `<title>` only. **Do not** add sidebar-footer instructions. On empty (no result yet), show one short hint in the result pane (upload zone already covers drop/choose). Tighten shell top spacing that existed mainly for the header.
+- Done when: no title band above the tool; empty result has a brief hint; success/loading/error unchanged aside from gained viewport height
+- Commit: `frontend - ui, drop page header and keep empty-state result hint`
 
 ---
 

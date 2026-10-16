@@ -6,10 +6,6 @@ import { RouterOutlet } from '@angular/router';
   imports: [RouterOutlet],
   template: `
     <main class="page-shell">
-      <header class="tool-header">
-        <h1>Media to ASCII</h1>
-        <p>Convert images and video to ASCII art.</p>
-      </header>
       <router-outlet />
     </main>
   `,
