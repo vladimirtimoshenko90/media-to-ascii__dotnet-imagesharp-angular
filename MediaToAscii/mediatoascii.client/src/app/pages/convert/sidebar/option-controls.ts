@@ -7,6 +7,7 @@ import {
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { debounceTime, filter } from 'rxjs';
+import { RangeSliderComponent } from '@components/range-slider';
 import { ToggleSwitchComponent } from '@components/toggle-switch';
 import { ASCII_WIDTH } from '@constants/ascii-width';
 import { AsciiCharsetOption } from '@services/configuration-api.service';
@@ -15,24 +16,21 @@ import { CharsetPickerComponent } from './charset-picker';
 
 @Component({
   selector: 'app-option-controls',
-  imports: [FormsModule, CharsetPickerComponent, ToggleSwitchComponent],
+  imports: [
+    FormsModule,
+    CharsetPickerComponent,
+    RangeSliderComponent,
+    ToggleSwitchComponent,
+  ],
   template: `
     <div class="opt-row">
-      <div>
-        <div class="d-flex justify-content-between align-items-baseline mb-1">
-          <label class="form-label mb-0" for="convert-width">Width</label>
-          <span class="opt-meta">{{ liveWidth() }}</span>
-        </div>
-        <input
-          id="convert-width"
-          type="range"
-          class="form-range"
-          [min]="ASCII_WIDTH.MIN"
-          [max]="ASCII_WIDTH.MAX"
-          [ngModel]="liveWidth()"
-          (ngModelChange)="liveWidth.set(+$event)"
-        />
-      </div>
+      <app-range-slider
+        label="Resolution"
+        [min]="ASCII_WIDTH.MIN"
+        [max]="ASCII_WIDTH.MAX"
+        [ngModel]="liveWidth()"
+        (ngModelChange)="liveWidth.set($event)"
+      />
 
       <app-toggle-switch
         label="Invert"
@@ -51,11 +49,6 @@ import { CharsetPickerComponent } from './charset-picker';
     .opt-row {
       display: grid;
       gap: 0.85rem;
-
-      .form-label {
-        color: var(--fg);
-        font-size: 0.9rem;
-      }
     }
   `,
 })
