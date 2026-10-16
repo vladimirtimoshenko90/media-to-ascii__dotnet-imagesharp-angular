@@ -15,8 +15,6 @@ public sealed class VideoAsciiConverter(
     IImageAsciiConverter imageConverter,
     ITempFileUtility tempFiles) : IVideoAsciiConverter
 {
-    public const int MaxFrames = 30;
-
     public async Task<AsciiVideo> Convert(Stream stream, ConvertOptions options, CancellationToken ct)
     {
         // Seekable temp file — pipe+seek fails with FFmpeg exit 69 on many phone MP4s.
@@ -24,8 +22,7 @@ public sealed class VideoAsciiConverter(
 
         var analysis = await FFProbe.AnalyseAsync(videoPath, cancellationToken: ct);
         var duration = analysis.Duration;
-        var frameCount = ResolveFrameCount(analysis, duration);
-        var timestamps = SampleTimestamps(duration, frameCount);
+        var timestamps = SampleTimestamps(duration, ResolveFrameCount(analysis));
 
         var pngBuffers = new MemoryStream[timestamps.Count];
         try
@@ -90,25 +87,11 @@ public sealed class VideoAsciiConverter(
         return pngBuffer;
     }
 
-    private static int ResolveFrameCount(IMediaAnalysis analysis, TimeSpan duration)
+    private static int ResolveFrameCount(IMediaAnalysis analysis)
     {
-        if (duration <= TimeSpan.Zero)
-        {
-            return 1;
-        }
-
-        var estimated = MaxFrames;
-        var stream = analysis.PrimaryVideoStream;
-        if (stream is not null)
-        {
-            var fps = stream.AvgFrameRate > 0 ? stream.AvgFrameRate : stream.FrameRate;
-            if (fps > 0)
-            {
-                estimated = Math.Max(1, (int)Math.Round(duration.TotalSeconds * fps));
-            }
-        }
-
-        return Math.Min(MaxFrames, estimated);
+        var stream = analysis.PrimaryVideoStream!;
+        var fps = stream.AvgFrameRate > 0 ? stream.AvgFrameRate : stream.FrameRate;
+        return (int)Math.Round(analysis.Duration.TotalSeconds * fps);
     }
 
     /// <summary>
