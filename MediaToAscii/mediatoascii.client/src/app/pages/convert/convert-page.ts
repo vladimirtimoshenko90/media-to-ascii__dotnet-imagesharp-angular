@@ -17,6 +17,7 @@ import { AsciiVideoPlayerComponent } from './results/ascii-video-player';
 import { ImageAsciiResultComponent } from './results/image-ascii-result';
 import { OptionControlsComponent } from './sidebar/option-controls';
 import { SourceImagePreviewComponent } from './sidebar/source-image-preview';
+import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
 
 @Component({
   selector: 'app-convert-page',
@@ -24,6 +25,7 @@ import { SourceImagePreviewComponent } from './sidebar/source-image-preview';
     UploadZoneComponent,
     OptionControlsComponent,
     SourceImagePreviewComponent,
+    SourceVideoPreviewComponent,
     ImageAsciiResultComponent,
     AsciiVideoPlayerComponent,
   ],
@@ -39,6 +41,8 @@ import { SourceImagePreviewComponent } from './sidebar/source-image-preview';
         <div class="sidebar-column">
           @if (imageUrl) {
             <app-source-image-preview [imageUrl]="imageUrl" />
+          } @else if (videoUrl) {
+            <app-source-video-preview [videoUrl]="videoUrl" />
           }
           <div class="region">
             <app-option-controls
@@ -146,6 +150,7 @@ export class ConvertPage implements OnInit, OnDestroy {
   loading = false;
   error: string | null = null;
   imageUrl: string | null = null;
+  videoUrl: string | null = null;
   imageResult: AsciiFrame | null = null;
   videoResult: AsciiVideo | null = null;
 
@@ -162,7 +167,7 @@ export class ConvertPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.cancelConvert$.next();
     this.cancelConvert$.complete();
-    this.revokeImageUrl();
+    this.revokeMediaUrls();
   }
 
   onFileSelected(file: File): void {
@@ -170,9 +175,11 @@ export class ConvertPage implements OnInit, OnDestroy {
     this.error = null;
     this.imageResult = null;
     this.videoResult = null;
-    this.revokeImageUrl();
+    this.revokeMediaUrls();
     if (file.type.startsWith('image/')) {
       this.imageUrl = URL.createObjectURL(file);
+    } else if (file.type.startsWith('video/')) {
+      this.videoUrl = URL.createObjectURL(file);
     }
     this.convert();
   }
@@ -231,10 +238,14 @@ export class ConvertPage implements OnInit, OnDestroy {
     this.error = this.errorMessage(err);
   }
 
-  private revokeImageUrl(): void {
+  private revokeMediaUrls(): void {
     if (this.imageUrl) {
       URL.revokeObjectURL(this.imageUrl);
       this.imageUrl = null;
+    }
+    if (this.videoUrl) {
+      URL.revokeObjectURL(this.videoUrl);
+      this.videoUrl = null;
     }
   }
 

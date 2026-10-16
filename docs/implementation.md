@@ -41,6 +41,8 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 8.4 — Drop page header; empty-state result hint](#step-84--drop-page-header-empty-state-result-hint)
   - [✅ 8.5 — Remove Download; Copy only](#step-85--remove-download-copy-only)
   - [✅ 8.6 — Upload-first empty; preview replaces upload](#step-86--upload-first-empty-preview-replaces-upload)
+  - [✅ 8.7 — Sidebar source video preview (display-only)](#step-87--sidebar-source-video-preview-display-only)
+  - [⬜ 8.8 — Sync source video preview to ASCII player](#step-88--sync-source-video-preview-to-ascii-player)
 - [⬜ Step 9 — Finalization](#step-9--finalization)
   - [⬜ 9.1 — UI polish to match Open Design](#step-91--ui-polish-to-match-open-design)
   - [⬜ 9.2 — README adjust for new behavior](#step-92--readme-adjust-for-new-behavior)
@@ -81,8 +83,10 @@ Feature steps can advance in parallel when Needs/Files allow.
 | ✅ | **1.x** API cleanup | **2.x** Video temp | **3.x** charsets / JSON / picker |
 | ✅ | **4.x** auto-convert | **5.1** image-ascii-result | **6.1 → 6.2 → 6.3** player (component) |
 | ✅ | **7.x** viewer + compose + page host | — | — |
-| now | **8.6** upload-first empty; then **8.2** shell hug polish | — | — |
+| ✅ | **8.6** upload-first empty | — | — |
 | ✅ | **6.4** player chrome | — | — |
+| ✅ | **8.7** source video preview (display-only) | — | — |
+| now | **8.8** sync source video to ASCII player | **8.2** shell hug polish | — |
 | last | **9.x** Finalization (needs **8.3**) | — | — |
 
 Prefer fewer parallel claims over conflicts. **8.x** is sequential.
@@ -97,7 +101,7 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 - `{Api}` = `MediaToAscii/MediaToAscii.Server`, `{Ng}` = `MediaToAscii/mediatoascii.client`.
 - **Shipped backend (Steps 1–2):** FluentValidation convert form (charset **id** → `AsciiCharsetType`); `GET /api/config/convert-options`; JSON convert (`AsciiFrame` / `AsciiVideo`); video frames via temp file (exit-69 pipe/seek fixed).
 - **Shipped FE:** **3.x** charsets/JSON/picker; **4.x** auto-convert; **5.1** / **7.2** image-ascii-result; **6.x** / **7.3** video player (D2 chrome); **7.1** `ascii-frame-viewer`; **7.4** convert-page result host (result | player; `ascii-preview` removed).
-- **Still to build:** shell polish (**8.2**); polish/docs (**9**). **5.2** ✅ sidebar source preview.
+- **Still to build:** **8.8** sync source video preview to ASCII player; shell polish (**8.2**); polish/docs (**9**). **5.2** / **8.7** ✅ source previews (image + display-only video).
 - **UI target (locked):** OD project **Media to Ascii** / `media-to-ascii-refresh.html` (HTML top comment **D1–D5** + 10 frames). Older [design-prompt.phase2.md](./design-prompt.phase2.md) is historical; **OD HTML wins** on any conflict. **No further OD clarification needed** to implement remaining leaves.
 
 ### Video runtime note
@@ -150,7 +154,8 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
     sidebar/
       option-controls.ts              # width debounce (toObservable) + invert + charset picker
       charset-picker.ts               # Step 3.3
-      source-image-preview.ts         # Step 5.2 — raw image below sidebar card
+      source-image-preview.ts         # Step 5.2 / 8.6 — raw image above options
+      source-video-preview.ts         # phase 1: display-only raw video above options (no sync yet)
     results/
       ascii-frame-viewer.ts           # Step 7.1 / 8.3 — AsciiFrame + icon Copy (current frame)
       image-ascii-result.ts           # Steps 5.1 / 7.2 / 5.2 — ASCII-only stage
@@ -197,7 +202,7 @@ Source: OD **Media to Ascii** / `media-to-ascii-refresh.html` (decision comment 
 
 | ID | Decision |
 |----|----------|
-| **D1** | Image success: original **below the sidebar card** (not inside it; width = sidebar column, natural aspect ratio); result region is **ASCII only**. Video: no sidebar original. |
+| **D1** | Source preview **above** options (sidebar column width, height from aspect ratio): **image** = still; **video** = muted display-only `<video>` (no controls; `pointer-events: none`; first frame / metadata — **not** synced to ASCII player yet; sync = later phase). Result region is ASCII only. |
 | **D2** | Video transport: Play/Pause **toggle** + **2×** (`bi-fast-forward-fill`, two triangles) + Restart + flex seek on **one row under ASCII**; **icons only**; **2×** active = pressed look; stop on last frame (**no loop**); Play from end restarts at 0; no frame counter. OD frames **6** (playing), **7** (ended), **10** (mobile) — speed control is a product add-on beyond OD. |
 | **D3** | **Copy only** (no Download), on the **visible frame** (`ascii-frame-viewer`). Icon-only **`bi-copy`** (NOT `bi-clipboard`); **top-right** of the frame stage; disabled when empty. Transport stays under ASCII; Copy is not in the transport row. |
 | **D4** | Shell: empty/loading/error **spacious** (~360px min); success **hugs** natural-size ASCII (**no** CSS scale; **no** ASCII-pane scrollbars). Centered working area has a default laptop width (~1080); when ASCII needs more width, the shell **grows horizontally** (equal L/R padding shrinks) up to the viewport (padding → ~0). Controls left \| preview right. |
@@ -205,7 +210,7 @@ Source: OD **Media to Ascii** / `media-to-ascii-refresh.html` (decision comment 
 
 **OD frame map (gallery):** 1 Empty · 2 Loading · 3 Image typical · 4 Image wide ASCII · 5 Image narrow ASCII · 6 Video playing · 7 Video ended · 8 Error · 9 Mobile image · 10 Mobile video.
 
-**Angular map:** upload · options (width/invert/charset) · result-host · `ascii-frame-viewer` (incl. Copy) · `image-ascii-result` · `ascii-video-player` · `source-image-preview`. Brand via document `<title>` only (**8.4** — no on-page tool-header).
+**Angular map:** upload · options (width/invert/charset) · result-host · `ascii-frame-viewer` (incl. Copy) · `image-ascii-result` · `ascii-video-player` · `source-image-preview` · `source-video-preview`. Brand via document `<title>` only (**8.4** — no on-page tool-header).
 
 ---
 
@@ -483,7 +488,7 @@ Gated by **Needs: 7.4** (✅). Scale-to-fit was tried and rolled back — **do n
 
 ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working area grows with wide ASCII until L/R padding ≈ 0. Actions match **D3**.
 
-**Split:** **8.1** = natural-size ASCII + growable centered shell (**D4** core). **8.2** = spacious empty / hug polish. **8.3** = icon-only Copy top-right (**D3**). **8.4** = drop on-page tool-header. **8.5** = remove Download (Copy only). **8.6** = upload-first empty (centered drop only); after file → tool chrome; image preview above controls (display-only; no replace; no video preview yet).
+**Split:** **8.1** = natural-size ASCII + growable centered shell (**D4** core). **8.2** = spacious empty / hug polish. **8.3** = icon-only Copy top-right (**D3**). **8.4** = drop on-page tool-header. **8.5** = remove Download (Copy only). **8.6** = upload-first empty; image preview above controls. **8.7** = display-only sidebar source **video** preview (no sync). **8.8** = scrub that preview to follow the ASCII player (player = source of truth).
 
 ### Step 8.1 — Natural-size ASCII + growable page shell
 
@@ -535,9 +540,27 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 - Status: ✅
 - Needs: 8.4
 - Files: `{Ng}/src/app/pages/convert/convert-page.ts`, `{Ng}/src/app/components/upload-zone.ts`, `{Ng}/src/app/pages/convert/sidebar/source-image-preview.ts`
-- Do: **Empty:** only a centered upload zone (no width/invert/charset, no result pane). **After file chosen:** show tool layout (options + result). **Image:** display-only source preview above controls (flush/no padding; not clickable; no replace). **Video:** no sidebar preview / no replace for now (defer). Options once a file is selected. Result column for loading | error | success. Supersedes sparse empty + **8.4** hint. Upload zone has no variant API — welcome only.
+- Do: **Empty:** only a centered upload zone (no width/invert/charset, no result pane). **After file chosen:** show tool layout (options + result). **Image:** display-only source preview above controls (flush/no padding; not clickable; no replace). **Video:** no sidebar preview in this leaf (→ **8.7** / **8.8**). Options once a file is selected. Result column for loading | error | success. Supersedes sparse empty + **8.4** hint. Upload zone has no variant API — welcome only.
 - Done when: first paint is centered upload only; image success shows preview + options; video shows options + player only; no change-file controls
 - Commit: `frontend - ui, upload-first empty and preview replaces upload`
+
+### Step 8.7 — Sidebar source video preview (display-only)
+
+- Status: ✅
+- Needs: 8.6
+- Files: `{Ng}/src/app/pages/convert/sidebar/source-video-preview.ts` (**new**), `{Ng}/src/app/pages/convert/convert-page.ts` (**hot**); update **D1** / Locked layout in this plan
+- Do: **phase 1 of video source preview** — when a video file is chosen, show muted display-only raw video above options (same slot as image). Full sidebar width; height from aspect ratio. No controls; `pointer-events: none`; no replace-file. Object URL create/revoke with the file. **Do not** sync to ASCII player (that is **8.8**). ASCII player unchanged.
+- Done when: video upload shows static-looking source strip + options + ASCII player; preview cannot be played/scrubbed by the user
+- Commit: `frontend - ui, add display-only source video preview`
+
+### Step 8.8 — Sync source video preview to ASCII player
+
+- Status: ⬜
+- Needs: 8.7
+- Files: `{Ng}/src/app/pages/convert/results/ascii-video-player.ts`, `{Ng}/src/app/pages/convert/sidebar/source-video-preview.ts`, `{Ng}/src/app/pages/convert/convert-page.ts` (**hot**); update **D1** / Player contract
+- Do: **phase 2** — ASCII player remains source of truth. Emit current frame index (`frameChange`); convert-page maps `index * frameDelayMs` → preview `currentTime` (ms). Preview stays paused, no controls; seek `video.currentTime` to match. Reset on new file.
+- Done when: play / 2× / restart / seek on ASCII player advances the sidebar source frame accordingly; user still cannot manipulate the preview
+- Commit: `frontend - player, sync source video preview to ASCII frame`
 
 ---
 
