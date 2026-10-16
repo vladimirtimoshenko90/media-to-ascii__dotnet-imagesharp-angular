@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { UploadZoneComponent } from '@components/upload-zone';
+import { ASCII_WIDTH } from '@constants/ascii-width';
 import {
   AsciiCharsetOption,
   ConfigurationApiService,
@@ -138,7 +139,7 @@ export class ConvertPage implements OnInit, OnDestroy {
   selectedFile: File | null = null;
   charsets: AsciiCharsetOption[] = [];
   options: ConvertOptions = {
-    width: 100,
+    width: ASCII_WIDTH.DEFAULT,
     invert: false,
     charset: '',
   };

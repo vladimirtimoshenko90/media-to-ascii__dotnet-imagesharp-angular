@@ -8,6 +8,7 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { debounceTime, filter } from 'rxjs';
 import { ToggleSwitchComponent } from '@components/toggle-switch';
+import { ASCII_WIDTH } from '@constants/ascii-width';
 import { AsciiCharsetOption } from '@services/configuration-api.service';
 import { ConvertOptions } from '@services/convert-api.service';
 import { CharsetPickerComponent } from './charset-picker';
@@ -26,8 +27,8 @@ import { CharsetPickerComponent } from './charset-picker';
           id="convert-width"
           type="range"
           class="form-range"
-          min="40"
-          max="200"
+          [min]="ASCII_WIDTH.MIN"
+          [max]="ASCII_WIDTH.MAX"
           [ngModel]="liveWidth()"
           (ngModelChange)="liveWidth.set(+$event)"
         />
@@ -59,6 +60,8 @@ import { CharsetPickerComponent } from './charset-picker';
   `,
 })
 export class OptionControlsComponent {
+  readonly ASCII_WIDTH = ASCII_WIDTH;
+
   readonly charsets = input.required<AsciiCharsetOption[]>();
 
   readonly options = input.required<ConvertOptions>();

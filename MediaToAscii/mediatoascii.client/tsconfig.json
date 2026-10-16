@@ -20,7 +20,8 @@
     "baseUrl": "./",
     "paths": {
       "@services/*": ["src/app/services/*"],
-      "@components/*": ["src/app/components/*"]
+      "@components/*": ["src/app/components/*"],
+      "@constants/*": ["src/app/constants/*"]
     }
   },
   "angularCompilerOptions": {
