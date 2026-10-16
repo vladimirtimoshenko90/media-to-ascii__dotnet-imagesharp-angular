@@ -28,6 +28,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 6.2 — Autoplay in player](#step-62--autoplay-in-player)
   - [✅ 6.3 — Transport controls on player](#step-63--transport-controls-on-player)
   - [⏸️ 6.4 — Rework video player UI](#step-64--rework-video-player-ui)
+  - [✅ 6.5 — Restart resumes playback](#step-65--restart-resumes-playback)
 - [✅ Step 7 — Feature: Result views decomposition](#step-7--feature-result-views-decomposition)
   - [✅ 7.1 — Shared ascii-frame-viewer component](#step-71--shared-ascii-frame-viewer-component)
   - [✅ 7.2 — Image ASCII result uses ascii-frame-viewer](#step-72--image-ascii-result-uses-ascii-frame-viewer)
@@ -178,7 +179,7 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 | Copy/Download export | Join video frame `.ascii` strings with `\n\n----\n\n` |
 | Copy/Download UI | **Icon-only** `bi-copy` + `bi-download` (NOT `bi-clipboard`); **top-right** of result region / hugged stage; `title` tooltips OK; no visible labels; disabled when no result |
 | Charset UI | Segmented strip (shared outer border); selected = inset accent + subtle fill; monospace glyphs; no name labels |
-| Player | input `AsciiVideo`; owns index/timing via `frameDelayMs` (FE fallback ~120ms if 0); **icon-only** Play/Pause toggle + Restart + seek on one row under ASCII; no speed; no loop (stop on last frame; Play from end → frame 0); autoplay on new `video`; renders via `ascii-frame-viewer` |
+| Player | input `AsciiVideo`; owns index/timing via `frameDelayMs` (FE fallback ~120ms if 0); **icon-only** Play/Pause toggle + Restart + seek on one row under ASCII; no speed; no loop (stop on last frame; Play from end → frame 0); **Restart** → frame 0 and play (start if paused/ended, keep going if already playing); autoplay on new `video`; renders via `ascii-frame-viewer` |
 | ascii-frame-viewer | input `AsciiFrame`; monospace `<pre>` at **natural size** (no CSS scale); parents must not clip/scroll it |
 | Result host | convert-page: loading \| error \| `image-ascii-result` (image) \| `ascii-video-player` (video); no success via `ascii-preview` |
 | Preview / shell | **Step 8**: natural-size ASCII; centered page shell grows with ASCII up to viewport (L/R padding → 0); spacious empty |
@@ -380,7 +381,7 @@ Owns `convert-page.ts` for convert triggers (done before result-host wiring in *
 
 ## Step 6 — Feature: ASCII video player
 
-**6.1 → 6.3** / **7.3** shipped. **6.4** is deferred chrome polish to **D2** (Needs **8.2**; prefer after **8.3**).
+**6.1 → 6.3** / **7.3** shipped. **6.4** is deferred chrome polish to **D2** (Needs **8.2**; prefer after **8.3**). **6.5** fixes Restart so it always plays from the start.
 
 ### Step 6.1 — Reusable player: frame display
 
@@ -417,6 +418,15 @@ Owns `convert-page.ts` for convert triggers (done before result-host wiring in *
 - Do: match **D2** / OD frames **6**, **7**, **10** — single Play/Pause **toggle** + Restart + seek on **one horizontal row** under ASCII; **icons only** (no Play/Pause/Restart text; `title` OK); keep no-loop + Play-from-end → 0; no frame counter; no speed. Do not claim while ⏸️; human un-postpones to ⬜ (prefer after **8.3**).
 - Done when: transport chrome matches OD D2 (desktop + mobile)
 - Commit: `frontend - ui, rework ASCII video player controls`
+
+### Step 6.5 — Restart resumes playback
+
+- Status: ✅
+- Needs: 6.3
+- Files: `{Ng}/src/app/pages/convert/results/ascii-video-player.ts`
+- Do: Restart must seek to frame 0 **and** ensure playback — start if paused/ended; keep playing if already playing. Today Restart only resets the index, so a stopped/paused video stays still at the start.
+- Done when: Restart from playing, paused mid-video, or ended all show frame 0 advancing (or already advancing)
+- Commit: `frontend - player, restart seeks to start and plays`
 
 ---
 

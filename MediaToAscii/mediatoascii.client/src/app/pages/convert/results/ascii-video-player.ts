@@ -30,7 +30,7 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
             <button
               type="button"
               class="btn btn-sm btn-secondary-action"
-              (click)="currentFrameIndex.set(0)"
+              (click)="restart()"
             >
               <i class="bi bi-skip-start-fill"></i>
               Restart
@@ -133,5 +133,10 @@ export class AsciiVideoPlayerComponent {
       }
       this.playing.set(true);
     }
+  }
+
+  restart(): void {
+    this.currentFrameIndex.set(0);
+    this.playing.set(true);
   }
 }
