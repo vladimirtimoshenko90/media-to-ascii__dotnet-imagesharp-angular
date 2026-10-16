@@ -20,9 +20,9 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
 - [✅ Step 4 — Feature: Auto-convert UX](#step-4--feature-auto-convert-ux)
   - [✅ 4.1 — Remove Convert button; convert on file/charset/invert](#step-41--remove-convert-button-convert-on-filecharsetinvert)
   - [✅ 4.2 — Width debounce + cancel in-flight convert](#step-42--width-debounce--cancel-in-flight-convert)
-- [⏳ Step 5 — Feature: Image original | ASCII side-by-side](#step-5--feature-image-original--ascii-side-by-side)
+- [✅ Step 5 — Feature: Image original | ASCII side-by-side](#step-5--feature-image-original--ascii-side-by-side)
   - [✅ 5.1 — Image ASCII result component](#step-51--image-ascii-result-component)
-  - [⏸️ 5.2 — Rework image ASCII result UI](#step-52--rework-image-ascii-result-ui)
+  - [✅ 5.2 — Original under sidebar; ASCII result](#step-52--original-under-sidebar-ascii-result)
 - [⏳ Step 6 — Feature: ASCII video player](#step-6--feature-ascii-video-player)
   - [✅ 6.1 — Reusable player: frame display](#step-61--reusable-player-frame-display)
   - [✅ 6.2 — Autoplay in player](#step-62--autoplay-in-player)
@@ -79,8 +79,8 @@ Feature steps can advance in parallel when Needs/Files allow.
 | ✅ | **1.x** API cleanup | **2.x** Video temp | **3.x** charsets / JSON / picker |
 | ✅ | **4.x** auto-convert | **5.1** image-ascii-result | **6.1 → 6.2 → 6.3** player (component) |
 | ✅ | **7.x** viewer + compose + page host | — | — |
-| now | **8.2 → 8.3**; **8.4** drop header (Needs **8.1** ✅; can ship before 8.2) | — | — |
-| then | **5.2** / **6.4** UI rework (⏸️; Needs **8.2**; prefer un-postpone after **8.3**) | — | — |
+| now | **8.2 → 8.3** (Needs **5.2** ✅) | — | — |
+| then | **8.2** hug success · **8.3** icon actions · **6.4** player chrome (⏸️) | — | — |
 | last | **9.x** Finalization (needs **8.3**; may run while **5.2**/**6.4** still ⏸️) | — | — |
 
 Prefer fewer parallel claims over conflicts. **8.x** is sequential.
@@ -95,7 +95,7 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 - `{Api}` = `MediaToAscii/MediaToAscii.Server`, `{Ng}` = `MediaToAscii/mediatoascii.client`.
 - **Shipped backend (Steps 1–2):** FluentValidation convert form (charset **id** → `AsciiCharsetType`); `GET /api/config/convert-options`; JSON convert (`AsciiFrame` / `AsciiVideo`); video frames via temp file (exit-69 pipe/seek fixed).
 - **Shipped FE:** **3.x** charsets/JSON/picker; **4.x** auto-convert; **5.1** / **7.2** image-ascii-result; **6.1/6.2/6.3** / **7.3** video player; **7.1** `ascii-frame-viewer`; **7.4** convert-page result host (result | player; `ascii-preview` removed).
-- **Still to build:** fit/shell/actions (**8.x**); polish/docs (**9**). Postponed UI polish: **5.2**, **6.4** (look locked — see **Locked UI (OD)**).
+- **Still to build:** shell polish/actions (**8.2–8.3**); polish/docs (**9**). **5.2** ✅ sidebar source preview; postponed: **6.4** (look locked — see **Locked UI (OD)**).
 - **UI target (locked):** OD project **Media to Ascii** / `media-to-ascii-refresh.html` (HTML top comment **D1–D5** + 10 frames). Older [design-prompt.phase2.md](./design-prompt.phase2.md) is historical; **OD HTML wins** on any conflict. **No further OD clarification needed** to implement remaining leaves.
 
 ### Video runtime note
@@ -144,13 +144,14 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
   components/                         # shared only
     upload-zone.ts
   pages/convert/
-    convert-page.ts                   # Steps 4.x / 7.4 — result host; actions placement with 8.3
+    convert-page.ts                   # Steps 4.x / 7.4 / 5.2 — hosts sidebar + source preview + result; actions in 8.3
     sidebar/
       option-controls.ts              # width debounce (toObservable) + invert + charset picker
       charset-picker.ts               # Step 3.3
+      source-image-preview.ts         # Step 5.2 — raw image below sidebar card
     results/
       ascii-frame-viewer.ts           # Step 7.1 — AsciiFrame input; natural size (8.1)
-      image-ascii-result.ts           # Steps 5.1 / 7.2 — original + ascii-frame-viewer
+      image-ascii-result.ts           # Steps 5.1 / 7.2 / 5.2 — ASCII-only stage
       ascii-video-player.ts           # Steps 6.x / 7.3 — AsciiVideo + transport; renders ascii-frame-viewer
       result-actions.ts               # Copy / Download; icon-only + placement in 8.3
   app.component.ts
@@ -194,7 +195,7 @@ Source: OD **Media to Ascii** / `media-to-ascii-refresh.html` (decision comment 
 
 | ID | Decision |
 |----|----------|
-| **D1** | Image ASCII result: original | ASCII pair **hugs as one unit** (not full-bleed); **one shared stage border**; photo **height-matched** to natural-size ASCII; **no** Original/ASCII labels; top-aligned when sizes differ. OD frames **3** (typical), **4** (wide), **5** (narrow), **9** (mobile stack). |
+| **D1** | Image success: original **below the sidebar card** (not inside it; width = sidebar column, natural aspect ratio); result region is **ASCII only**. Video: no sidebar original. |
 | **D2** | Video transport: single Play/Pause **toggle** + Restart + flex seek on **one row under ASCII**; **icons only** (no button text; `title` OK); stop on last frame (**no loop**); Play from end restarts at 0; no frame counter. OD frames **6** (playing), **7** (ended), **10** (mobile). |
 | **D3** | Result actions: icon-only **`bi-copy`** + **`bi-download`**; **top-right** of result region (or hugged stage); not a full-width row under preview; disabled on empty/loading/error. Transport stays under ASCII; actions stay in the corner. |
 | **D4** | Shell: empty/loading/error **spacious** (~360px min); success **hugs** natural-size ASCII (**no** CSS scale; **no** ASCII-pane scrollbars). Centered working area has a default laptop width (~1080); when ASCII needs more width, the shell **grows horizontally** (equal L/R padding shrinks) up to the viewport (padding → ~0). Controls left \| preview right. |
@@ -215,14 +216,14 @@ Feature-complete phase 2: reliable video; API-owned charsets + picker; JSON conv
 - Plan is **feature-centric** (Step = feature).
 - No Convert button; auto-convert.
 - Charset UI: clickable samples only (no name labels, no native radios) — look = **D5**.
-- Image side-by-side; video = ASCII player only (no raw video pane).
+- Image layout (**D1**): original under sidebar; ASCII in result region. Video = ASCII player only (no raw video pane).
 - Never commit unless asked / `/m2asc-ship`; never push.
 - **UI locked:** OD `media-to-ascii-refresh.html` + **Locked UI (OD)** above. Do **not** block on further OD work unless product intent changes. No open design clarification questions remain.
 - **Result decomposition (Step 7):** ✅ one shared `ascii-frame-viewer`; `image-ascii-result` + player compose it; convert-page hosts loading | error | image result | player.
 - **Rename:** `image-compare` → `image-ascii-result` (file / selector / class).
 - **FE folders:** shared UI in `components/` (`upload-zone`); convert page UI under `pages/convert/` with `sidebar/` + `results/` (incl. `ascii-frame-viewer`) + `convert-page.ts`.
 - **Functional first:** **7.x** done before **8.x**. Scale-to-fit approach **rejected** — ASCII stays natural size; shell grows instead.
-- **Postponed polish:** **5.2** / **6.4** stay ⏸️ until a human un-postpones to ⬜. **Needs: 8.2** (prefer claim after **8.3**). Look is **locked** (D1 / D2) — not TBD.
+- **Atomic work:** **5.2** ✅. Reminder polish stays in **8.2** / **8.3** / **6.4**.
 - **Shell / preview / actions (Step 8):** match **D3–D4** (growable shell + natural ASCII). Do **not** interpret “fluid” as always full-bleed empty preview; do **not** CSS-scale ASCII.
 - **Natural size:** **8.1** keeps ASCII at glyph size and grows `.page-shell` with content; image-ascii-result/player must not introduce pane scrollbars.
 
@@ -358,7 +359,7 @@ Owns `convert-page.ts` for convert triggers (done before result-host wiring in *
 
 ## Step 5 — Feature: Image original | ASCII side-by-side
 
-**5.1** / **7.2** shipped. **5.2** is deferred UI polish to **D1** (Needs **8.2**; prefer after **8.3**).
+**5.1** / **7.2** shipped. **5.2** locks **D1**: original under sidebar; ASCII owns the result region (human chose after screenshot compare).
 
 ### Step 5.1 — Image ASCII result component
 
@@ -369,14 +370,15 @@ Owns `convert-page.ts` for convert triggers (done before result-host wiring in *
 - Done when: component demos side-by-side with inputs
 - Commit: `frontend - ui, add image ASCII result component`
 
-### Step 5.2 — Rework image ASCII result UI
+### Step 5.2 — Original under sidebar; ASCII result
 
-- Status: ⏸️
-- Needs: 8.2
-- Files: `{Ng}/src/app/pages/convert/results/image-ascii-result.ts` (and styles only if required)
-- Do: match **D1** / OD frames **3**, **4**, **5**, **9** — hug pair as one unit; one shared stage border; photo height-matched to fitted ASCII; no Original/ASCII labels; top-aligned when sizes differ; stack on narrow. Uses **8.1** fit via `ascii-frame-viewer` + **8.2** hug shell. Do not claim while ⏸️; human un-postpones to ⬜ (prefer after **8.3** so actions chrome is settled).
-- Done when: result layout matches OD D1 frames (desktop + mobile stack)
-- Commit: `frontend - ui, rework image ASCII result layout`
+- Status: ✅
+- Needs: 8.1
+- Files: `{Ng}/src/app/pages/convert/convert-page.ts` (**hot**), `{Ng}/src/app/pages/convert/sidebar/source-image-preview.ts` (**new**), `{Ng}/src/app/pages/convert/results/image-ascii-result.ts`
+- Do: **atomic only** — original image **below** the sidebar card via `source-image-preview` (not inside the card); small gap between card and preview; width = sidebar column width; height proportional (keep aspect ratio). Result column = ASCII only (`image-ascii-result` → `ascii-frame-viewer`). No hug/shell polish, no icon-action move (those are **8.2** / **8.3**). Video: no source preview.
+
+- Done when: image convert shows source under controls + ASCII alone on the right; Copy/Download stay as before
+- Commit: `frontend - ui, original under sidebar ASCII result`
 
 ---
 
@@ -493,10 +495,10 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 ### Step 8.2 — Shell polish (spacious empty / hug success)
 
 - Status: ⬜
-- Needs: 8.1
-- Files: `{Ng}/src/styles.scss`, optionally `pages/convert/convert-page.ts` / `pages/convert/results/*`
-- Do: match remaining **D4** / OD frames **1**, **2**, **3**, **5**, **8** — spacious empty/loading/error (~360px min feel); on success hug ASCII (no large empty field beside narrow art — frame **5**); keep equal L/R padding behavior from **8.1**. Reference OD `is-spacious` vs `is-hug` ideas (class names need not match).
-- Done when: empty feels like a real workspace; narrow success hugs; layout balanced vs OD
+- Needs: 8.1, 5.2
+- Files: `{Ng}/src/styles.scss`, `{Ng}/src/app/pages/convert/convert-page.ts`, optionally `pages/convert/results/*`
+- Do: match remaining **D4** — spacious empty/loading/error (~360px min feel); on success **hug** ASCII (no large empty field beside narrow art — drop forced ~24rem result min on success); keep equal L/R padding from **8.1**. **Reminder (from 5.2 scope cut):** do not ship this inside 5.2.
+- Done when: empty feels like a real workspace; narrow success hugs; layout balanced
 - Commit: `frontend - layout, shell spacious empty and hug polish`
 
 ### Step 8.3 — Icon-only Copy / Download (top-right)
@@ -504,7 +506,7 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 - Status: ⬜
 - Needs: 8.2
 - Files: `{Ng}/src/app/pages/convert/results/result-actions.ts`, `{Ng}/src/app/pages/convert/convert-page.ts` (placement / result-region positioning)
-- Do: match **D3** — icon-only **`bi-copy`** + **`bi-download`** (NOT `bi-clipboard`); optional `title="Copy"` / `title="Download"`; place **top-right** of the result region (or hugged stage), not a full-width band under the preview; disabled on empty/loading/error; do not put actions in the video transport row. Leave vertical space for ASCII.
+- Do: match **D3** — icon-only **`bi-copy`** + **`bi-download`** (NOT `bi-clipboard`); optional `title="Copy"` / `title="Download"`; place **top-right** of the result region (or hugged stage), not a full-width band under the preview; disabled on empty/loading/error; do not put actions in the video transport row. **Reminder (from 5.2 scope cut):** keep labeled Copy/Download under the result until this leaf.
 - Done when: actions match OD corner icon chrome on empty/loading/success/error (and video frames)
 - Commit: `frontend - ui, icon-only copy and download top-right`
 

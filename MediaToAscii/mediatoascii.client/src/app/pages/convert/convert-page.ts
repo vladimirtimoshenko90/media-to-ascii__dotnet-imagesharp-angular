@@ -16,25 +16,32 @@ import { AsciiVideoPlayerComponent } from './results/ascii-video-player';
 import { ImageAsciiResultComponent } from './results/image-ascii-result';
 import { ResultActionsComponent } from './results/result-actions';
 import { OptionControlsComponent } from './sidebar/option-controls';
+import { SourceImagePreviewComponent } from './sidebar/source-image-preview';
 
 @Component({
   selector: 'app-convert-page',
   imports: [
     UploadZoneComponent,
     OptionControlsComponent,
+    SourceImagePreviewComponent,
     ImageAsciiResultComponent,
     AsciiVideoPlayerComponent,
     ResultActionsComponent,
   ],
   template: `
     <div class="tool-layout">
-      <div class="region region-stack">
-        <app-upload-zone (fileSelected)="onFileSelected($event)" />
-        <app-option-controls
-          [charsets]="charsets"
-          [options]="options"
-          (optionsChange)="onOptionsChange($event)"
-        />
+      <div class="sidebar-column">
+        <div class="region region-stack">
+          <app-upload-zone (fileSelected)="onFileSelected($event)" />
+          <app-option-controls
+            [charsets]="charsets"
+            [options]="options"
+            (optionsChange)="onOptionsChange($event)"
+          />
+        </div>
+        @if (imageUrl && imageResult) {
+          <app-source-image-preview [imageUrl]="imageUrl" />
+        }
       </div>
 
       <div class="region">
@@ -49,8 +56,8 @@ import { OptionControlsComponent } from './sidebar/option-controls';
           <div class="result-status">
             <p class="error-msg">{{ error }}</p>
           </div>
-        } @else if (imageUrl && imageResult) {
-          <app-image-ascii-result [imageUrl]="imageUrl" [frame]="imageResult" />
+        } @else if (imageResult) {
+          <app-image-ascii-result [frame]="imageResult" />
         } @else if (videoResult) {
           <app-ascii-video-player [video]="videoResult" />
         } @else {
@@ -65,6 +72,13 @@ import { OptionControlsComponent } from './sidebar/option-controls';
   styles: `
     :host {
       display: block;
+    }
+
+    .sidebar-column {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-width: 0;
     }
 
     .result-status {
