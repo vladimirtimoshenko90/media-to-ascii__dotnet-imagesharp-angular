@@ -42,7 +42,10 @@ import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
           @if (imageUrl) {
             <app-source-image-preview [imageUrl]="imageUrl" />
           } @else if (videoUrl) {
-            <app-source-video-preview [videoUrl]="videoUrl" />
+            <app-source-video-preview
+              [videoUrl]="videoUrl"
+              [currentTime]="videoTimestamp"
+            />
           }
           <div class="region">
             <app-option-controls
@@ -68,7 +71,10 @@ import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
           } @else if (imageResult) {
             <app-image-ascii-result [frame]="imageResult" />
           } @else if (videoResult) {
-            <app-ascii-video-player [video]="videoResult" />
+            <app-ascii-video-player
+              [video]="videoResult"
+              (frameChange)="onAsciiFrameChange($event)"
+            />
           }
         </div>
       </div>
@@ -151,6 +157,7 @@ export class ConvertPage implements OnInit, OnDestroy {
   error: string | null = null;
   imageUrl: string | null = null;
   videoUrl: string | null = null;
+  videoTimestamp = 0;
   imageResult: AsciiFrame | null = null;
   videoResult: AsciiVideo | null = null;
 
@@ -175,6 +182,7 @@ export class ConvertPage implements OnInit, OnDestroy {
     this.error = null;
     this.imageResult = null;
     this.videoResult = null;
+    this.videoTimestamp = 0;
     this.revokeMediaUrls();
     if (file.type.startsWith('image/')) {
       this.imageUrl = URL.createObjectURL(file);
@@ -182,6 +190,10 @@ export class ConvertPage implements OnInit, OnDestroy {
       this.videoUrl = URL.createObjectURL(file);
     }
     this.convert();
+  }
+
+  onAsciiFrameChange(index: number): void {
+    this.videoTimestamp = index * (this.videoResult?.frameDelayMs ?? 0);
   }
 
   onOptionsChange(options: ConvertOptions): void {

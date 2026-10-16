@@ -1,4 +1,4 @@
-import { Component, computed, effect, input, signal } from '@angular/core';
+import { Component, computed, effect, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AsciiFrame, AsciiVideo } from '@services/convert-api.service';
 import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
@@ -120,6 +120,7 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
 })
 export class AsciiVideoPlayerComponent {
   readonly video = input.required<AsciiVideo>();
+  readonly frameChange = output<number>();
   readonly playing = signal(false);
   readonly doubleSpeed = signal(false);
 
@@ -136,6 +137,8 @@ export class AsciiVideoPlayerComponent {
       this.doubleSpeed.set(false);
       this.playing.set(this.frameCount() > 0);
     });
+
+    effect(() => this.frameChange.emit(this.currentFrameIndex()));
 
     effect((onCleanup) => {
       if (this.playing()) {

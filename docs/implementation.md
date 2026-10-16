@@ -42,7 +42,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 8.5 — Remove Download; Copy only](#step-85--remove-download-copy-only)
   - [✅ 8.6 — Upload-first empty; preview replaces upload](#step-86--upload-first-empty-preview-replaces-upload)
   - [✅ 8.7 — Sidebar source video preview (display-only)](#step-87--sidebar-source-video-preview-display-only)
-  - [⬜ 8.8 — Sync source video preview to ASCII player](#step-88--sync-source-video-preview-to-ascii-player)
+  - [✅ 8.8 — Sync source video preview to ASCII player](#step-88--sync-source-video-preview-to-ascii-player)
 - [⬜ Step 9 — Finalization](#step-9--finalization)
   - [⬜ 9.1 — UI polish to match Open Design](#step-91--ui-polish-to-match-open-design)
   - [⬜ 9.2 — README adjust for new behavior](#step-92--readme-adjust-for-new-behavior)
@@ -86,7 +86,8 @@ Feature steps can advance in parallel when Needs/Files allow.
 | ✅ | **8.6** upload-first empty | — | — |
 | ✅ | **6.4** player chrome | — | — |
 | ✅ | **8.7** source video preview (display-only) | — | — |
-| now | **8.8** sync source video to ASCII player | **8.2** shell hug polish | — |
+| ✅ | **8.8** sync source video to ASCII player | — | — |
+| now | **8.2** shell hug polish | — | — |
 | last | **9.x** Finalization (needs **8.3**) | — | — |
 
 Prefer fewer parallel claims over conflicts. **8.x** is sequential.
@@ -101,7 +102,7 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 - `{Api}` = `MediaToAscii/MediaToAscii.Server`, `{Ng}` = `MediaToAscii/mediatoascii.client`.
 - **Shipped backend (Steps 1–2):** FluentValidation convert form (charset **id** → `AsciiCharsetType`); `GET /api/config/convert-options`; JSON convert (`AsciiFrame` / `AsciiVideo`); video frames via temp file (exit-69 pipe/seek fixed).
 - **Shipped FE:** **3.x** charsets/JSON/picker; **4.x** auto-convert; **5.1** / **7.2** image-ascii-result; **6.x** / **7.3** video player (D2 chrome); **7.1** `ascii-frame-viewer`; **7.4** convert-page result host (result | player; `ascii-preview` removed).
-- **Still to build:** **8.8** sync source video preview to ASCII player; shell polish (**8.2**); polish/docs (**9**). **5.2** / **8.7** ✅ source previews (image + display-only video).
+- **Still to build:** shell polish (**8.2**); polish/docs (**9**). **5.2** / **8.7** / **8.8** ✅ source previews (image + video synced to ASCII).
 - **UI target (locked):** OD project **Media to Ascii** / `media-to-ascii-refresh.html` (HTML top comment **D1–D5** + 10 frames). Older [design-prompt.phase2.md](./design-prompt.phase2.md) is historical; **OD HTML wins** on any conflict. **No further OD clarification needed** to implement remaining leaves.
 
 ### Video runtime note
@@ -155,7 +156,7 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
       option-controls.ts              # width debounce (toObservable) + invert + charset picker
       charset-picker.ts               # Step 3.3
       source-image-preview.ts         # Step 5.2 / 8.6 — raw image above options
-      source-video-preview.ts         # phase 1: display-only raw video above options (no sync yet)
+      source-video-preview.ts         # 8.7 / 8.8 — raw video above options; follows ASCII frame
     results/
       ascii-frame-viewer.ts           # Step 7.1 / 8.3 — AsciiFrame + icon Copy (current frame)
       image-ascii-result.ts           # Steps 5.1 / 7.2 / 5.2 — ASCII-only stage
@@ -188,7 +189,7 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 | Copy export | **Current frame only** — `frame.ascii` of the visible `ascii-frame-viewer` (image or video’s current index). No multi-frame join. |
 | Copy UI | **Copy only** on `ascii-frame-viewer`: icon-only **`bi-copy`** (NOT `bi-clipboard`), top-right of the frame stage; `title="Copy"` OK; disabled when ascii empty |
 | Charset UI | Segmented strip (shared outer border); selected = inset accent + subtle fill; monospace glyphs; no name labels |
-| Player | input `AsciiVideo`; owns index/timing via `frameDelayMs`; Play/Pause toggle + **2×** (`bi-fast-forward-fill`) + Restart + flex seek on one row under ASCII; all transport buttons icon-only; **2×** active = half `frameDelayMs`; no loop (stop on last frame; Play from end → frame 0); **Restart** → frame 0 and play (start if paused/ended, keep going if already playing); autoplay on new `video` (resets 2× off); renders via `ascii-frame-viewer` |
+| Player | input `AsciiVideo`; owns index/timing via `frameDelayMs`; emits `frameChange` (sidebar source video follows via `index * frameDelayMs`); Play/Pause toggle + **2×** (`bi-fast-forward-fill`) + Restart + flex seek on one row under ASCII; all transport buttons icon-only; **2×** active = half `frameDelayMs`; no loop (stop on last frame; Play from end → frame 0); **Restart** → frame 0 and play (start if paused/ended, keep going if already playing); autoplay on new `video` (resets 2× off); renders via `ascii-frame-viewer` |
 | ascii-frame-viewer | input `AsciiFrame`; monospace `<pre>` at **natural size** (no CSS scale); parents must not clip/scroll it |
 | Result host | convert-page: loading \| error \| `image-ascii-result` (image) \| `ascii-video-player` (video); no success via `ascii-preview` |
 | Preview / shell | **Step 8**: natural-size ASCII; centered page shell grows with ASCII up to viewport (L/R padding → 0); spacious empty |
@@ -202,7 +203,7 @@ Source: OD **Media to Ascii** / `media-to-ascii-refresh.html` (decision comment 
 
 | ID | Decision |
 |----|----------|
-| **D1** | Source preview **above** options (sidebar column width, height from aspect ratio): **image** = still; **video** = muted display-only `<video>` (no controls; `pointer-events: none`; first frame / metadata — **not** synced to ASCII player yet; sync = later phase). Result region is ASCII only. |
+| **D1** | Source preview **above** options (sidebar column width, height from aspect ratio): **image** = still; **video** = muted display-only `<video>` (no controls; `pointer-events: none`) scrubbed to ASCII player frame (`index * frameDelayMs`) — ASCII player is source of truth. Result region is ASCII only. |
 | **D2** | Video transport: Play/Pause **toggle** + **2×** (`bi-fast-forward-fill`, two triangles) + Restart + flex seek on **one row under ASCII**; **icons only**; **2×** active = pressed look; stop on last frame (**no loop**); Play from end restarts at 0; no frame counter. OD frames **6** (playing), **7** (ended), **10** (mobile) — speed control is a product add-on beyond OD. |
 | **D3** | **Copy only** (no Download), on the **visible frame** (`ascii-frame-viewer`). Icon-only **`bi-copy`** (NOT `bi-clipboard`); **top-right** of the frame stage; disabled when empty. Transport stays under ASCII; Copy is not in the transport row. |
 | **D4** | Shell: empty/loading/error **spacious** (~360px min); success **hugs** natural-size ASCII (**no** CSS scale; **no** ASCII-pane scrollbars). Centered working area has a default laptop width (~1080); when ASCII needs more width, the shell **grows horizontally** (equal L/R padding shrinks) up to the viewport (padding → ~0). Controls left \| preview right. |
@@ -555,7 +556,7 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 
 ### Step 8.8 — Sync source video preview to ASCII player
 
-- Status: ⬜
+- Status: ✅
 - Needs: 8.7
 - Files: `{Ng}/src/app/pages/convert/results/ascii-video-player.ts`, `{Ng}/src/app/pages/convert/sidebar/source-video-preview.ts`, `{Ng}/src/app/pages/convert/convert-page.ts` (**hot**); update **D1** / Player contract
 - Do: **phase 2** — ASCII player remains source of truth. Emit current frame index (`frameChange`); convert-page maps `index * frameDelayMs` → preview `currentTime` (ms). Preview stays paused, no controls; seek `video.currentTime` to match. Reset on new file.
