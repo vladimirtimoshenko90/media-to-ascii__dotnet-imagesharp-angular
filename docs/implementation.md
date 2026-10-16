@@ -23,11 +23,11 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
 - [✅ Step 5 — Feature: Image original | ASCII side-by-side](#step-5--feature-image-original--ascii-side-by-side)
   - [✅ 5.1 — Image ASCII result component](#step-51--image-ascii-result-component)
   - [✅ 5.2 — Original under sidebar; ASCII result](#step-52--original-under-sidebar-ascii-result)
-- [⏳ Step 6 — Feature: ASCII video player](#step-6--feature-ascii-video-player)
+- [✅ Step 6 — Feature: ASCII video player](#step-6--feature-ascii-video-player)
   - [✅ 6.1 — Reusable player: frame display](#step-61--reusable-player-frame-display)
   - [✅ 6.2 — Autoplay in player](#step-62--autoplay-in-player)
   - [✅ 6.3 — Transport controls on player](#step-63--transport-controls-on-player)
-  - [⏸️ 6.4 — Rework video player UI](#step-64--rework-video-player-ui)
+  - [✅ 6.4 — Rework video player UI](#step-64--rework-video-player-ui)
   - [✅ 6.5 — Restart resumes playback](#step-65--restart-resumes-playback)
 - [✅ Step 7 — Feature: Result views decomposition](#step-7--feature-result-views-decomposition)
   - [✅ 7.1 — Shared ascii-frame-viewer component](#step-71--shared-ascii-frame-viewer-component)
@@ -82,8 +82,8 @@ Feature steps can advance in parallel when Needs/Files allow.
 | ✅ | **4.x** auto-convert | **5.1** image-ascii-result | **6.1 → 6.2 → 6.3** player (component) |
 | ✅ | **7.x** viewer + compose + page host | — | — |
 | now | **8.6** upload-first empty; then **8.2** shell hug polish | — | — |
-| then | **6.4** player chrome (⏸️; prefer after **8.3**) | — | — |
-| last | **9.x** Finalization (needs **8.3**; may run while **6.4** still ⏸️) | — | — |
+| ✅ | **6.4** player chrome | — | — |
+| last | **9.x** Finalization (needs **8.3**) | — | — |
 
 Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 
@@ -96,8 +96,8 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 - Angular 19 + ASP.NET Minimal API (.NET 10); ImageSharp; FFMpegCore; system `ffmpeg`/`ffprobe` on PATH.
 - `{Api}` = `MediaToAscii/MediaToAscii.Server`, `{Ng}` = `MediaToAscii/mediatoascii.client`.
 - **Shipped backend (Steps 1–2):** FluentValidation convert form (charset **id** → `AsciiCharsetType`); `GET /api/config/convert-options`; JSON convert (`AsciiFrame` / `AsciiVideo`); video frames via temp file (exit-69 pipe/seek fixed).
-- **Shipped FE:** **3.x** charsets/JSON/picker; **4.x** auto-convert; **5.1** / **7.2** image-ascii-result; **6.1/6.2/6.3** / **7.3** video player; **7.1** `ascii-frame-viewer`; **7.4** convert-page result host (result | player; `ascii-preview` removed).
-- **Still to build:** shell polish/actions (**8.2–8.3**); polish/docs (**9**). **5.2** ✅ sidebar source preview; postponed: **6.4** (look locked — see **Locked UI (OD)**).
+- **Shipped FE:** **3.x** charsets/JSON/picker; **4.x** auto-convert; **5.1** / **7.2** image-ascii-result; **6.x** / **7.3** video player (D2 chrome); **7.1** `ascii-frame-viewer`; **7.4** convert-page result host (result | player; `ascii-preview` removed).
+- **Still to build:** shell polish (**8.2**); polish/docs (**9**). **5.2** ✅ sidebar source preview.
 - **UI target (locked):** OD project **Media to Ascii** / `media-to-ascii-refresh.html` (HTML top comment **D1–D5** + 10 frames). Older [design-prompt.phase2.md](./design-prompt.phase2.md) is historical; **OD HTML wins** on any conflict. **No further OD clarification needed** to implement remaining leaves.
 
 ### Video runtime note
@@ -386,7 +386,7 @@ Owns `convert-page.ts` for convert triggers (done before result-host wiring in *
 
 ## Step 6 — Feature: ASCII video player
 
-**6.1 → 6.3** / **7.3** shipped. **6.4** is deferred chrome polish to **D2** (Needs **8.2**; prefer after **8.3**). **6.5** fixes Restart so it always plays from the start.
+**6.x** / **7.3** shipped — player chrome matches **D2**.
 
 ### Step 6.1 — Reusable player: frame display
 
@@ -417,10 +417,10 @@ Owns `convert-page.ts` for convert triggers (done before result-host wiring in *
 
 ### Step 6.4 — Rework video player UI
 
-- Status: ⏸️
+- Status: ✅
 - Needs: 8.2
 - Files: `{Ng}/src/app/pages/convert/results/ascii-video-player.ts` (and styles only if required)
-- Do: match **D2** / OD frames **6**, **7**, **10** — single Play/Pause **toggle** + Restart + seek on **one horizontal row** under ASCII; **icons only** (no Play/Pause/Restart text; `title` OK); keep no-loop + Play-from-end → 0; no frame counter; no speed. Do not claim while ⏸️; human un-postpones to ⬜ (prefer after **8.3**).
+- Do: match **D2** / OD frames **6**, **7**, **10** — single Play/Pause **toggle** + Restart + seek on **one horizontal row** under ASCII; **icons only** (no Play/Pause/Restart text); keep no-loop + Play-from-end → 0; no frame counter; no speed. Human un-postponed and claimed without waiting for **8.2** (parallel UI OK; Files stay player-only).
 - Done when: transport chrome matches OD D2 (desktop + mobile)
 - Commit: `frontend - ui, rework ASCII video player controls`
 
@@ -548,7 +548,7 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 - Status: ⬜
 - Needs: 7.4, 4.2, 8.3
 - Files: `{Ng}/src/app/pages/**`, `components/**`, `styles.scss`
-- Do: final pass vs OD `media-to-ascii-refresh.html` + **Locked UI (OD)** (D1–D5); verify charset **D5**, transport **D2**, actions **D3**, shell **D4**, image-ascii-result **D1** if **5.2**/**6.4** still ⏸️ note remaining gaps or finish them first; no new features
+- Do: final pass vs OD `media-to-ascii-refresh.html` + **Locked UI (OD)** (D1–D5); verify charset **D5**, transport **D2**, actions **D3**, shell **D4**, image-ascii-result **D1**; no new features
 - Done when: UI shippable vs locked OD mockup
 - Commit: `frontend - ui, polish to phase2 Open Design`
 

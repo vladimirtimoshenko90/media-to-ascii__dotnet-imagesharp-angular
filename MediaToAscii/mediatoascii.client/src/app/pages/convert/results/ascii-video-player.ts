@@ -14,32 +14,27 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
 
       @if (frameCount()) {
         <div class="transport">
-          <div class="transport-buttons">
-            <button
-              type="button"
-              class="btn btn-sm btn-secondary-action"
-              (click)="togglePlay()"
-            >
-              <i
-                class="bi"
-                [class.bi-pause-fill]="playing()"
-                [class.bi-play-fill]="!playing()"
-              ></i>
-              {{ playing() ? 'Pause' : 'Play' }}
-            </button>
-            <button
-              type="button"
-              class="btn btn-sm btn-secondary-action"
-              (click)="restart()"
-            >
-              <i class="bi bi-skip-start-fill"></i>
-              Restart
-            </button>
-          </div>
-
+          <button
+            type="button"
+            class="btn btn-sm btn-secondary-action transport-btn"
+            (click)="togglePlay()"
+          >
+            <i
+              class="bi"
+              [class.bi-pause-fill]="playing()"
+              [class.bi-play-fill]="!playing()"
+            ></i>
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-secondary-action transport-btn"
+            (click)="restart()"
+          >
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
           <input
             type="range"
-            class="form-range"
+            class="form-range transport-seek"
             min="0"
             [max]="frameCount() - 1"
             [ngModel]="currentFrameIndex()"
@@ -80,16 +75,33 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
 
     .transport {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      align-items: center;
       gap: 0.5rem;
+      width: 100%;
       min-width: 16rem;
       max-width: 100%;
     }
 
-    .transport-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
+    .transport-btn {
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .transport-btn .bi {
+      font-size: 1rem;
+    }
+
+    .transport-seek {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin: 0;
     }
   `,
 })
