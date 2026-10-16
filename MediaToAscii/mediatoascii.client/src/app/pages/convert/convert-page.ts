@@ -27,48 +27,64 @@ import { SourceImagePreviewComponent } from './sidebar/source-image-preview';
     AsciiVideoPlayerComponent,
   ],
   template: `
-    <div class="tool-layout">
-      <div class="sidebar-column">
-        <div class="region region-stack">
+    @if (!selectedFile) {
+      <div class="welcome">
+        <div class="welcome-card region">
           <app-upload-zone (fileSelected)="onFileSelected($event)" />
-          <app-option-controls
-            [charsets]="charsets"
-            [options]="options"
-            (optionsChange)="onOptionsChange($event)"
-          />
         </div>
-        @if (imageUrl && imageResult) {
-          <app-source-image-preview [imageUrl]="imageUrl" />
-        }
       </div>
+    } @else {
+      <div class="tool-layout">
+        <div class="sidebar-column">
+          @if (imageUrl) {
+            <app-source-image-preview [imageUrl]="imageUrl" />
+          }
+          <div class="region">
+            <app-option-controls
+              [charsets]="charsets"
+              [options]="options"
+              (optionsChange)="onOptionsChange($event)"
+            />
+          </div>
+        </div>
 
-      <div class="region">
-        @if (loading) {
-          <div class="result-status">
-            <p class="loading-msg">
-              <span class="spinner-border spinner-border-sm"></span>
-              Converting…
-            </p>
-          </div>
-        } @else if (error) {
-          <div class="result-status">
-            <p class="error-msg">{{ error }}</p>
-          </div>
-        } @else if (imageResult) {
-          <app-image-ascii-result [frame]="imageResult" />
-        } @else if (videoResult) {
-          <app-ascii-video-player [video]="videoResult" />
-        } @else {
-          <div class="result-status">
-            <p class="hint">Choose an image or video to see ASCII here.</p>
-          </div>
-        }
+        <div class="region">
+          @if (loading) {
+            <div class="result-status">
+              <p class="loading-msg">
+                <span class="spinner-border spinner-border-sm"></span>
+                Converting…
+              </p>
+            </div>
+          } @else if (error) {
+            <div class="result-status">
+              <p class="error-msg">{{ error }}</p>
+            </div>
+          } @else if (imageResult) {
+            <app-image-ascii-result [frame]="imageResult" />
+          } @else if (videoResult) {
+            <app-ascii-video-player [video]="videoResult" />
+          }
+        </div>
       </div>
-    </div>
+    }
   `,
   styles: `
     :host {
       display: block;
+    }
+
+    .welcome {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 2rem);
+      box-sizing: border-box;
+      padding: 1rem;
+    }
+
+    .welcome-card {
+      width: min(28rem, 100%);
     }
 
     .sidebar-column {
@@ -87,7 +103,6 @@ import { SourceImagePreviewComponent } from './sidebar/source-image-preview';
       padding: 0.75rem;
     }
 
-    .hint,
     .error-msg,
     .loading-msg {
       color: var(--muted);
@@ -137,6 +152,9 @@ export class ConvertPage implements OnInit, OnDestroy {
     this.configurationApi.getConvertOptions().subscribe((data) => {
       this.charsets = data;
       this.options = { ...this.options, charset: data[0].id };
+      if (this.selectedFile) {
+        this.convert();
+      }
     });
   }
 
@@ -149,7 +167,12 @@ export class ConvertPage implements OnInit, OnDestroy {
   onFileSelected(file: File): void {
     this.selectedFile = file;
     this.error = null;
-    this.clearResult();
+    this.imageResult = null;
+    this.videoResult = null;
+    this.revokeImageUrl();
+    if (file.type.startsWith('image/')) {
+      this.imageUrl = URL.createObjectURL(file);
+    }
     this.convert();
   }
 
@@ -180,8 +203,6 @@ export class ConvertPage implements OnInit, OnDestroy {
         .pipe(takeUntil(this.cancelConvert$))
         .subscribe({
           next: (frame) => {
-            this.revokeImageUrl();
-            this.imageUrl = URL.createObjectURL(file);
             this.imageResult = frame;
             this.loading = false;
           },
@@ -204,14 +225,9 @@ export class ConvertPage implements OnInit, OnDestroy {
 
   private onConvertError(err: unknown): void {
     this.loading = false;
-    this.clearResult();
-    this.error = this.errorMessage(err);
-  }
-
-  private clearResult(): void {
-    this.revokeImageUrl();
     this.imageResult = null;
     this.videoResult = null;
+    this.error = this.errorMessage(err);
   }
 
   private revokeImageUrl(): void {

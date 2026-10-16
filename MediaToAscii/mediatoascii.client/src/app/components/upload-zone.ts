@@ -6,18 +6,13 @@ import { Component, ElementRef, output, viewChild } from '@angular/core';
     <div
       class="dropzone"
       [class.is-dragover]="dragOver"
-      [class.is-selected]="!!fileName"
       (click)="openPicker()"
       (dragover)="onDragOver($event)"
       (dragleave)="onDragLeave($event)"
       (drop)="onDrop($event)"
     >
-      @if (fileName) {
-        <div class="file-name">{{ fileName }}</div>
-      } @else {
-        <i class="bi bi-upload d-block mb-2"></i>
-        <span>Drop an image or video here, or choose a file.</span>
-      }
+      <i class="bi bi-upload d-block mb-2"></i>
+      <span>Drop an image or video here, or choose a file.</span>
     </div>
     <input
       #fileInput
@@ -33,10 +28,15 @@ import { Component, ElementRef, output, viewChild } from '@angular/core';
       border: 1px dashed var(--border);
       background: color-mix(in srgb, var(--bg) 70%, var(--surface));
       border-radius: 0.25rem;
-      padding: 1.25rem 1rem;
+      padding: 2.5rem 1.5rem;
       text-align: center;
       color: var(--muted);
       cursor: pointer;
+      font-size: 1.05rem;
+    }
+
+    .dropzone .bi {
+      font-size: 1.75rem;
     }
 
     .dropzone:hover {
@@ -48,18 +48,6 @@ import { Component, ElementRef, output, viewChild } from '@angular/core';
       background: color-mix(in srgb, var(--focus) 8%, var(--surface));
       color: var(--fg);
     }
-
-    .dropzone.is-selected {
-      border-style: solid;
-      color: var(--fg);
-      text-align: left;
-    }
-
-    .dropzone .file-name {
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      word-break: break-all;
-    }
   `,
 })
 export class UploadZoneComponent {
@@ -67,7 +55,6 @@ export class UploadZoneComponent {
   private readonly fileInput =
     viewChild.required<ElementRef<HTMLInputElement>>('fileInput');
 
-  fileName: string | null = null;
   dragOver = false;
 
   openPicker(): void {
@@ -105,7 +92,6 @@ export class UploadZoneComponent {
     if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
       return;
     }
-    this.fileName = file.name;
     this.fileSelected.emit(file);
   }
 }

@@ -4,7 +4,7 @@ import { Component, input } from '@angular/core';
   selector: 'app-source-image-preview',
   template: `
     <div class="source-image-preview">
-      <img [src]="imageUrl()" />
+      <img [src]="imageUrl()" alt="" />
     </div>
   `,
   styles: `
@@ -15,17 +15,22 @@ import { Component, input } from '@angular/core';
     }
 
     .source-image-preview {
+      display: block;
       width: 100%;
+      margin: 0;
+      padding: 0;
       border: 1px solid var(--border);
-      border-radius: 0.25rem;
+      border-radius: 0;
       overflow: hidden;
-      background: var(--bg);
+      background: transparent;
     }
 
     img {
       display: block;
       width: 100%;
       height: auto;
+      margin: 0;
+      padding: 0;
     }
   `,
 })
