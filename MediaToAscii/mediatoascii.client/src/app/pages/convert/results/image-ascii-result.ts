@@ -16,52 +16,61 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
     </div>
   `,
   styles: `
+    :host {
+      display: block;
+      width: max-content;
+      max-width: none;
+      height: auto;
+      max-height: none;
+      overflow: visible;
+    }
+
     .image-ascii-result {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: auto max-content;
       gap: 0.75rem;
-      min-height: 280px;
-      max-height: 520px;
+      align-items: start;
+      width: max-content;
+      height: auto;
+      max-height: none;
 
       @media (max-width: 640px) {
         grid-template-columns: 1fr;
-        max-height: none;
+        width: 100%;
       }
     }
 
     .pane {
-      min-height: 0;
-      min-width: 0;
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 0.25rem;
-      overflow: auto;
+      overflow: visible;
+      height: auto;
+      max-height: none;
     }
 
     .pane-original {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       padding: 0.5rem;
 
       img {
         display: block;
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
+        max-width: 280px;
+        width: auto;
+        height: auto;
       }
 
       @media (max-width: 640px) {
-        max-height: 280px;
+        img {
+          max-width: 100%;
+        }
       }
     }
 
     .pane-ascii {
       padding: 0.75rem;
-
-      @media (max-width: 640px) {
-        max-height: 320px;
-      }
     }
   `,
 })

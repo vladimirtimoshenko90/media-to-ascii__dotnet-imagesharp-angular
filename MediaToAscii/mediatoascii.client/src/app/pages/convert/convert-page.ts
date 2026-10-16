@@ -63,10 +63,13 @@ import { OptionControlsComponent } from './sidebar/option-controls';
     </div>
   `,
   styles: `
+    :host {
+      display: block;
+    }
+
     .result-status {
-      min-height: 280px;
-      max-height: 520px;
-      overflow: auto;
+      min-height: 360px;
+      min-width: 24rem;
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 0.25rem;

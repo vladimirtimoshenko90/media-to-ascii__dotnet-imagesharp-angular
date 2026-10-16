@@ -50,28 +50,40 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
     </div>
   `,
   styles: `
+    :host {
+      display: block;
+      width: max-content;
+      max-width: none;
+      height: auto;
+      max-height: none;
+      overflow: visible;
+    }
+
     .ascii-video-player {
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
-      min-height: 280px;
-      max-height: 520px;
+      width: max-content;
+      height: auto;
+      max-height: none;
     }
 
     .frame-pane {
-      flex: 1;
-      min-height: 0;
-      overflow: auto;
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 0.25rem;
       padding: 0.75rem;
+      overflow: visible;
+      height: auto;
+      max-height: none;
     }
 
     .transport {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
+      min-width: 16rem;
+      max-width: 100%;
     }
 
     .transport-buttons {

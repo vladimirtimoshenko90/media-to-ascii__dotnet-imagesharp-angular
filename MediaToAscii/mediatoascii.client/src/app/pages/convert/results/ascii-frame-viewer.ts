@@ -7,6 +7,16 @@ import { AsciiFrame } from '@services/convert-api.service';
     <pre class="ascii-frame-viewer">{{ frame().ascii }}</pre>
   `,
   styles: `
+    :host {
+      display: block;
+      width: max-content;
+      max-width: none;
+      height: auto;
+      max-height: none;
+      overflow: visible;
+    }
+
+    /* Override Bootstrap reboot pre { overflow: auto } — never scroll here */
     .ascii-frame-viewer {
       display: block;
       margin: 0;
@@ -15,6 +25,9 @@ import { AsciiFrame } from '@services/convert-api.service';
       line-height: 1;
       white-space: pre;
       color: var(--fg);
+      overflow: visible;
+      max-height: none;
+      height: auto;
     }
   `,
 })

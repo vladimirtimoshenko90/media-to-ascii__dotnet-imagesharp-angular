@@ -33,9 +33,9 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 7.2 — Image ASCII result uses ascii-frame-viewer](#step-72--image-ascii-result-uses-ascii-frame-viewer)
   - [✅ 7.3 — Video player uses ascii-frame-viewer](#step-73--video-player-uses-ascii-frame-viewer)
   - [✅ 7.4 — Convert page result host](#step-74--convert-page-result-host)
-- [⬜ Step 8 — Feature: Preview fit + page shell](#step-8--feature-preview-fit--page-shell)
-  - [⬜ 8.1 — ASCII frame-viewer fit (no scrollbars)](#step-81--ascii-frame-viewer-fit-no-scrollbars)
-  - [⬜ 8.2 — Shell + preview sizing per Open Design](#step-82--shell--preview-sizing-per-open-design)
+- [⬜ Step 8 — Feature: Preview shell (natural ASCII)](#step-8--feature-preview-shell-natural-ascii)
+  - [✅ 8.1 — Natural-size ASCII + growable page shell](#step-81--natural-size-ascii--growable-page-shell)
+  - [⬜ 8.2 — Shell polish (spacious empty / hug success)](#step-82--shell-polish-spacious-empty--hug-success)
   - [⬜ 8.3 — Icon-only Copy / Download (top-right)](#step-83--icon-only-copy--download-top-right)
 - [⬜ Step 9 — Finalization](#step-9--finalization)
   - [⬜ 9.1 — UI polish to match Open Design](#step-91--ui-polish-to-match-open-design)
@@ -77,7 +77,7 @@ Feature steps can advance in parallel when Needs/Files allow.
 | ✅ | **1.x** API cleanup | **2.x** Video temp | **3.x** charsets / JSON / picker |
 | ✅ | **4.x** auto-convert | **5.1** image-ascii-result | **6.1 → 6.2 → 6.3** player (component) |
 | ✅ | **7.x** viewer + compose + page host | — | — |
-| now | **8.1 → 8.2 → 8.3** fit + shell + icon actions (Needs **7.4** ✅) | — | — |
+| now | **8.1 → 8.2 → 8.3** natural ASCII + growable shell + icon actions (Needs **7.4** ✅) | — | — |
 | then | **5.2** / **6.4** UI rework (⏸️; Needs **8.2**; prefer un-postpone after **8.3**) | — | — |
 | last | **9.x** Finalization (needs **8.3**; may run while **5.2**/**6.4** still ⏸️) | — | — |
 
@@ -147,13 +147,13 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
       option-controls.ts              # width debounce (toObservable) + invert + charset picker
       charset-picker.ts               # Step 3.3
     results/
-      ascii-frame-viewer.ts           # Step 7.1 — AsciiFrame input; fit in 8.1
+      ascii-frame-viewer.ts           # Step 7.1 — AsciiFrame input; natural size (8.1)
       image-ascii-result.ts           # Steps 5.1 / 7.2 — original + ascii-frame-viewer
       ascii-video-player.ts           # Steps 6.x / 7.3 — AsciiVideo + transport; renders ascii-frame-viewer
       result-actions.ts               # Copy / Download; icon-only + placement in 8.3
   app.component.ts
   app.config.ts
-  styles.scss                         # Step 8.2 (+ polish 9.1) when UI pass runs
+  styles.scss                         # Step 8.1 growable shell (+ 8.2 / 9.1 polish)
 ```
 
 ### Locked contracts (freeze — do not bikeshed)
@@ -179,9 +179,9 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 | Copy/Download UI | **Icon-only** `bi-copy` + `bi-download` (NOT `bi-clipboard`); **top-right** of result region / hugged stage; `title` tooltips OK; no visible labels; disabled when no result |
 | Charset UI | Segmented strip (shared outer border); selected = inset accent + subtle fill; monospace glyphs; no name labels |
 | Player | input `AsciiVideo`; owns index/timing via `frameDelayMs` (FE fallback ~120ms if 0); **icon-only** Play/Pause toggle + Restart + seek on one row under ASCII; no speed; no loop (stop on last frame; Play from end → frame 0); autoplay on new `video`; renders via `ascii-frame-viewer` |
-| ascii-frame-viewer | input `AsciiFrame`; monospace `<pre>` only (no intrinsic size); parent sizes/scrolls until **8.1** fit |
+| ascii-frame-viewer | input `AsciiFrame`; monospace `<pre>` at **natural size** (no CSS scale); parents must not clip/scroll it |
 | Result host | convert-page: loading \| error \| `image-ascii-result` (image) \| `ascii-video-player` (video); no success via `ascii-preview` |
-| Preview / fit | **Step 8**: fit on `ascii-frame-viewer`; OD spacious empty / hug success |
+| Preview / shell | **Step 8**: natural-size ASCII; centered page shell grows with ASCII up to viewport (L/R padding → 0); spacious empty |
 | Design | OD `media-to-ascii-refresh.html` (project **Media to Ascii**); D1–D5 in HTML comment; frames 1–10 |
 
 **Mapper note:** HTTP parses charset **id → `AsciiCharsetType` once** (validator/form boundary); `ConvertOptions.Charset` is the enum; mapper uses `charset.GetGlyphs()`.
@@ -192,10 +192,10 @@ Source: OD **Media to Ascii** / `media-to-ascii-refresh.html` (decision comment 
 
 | ID | Decision |
 |----|----------|
-| **D1** | Image ASCII result: original | ASCII pair **hugs as one unit** (not full-bleed); **one shared stage border**; photo **height-matched** to fitted ASCII; **no** Original/ASCII labels; top-aligned when sizes differ. OD frames **3** (typical), **4** (wide), **5** (narrow), **9** (mobile stack). |
+| **D1** | Image ASCII result: original | ASCII pair **hugs as one unit** (not full-bleed); **one shared stage border**; photo **height-matched** to natural-size ASCII; **no** Original/ASCII labels; top-aligned when sizes differ. OD frames **3** (typical), **4** (wide), **5** (narrow), **9** (mobile stack). |
 | **D2** | Video transport: single Play/Pause **toggle** + Restart + flex seek on **one row under ASCII**; **icons only** (no button text; `title` OK); stop on last frame (**no loop**); Play from end restarts at 0; no frame counter. OD frames **6** (playing), **7** (ended), **10** (mobile). |
 | **D3** | Result actions: icon-only **`bi-copy`** + **`bi-download`**; **top-right** of result region (or hugged stage); not a full-width row under preview; disabled on empty/loading/error. Transport stays under ASCII; actions stay in the corner. |
-| **D4** | Shell/fit: empty/loading/error **spacious** (~360px min); success **hugs** content; wide ASCII uniform scale-to-fit (**no** pane/page scrollbars); equal L/R page padding; controls left \| preview right. |
+| **D4** | Shell: empty/loading/error **spacious** (~360px min); success **hugs** natural-size ASCII (**no** CSS scale; **no** ASCII-pane scrollbars). Centered working area has a default laptop width (~1080); when ASCII needs more width, the shell **grows horizontally** (equal L/R padding shrinks) up to the viewport (padding → ~0). Controls left \| preview right. |
 | **D5** | Charset: **segmented strip** (shared outer border); selected = inset accent bar + subtle fill; left-aligned monospace glyphs; ellipsis if long. |
 
 **OD frame map (gallery):** 1 Empty · 2 Loading · 3 Image typical · 4 Image wide ASCII · 5 Image narrow ASCII · 6 Video playing · 7 Video ended · 8 Error · 9 Mobile image · 10 Mobile video.
@@ -219,10 +219,10 @@ Feature-complete phase 2: reliable video; API-owned charsets + picker; JSON conv
 - **Result decomposition (Step 7):** ✅ one shared `ascii-frame-viewer`; `image-ascii-result` + player compose it; convert-page hosts loading | error | image result | player.
 - **Rename:** `image-compare` → `image-ascii-result` (file / selector / class).
 - **FE folders:** shared UI in `components/` (`upload-zone`); convert page UI under `pages/convert/` with `sidebar/` + `results/` (incl. `ascii-frame-viewer`) + `convert-page.ts`.
-- **Functional first:** **7.x** done before **8.x**. Prior fit code was reverted; claim **8.1** next.
+- **Functional first:** **7.x** done before **8.x**. Scale-to-fit approach **rejected** — ASCII stays natural size; shell grows instead.
 - **Postponed polish:** **5.2** / **6.4** stay ⏸️ until a human un-postpones to ⬜. **Needs: 8.2** (prefer claim after **8.3**). Look is **locked** (D1 / D2) — not TBD.
-- **Shell / preview / actions (Step 8):** match OD **D3–D4**. Do **not** interpret “fluid” as always full-bleed empty preview.
-- **Fit one place:** **8.1** fits `ascii-frame-viewer` only; image-ascii-result/player get fit for free.
+- **Shell / preview / actions (Step 8):** match **D3–D4** (growable shell + natural ASCII). Do **not** interpret “fluid” as always full-bleed empty preview; do **not** CSS-scale ASCII.
+- **Natural size:** **8.1** keeps ASCII at glyph size and grows `.page-shell` with content; image-ascii-result/player must not introduce pane scrollbars.
 
 ## Living plan
 
@@ -462,31 +462,31 @@ Shared frame → compose consumers in parallel → one page host leaf.
 
 ---
 
-## Step 8 — Feature: Preview fit + page shell
+## Step 8 — Feature: Preview shell (natural ASCII)
 
-Gated by **Needs: 7.4** (✅). Prior fit commit was reverted; re-implement fit on **`ascii-frame-viewer`** when claiming **8.1**.
+Gated by **Needs: 7.4** (✅). Scale-to-fit was tried and rolled back — **do not** CSS-scale ASCII.
 
-No preview/page scrollbars from wide ASCII; shell + preview + actions match OD **D3–D4** (`media-to-ascii-refresh.html`).
+ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working area grows with wide ASCII until L/R padding ≈ 0. Actions match **D3**.
 
-**Split:** **8.1** = fit on `ascii-frame-viewer`. **8.2** = shell / spacious empty / hug success (**D4**). **8.3** = icon-only Copy/Download top-right (**D3**).
+**Split:** **8.1** = natural-size ASCII + growable centered shell (**D4** core). **8.2** = spacious empty / hug polish. **8.3** = icon-only Copy/Download top-right (**D3**).
 
-### Step 8.1 — ASCII frame-viewer fit (no scrollbars)
+### Step 8.1 — Natural-size ASCII + growable page shell
 
-- Status: ⬜
+- Status: ✅
 - Needs: 7.4
-- Files: `{Ng}/src/app/pages/convert/results/ascii-frame-viewer.ts`
-- Do: plaintext `<pre>` inside `ascii-frame-viewer`; uniform CSS scale/fit into the parent-allocated box; overflow hidden; no scrollbars. Image-ascii-result/player inherit via composition — do not re-fit in those parents. Prove against OD frame **4** (wide) behavior.
-- Done when: width ~200 ASCII fits pane without scrollbars in image result and player
-- Commit: `frontend - ui, fit ascii-frame-viewer without scrollbars`
+- Files: `{Ng}/src/styles.scss`, `{Ng}/src/app/pages/convert/results/ascii-frame-viewer.ts`, `{Ng}/src/app/pages/convert/results/image-ascii-result.ts`, `{Ng}/src/app/pages/convert/results/ascii-video-player.ts`, optionally `{Ng}/src/app/pages/convert/convert-page.ts`
+- Do: keep ASCII at natural `<pre>` size (**no** `transform` scale). Remove ASCII-pane `overflow: auto` / max-height clamps that force scrollbars. Centered `.page-shell` defaults to ~1080px working width on laptop; when the result (sidebar + ASCII) needs more horizontal room, shell/`tool-layout` grow with content up to the viewport so equal L/R padding shrinks toward zero (paint mockup: gray controls | green ASCII as one expanding centered unit).
+- Done when: narrow ASCII keeps side padding; wide ASCII expands the working area without scaling or ASCII scrollbars
+- Commit: `frontend - layout, natural-size ASCII with growable page shell`
 
-### Step 8.2 — Shell + preview sizing per Open Design
+### Step 8.2 — Shell polish (spacious empty / hug success)
 
 - Status: ⬜
 - Needs: 8.1
-- Files: `{Ng}/src/styles.scss`, `{Ng}/src/app/pages/convert/results/ascii-frame-viewer.ts`, optionally `pages/convert/convert-page.ts` / `app.component.ts` / `pages/convert/results/*`
-- Do: match **D4** / OD frames **1**, **2**, **3**, **5**, **8** — equal L/R page padding; spacious empty/loading/error (~360px min feel); on success hug ASCII (no large empty field beside narrow art — frame **5**); keep uniform scale within viewport; overflow hidden / no ASCII scrollbars; no asymmetric page overflow. Reference OD `is-spacious` vs `is-hug` ideas (class names need not match).
-- Done when: empty feels like a real workspace; narrow success hugs; wide/tall ASCII fits without preview or page scrollbars; layout balanced vs OD
-- Commit: `frontend - layout, shell and preview sizing per Open Design`
+- Files: `{Ng}/src/styles.scss`, optionally `pages/convert/convert-page.ts` / `pages/convert/results/*`
+- Do: match remaining **D4** / OD frames **1**, **2**, **3**, **5**, **8** — spacious empty/loading/error (~360px min feel); on success hug ASCII (no large empty field beside narrow art — frame **5**); keep equal L/R padding behavior from **8.1**. Reference OD `is-spacious` vs `is-hug` ideas (class names need not match).
+- Done when: empty feels like a real workspace; narrow success hugs; layout balanced vs OD
+- Commit: `frontend - layout, shell spacious empty and hug polish`
 
 ### Step 8.3 — Icon-only Copy / Download (top-right)
 
