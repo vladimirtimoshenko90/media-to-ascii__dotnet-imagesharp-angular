@@ -14,7 +14,6 @@ import {
 } from '@services/convert-api.service';
 import { AsciiVideoPlayerComponent } from './results/ascii-video-player';
 import { ImageAsciiResultComponent } from './results/image-ascii-result';
-import { ResultActionsComponent } from './results/result-actions';
 import { OptionControlsComponent } from './sidebar/option-controls';
 import { SourceImagePreviewComponent } from './sidebar/source-image-preview';
 
@@ -26,7 +25,6 @@ import { SourceImagePreviewComponent } from './sidebar/source-image-preview';
     SourceImagePreviewComponent,
     ImageAsciiResultComponent,
     AsciiVideoPlayerComponent,
-    ResultActionsComponent,
   ],
   template: `
     <div class="tool-layout">
@@ -65,7 +63,6 @@ import { SourceImagePreviewComponent } from './sidebar/source-image-preview';
             <p class="hint">Choose an image or video to see ASCII here.</p>
           </div>
         }
-        <app-result-actions [text]="exportText" />
       </div>
     </div>
   `,
@@ -135,18 +132,6 @@ export class ConvertPage implements OnInit, OnDestroy {
   imageUrl: string | null = null;
   imageResult: AsciiFrame | null = null;
   videoResult: AsciiVideo | null = null;
-
-  get exportText(): string {
-    if (this.imageResult) {
-      return this.imageResult.ascii;
-    }
-    if (this.videoResult) {
-      return this.videoResult.frames
-        .map((frame) => frame.ascii)
-        .join('\n\n----\n\n');
-    }
-    return '';
-  }
 
   ngOnInit(): void {
     this.configurationApi.getConvertOptions().subscribe((data) => {

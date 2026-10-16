@@ -37,7 +37,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
 - [⬜ Step 8 — Feature: Preview shell (natural ASCII)](#step-8--feature-preview-shell-natural-ascii)
   - [✅ 8.1 — Natural-size ASCII + growable page shell](#step-81--natural-size-ascii--growable-page-shell)
   - [⬜ 8.2 — Shell polish (spacious empty / hug success)](#step-82--shell-polish-spacious-empty--hug-success)
-  - [⬜ 8.3 — Icon-only Copy (top-right)](#step-83--icon-only-copy-top-right)
+  - [✅ 8.3 — Icon-only Copy (top-right)](#step-83--icon-only-copy-top-right)
   - [✅ 8.4 — Drop page header; empty-state result hint](#step-84--drop-page-header-empty-state-result-hint)
   - [✅ 8.5 — Remove Download; Copy only](#step-85--remove-download-copy-only)
 - [⬜ Step 9 — Finalization](#step-9--finalization)
@@ -80,7 +80,7 @@ Feature steps can advance in parallel when Needs/Files allow.
 | ✅ | **1.x** API cleanup | **2.x** Video temp | **3.x** charsets / JSON / picker |
 | ✅ | **4.x** auto-convert | **5.1** image-ascii-result | **6.1 → 6.2 → 6.3** player (component) |
 | ✅ | **7.x** viewer + compose + page host | — | — |
-| now | **8.2 → 8.3** (Needs **8.5** ✅ for 8.3) | — | — |
+| now | **8.2** shell hug polish | — | — |
 | then | **6.4** player chrome (⏸️; prefer after **8.3**) | — | — |
 | last | **9.x** Finalization (needs **8.3**; may run while **6.4** still ⏸️) | — | — |
 
@@ -151,10 +151,10 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
       charset-picker.ts               # Step 3.3
       source-image-preview.ts         # Step 5.2 — raw image below sidebar card
     results/
-      ascii-frame-viewer.ts           # Step 7.1 — AsciiFrame input; natural size (8.1)
+      ascii-frame-viewer.ts           # Step 7.1 / 8.3 — AsciiFrame + icon Copy (current frame)
       image-ascii-result.ts           # Steps 5.1 / 7.2 / 5.2 — ASCII-only stage
       ascii-video-player.ts           # Steps 6.x / 7.3 — AsciiVideo + transport; renders ascii-frame-viewer
-      result-actions.ts               # Copy only (8.5); icon-only + placement in 8.3
+      (removed) result-actions.ts     # deleted in 8.3 — Copy lives on ascii-frame-viewer
   app.component.ts
   app.config.ts
   styles.scss                         # Step 8.1 growable shell (+ 8.2 / 9.1 polish)
@@ -179,8 +179,8 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 | Temp files | Guid path under temp; scoped dispose deletes |
 | FE debounce | Width ~400ms; file/charset/invert immediate |
 | FE cancel | Cancel prior convert on new request |
-| Copy export | Image: frame `.ascii`. Video: join all frame `.ascii` with `\n\n----\n\n` (until a later “current frame only” leaf) |
-| Copy UI | **Copy only** — no Download / file export. Placement polish in **8.3** (icon-only `bi-copy`, top-right). Disabled when no result |
+| Copy export | **Current frame only** — `frame.ascii` of the visible `ascii-frame-viewer` (image or video’s current index). No multi-frame join. |
+| Copy UI | **Copy only** on `ascii-frame-viewer`: icon-only **`bi-copy`** (NOT `bi-clipboard`), top-right of the frame stage; `title="Copy"` OK; disabled when ascii empty |
 | Charset UI | Segmented strip (shared outer border); selected = inset accent + subtle fill; monospace glyphs; no name labels |
 | Player | input `AsciiVideo`; owns index/timing via `frameDelayMs` (FE fallback ~120ms if 0); **icon-only** Play/Pause toggle + Restart + seek on one row under ASCII; no speed; no loop (stop on last frame; Play from end → frame 0); **Restart** → frame 0 and play (start if paused/ended, keep going if already playing); autoplay on new `video`; renders via `ascii-frame-viewer` |
 | ascii-frame-viewer | input `AsciiFrame`; monospace `<pre>` at **natural size** (no CSS scale); parents must not clip/scroll it |
@@ -198,13 +198,13 @@ Source: OD **Media to Ascii** / `media-to-ascii-refresh.html` (decision comment 
 |----|----------|
 | **D1** | Image success: original **below the sidebar card** (not inside it; width = sidebar column, natural aspect ratio); result region is **ASCII only**. Video: no sidebar original. |
 | **D2** | Video transport: single Play/Pause **toggle** + Restart + flex seek on **one row under ASCII**; **icons only** (no button text; `title` OK); stop on last frame (**no loop**); Play from end restarts at 0; no frame counter. OD frames **6** (playing), **7** (ended), **10** (mobile). |
-| **D3** | Result actions: **Copy only** (no Download). Icon-only **`bi-copy`** (NOT `bi-clipboard`); **top-right** of result region (or hugged stage); not a full-width row under preview; disabled on empty/loading/error. Transport stays under ASCII; Copy stays in the corner. |
+| **D3** | **Copy only** (no Download), on the **visible frame** (`ascii-frame-viewer`). Icon-only **`bi-copy`** (NOT `bi-clipboard`); **top-right** of the frame stage; disabled when empty. Transport stays under ASCII; Copy is not in the transport row. |
 | **D4** | Shell: empty/loading/error **spacious** (~360px min); success **hugs** natural-size ASCII (**no** CSS scale; **no** ASCII-pane scrollbars). Centered working area has a default laptop width (~1080); when ASCII needs more width, the shell **grows horizontally** (equal L/R padding shrinks) up to the viewport (padding → ~0). Controls left \| preview right. |
 | **D5** | Charset: **segmented strip** (shared outer border); selected = inset accent bar + subtle fill; left-aligned monospace glyphs; ellipsis if long. |
 
 **OD frame map (gallery):** 1 Empty · 2 Loading · 3 Image typical · 4 Image wide ASCII · 5 Image narrow ASCII · 6 Video playing · 7 Video ended · 8 Error · 9 Mobile image · 10 Mobile video.
 
-**Angular map:** upload · options (width/invert/charset) · result-host · `ascii-frame-viewer` · `image-ascii-result` · `ascii-video-player` · `result-actions`. Brand via document `<title>` only (**8.4** — no on-page tool-header).
+**Angular map:** upload · options (width/invert/charset) · result-host · `ascii-frame-viewer` (incl. Copy) · `image-ascii-result` · `ascii-video-player` · `source-image-preview`. Brand via document `<title>` only (**8.4** — no on-page tool-header).
 
 ---
 
@@ -504,12 +504,12 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 
 ### Step 8.3 — Icon-only Copy (top-right)
 
-- Status: ⬜
-- Needs: 8.2, 8.5
-- Files: `{Ng}/src/app/pages/convert/results/result-actions.ts`, `{Ng}/src/app/pages/convert/convert-page.ts` (placement / result-region positioning)
-- Do: match **D3** — icon-only **`bi-copy`** (NOT `bi-clipboard`); optional `title="Copy"`; place **top-right** of the result region (or hugged stage), not a full-width band under the preview; disabled on empty/loading/error; do not put actions in the video transport row. No Download (removed in **8.5**).
-- Done when: Copy matches OD corner icon chrome on empty/loading/success/error (and video frames)
-- Commit: `frontend - ui, icon-only copy top-right`
+- Status: ✅
+- Needs: 8.5
+- Files: `{Ng}/src/app/pages/convert/results/ascii-frame-viewer.ts`, `{Ng}/src/app/pages/convert/convert-page.ts` (**hot**); delete `{Ng}/src/app/pages/convert/results/result-actions.ts` if unused
+- Do: match **D3** — move Copy onto **`ascii-frame-viewer`**: icon-only **`bi-copy`** (NOT `bi-clipboard`), `title="Copy"`, **top-right** of the frame stage. Copy **`frame.ascii` only** (current visible frame — for video that is the player’s current index). Remove page-level `result-actions` / multi-frame join export. No Copy on empty/loading/error (no viewer). Not in the transport row. **8.2** not required for this leaf.
+- Done when: image + video Copy copies only the on-screen frame; no Download; no page-level Copy under the result
+- Commit: `frontend - ui, icon-only copy current frame on viewer`
 
 ### Step 8.4 — Drop page header; empty-state result hint
 
@@ -525,7 +525,7 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 - Status: ✅
 - Needs: 7.4
 - Files: `{Ng}/src/app/pages/convert/results/result-actions.ts`; update Locked contracts / **D3** in this plan
-- Do: remove Download / file-export from the UI and component (`download()` + button). Keep a single Copy action (labeled as today; icon/placement polish stays in **8.3**). Do not change what Copy copies yet (image ascii / all video frames joined) — current-frame-only is a later leaf if wanted.
+- Do: remove Download / file-export from the UI and component (`download()` + button). Keep a single Copy action (labeled as today; icon/placement + current-frame copy land in **8.3**).
 - Done when: no Download control or blob-download path; Copy still works; contracts say Copy-only
 - Commit: `frontend - ui, remove download keep copy only`
 

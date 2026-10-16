@@ -137,13 +137,6 @@ body {
   }
 }
 
-.result-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
-
 // Defeat Bootstrap reboot `pre { overflow: auto }` for ASCII output.
 app-ascii-frame-viewer pre {
   overflow: visible;
