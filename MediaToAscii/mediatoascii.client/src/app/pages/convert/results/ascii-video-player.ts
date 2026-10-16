@@ -28,6 +28,14 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
           <button
             type="button"
             class="btn btn-sm btn-secondary-action transport-btn"
+            [class.transport-btn--active]="doubleSpeed()"
+            (click)="toggleDoubleSpeed()"
+          >
+            <i class="bi bi-fast-forward-fill"></i>
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-secondary-action transport-btn"
             (click)="restart()"
           >
             <i class="bi bi-arrow-clockwise"></i>
@@ -98,6 +106,11 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
       font-size: 1rem;
     }
 
+    .transport-btn--active {
+      border-color: var(--fg);
+      background: color-mix(in srgb, var(--fg) 8%, var(--surface));
+    }
+
     .transport-seek {
       flex: 1 1 auto;
       min-width: 0;
@@ -108,6 +121,7 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
 export class AsciiVideoPlayerComponent {
   readonly video = input.required<AsciiVideo>();
   readonly playing = signal(false);
+  readonly doubleSpeed = signal(false);
 
   readonly frameCount = computed(() => this.video().frames.length);
   readonly currentFrameIndex = signal(0);
@@ -119,18 +133,21 @@ export class AsciiVideoPlayerComponent {
     effect(() => {
       this.video();
       this.currentFrameIndex.set(0);
+      this.doubleSpeed.set(false);
       this.playing.set(this.frameCount() > 0);
     });
 
     effect((onCleanup) => {
       if (this.playing()) {
+        const delayMs =
+          this.video().frameDelayMs / (this.doubleSpeed() ? 2 : 1);
         const intervalId = setInterval(() => {
           if (this.currentFrameIndex() >= this.frameCount() - 1) {
             this.playing.set(false);
           } else {
             this.currentFrameIndex.update((i) => i + 1);
           }
-        }, this.video().frameDelayMs);
+        }, delayMs);
         onCleanup(() => clearInterval(intervalId));
       }
     });
@@ -150,5 +167,9 @@ export class AsciiVideoPlayerComponent {
   restart(): void {
     this.currentFrameIndex.set(0);
     this.playing.set(true);
+  }
+
+  toggleDoubleSpeed(): void {
+    this.doubleSpeed.update((on) => !on);
   }
 }

@@ -183,7 +183,7 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 | Copy export | **Current frame only** — `frame.ascii` of the visible `ascii-frame-viewer` (image or video’s current index). No multi-frame join. |
 | Copy UI | **Copy only** on `ascii-frame-viewer`: icon-only **`bi-copy`** (NOT `bi-clipboard`), top-right of the frame stage; `title="Copy"` OK; disabled when ascii empty |
 | Charset UI | Segmented strip (shared outer border); selected = inset accent + subtle fill; monospace glyphs; no name labels |
-| Player | input `AsciiVideo`; owns index/timing via `frameDelayMs` (FE fallback ~120ms if 0); **icon-only** Play/Pause toggle + Restart + seek on one row under ASCII; no speed; no loop (stop on last frame; Play from end → frame 0); **Restart** → frame 0 and play (start if paused/ended, keep going if already playing); autoplay on new `video`; renders via `ascii-frame-viewer` |
+| Player | input `AsciiVideo`; owns index/timing via `frameDelayMs`; Play/Pause toggle + **2×** (`bi-fast-forward-fill`) + Restart + flex seek on one row under ASCII; all transport buttons icon-only; **2×** active = half `frameDelayMs`; no loop (stop on last frame; Play from end → frame 0); **Restart** → frame 0 and play (start if paused/ended, keep going if already playing); autoplay on new `video` (resets 2× off); renders via `ascii-frame-viewer` |
 | ascii-frame-viewer | input `AsciiFrame`; monospace `<pre>` at **natural size** (no CSS scale); parents must not clip/scroll it |
 | Result host | convert-page: loading \| error \| `image-ascii-result` (image) \| `ascii-video-player` (video); no success via `ascii-preview` |
 | Preview / shell | **Step 8**: natural-size ASCII; centered page shell grows with ASCII up to viewport (L/R padding → 0); spacious empty |
@@ -198,7 +198,7 @@ Source: OD **Media to Ascii** / `media-to-ascii-refresh.html` (decision comment 
 | ID | Decision |
 |----|----------|
 | **D1** | Image success: original **below the sidebar card** (not inside it; width = sidebar column, natural aspect ratio); result region is **ASCII only**. Video: no sidebar original. |
-| **D2** | Video transport: single Play/Pause **toggle** + Restart + flex seek on **one row under ASCII**; **icons only** (no button text; `title` OK); stop on last frame (**no loop**); Play from end restarts at 0; no frame counter. OD frames **6** (playing), **7** (ended), **10** (mobile). |
+| **D2** | Video transport: Play/Pause **toggle** + **2×** (`bi-fast-forward-fill`, two triangles) + Restart + flex seek on **one row under ASCII**; **icons only**; **2×** active = pressed look; stop on last frame (**no loop**); Play from end restarts at 0; no frame counter. OD frames **6** (playing), **7** (ended), **10** (mobile) — speed control is a product add-on beyond OD. |
 | **D3** | **Copy only** (no Download), on the **visible frame** (`ascii-frame-viewer`). Icon-only **`bi-copy`** (NOT `bi-clipboard`); **top-right** of the frame stage; disabled when empty. Transport stays under ASCII; Copy is not in the transport row. |
 | **D4** | Shell: empty/loading/error **spacious** (~360px min); success **hugs** natural-size ASCII (**no** CSS scale; **no** ASCII-pane scrollbars). Centered working area has a default laptop width (~1080); when ASCII needs more width, the shell **grows horizontally** (equal L/R padding shrinks) up to the viewport (padding → ~0). Controls left \| preview right. |
 | **D5** | Charset: **segmented strip** (shared outer border); selected = inset accent bar + subtle fill; left-aligned monospace glyphs; ellipsis if long. |
