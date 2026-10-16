@@ -37,8 +37,9 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
 - [⬜ Step 8 — Feature: Preview shell (natural ASCII)](#step-8--feature-preview-shell-natural-ascii)
   - [✅ 8.1 — Natural-size ASCII + growable page shell](#step-81--natural-size-ascii--growable-page-shell)
   - [⬜ 8.2 — Shell polish (spacious empty / hug success)](#step-82--shell-polish-spacious-empty--hug-success)
-  - [⬜ 8.3 — Icon-only Copy / Download (top-right)](#step-83--icon-only-copy--download-top-right)
+  - [⬜ 8.3 — Icon-only Copy (top-right)](#step-83--icon-only-copy-top-right)
   - [✅ 8.4 — Drop page header; empty-state result hint](#step-84--drop-page-header-empty-state-result-hint)
+  - [✅ 8.5 — Remove Download; Copy only](#step-85--remove-download-copy-only)
 - [⬜ Step 9 — Finalization](#step-9--finalization)
   - [⬜ 9.1 — UI polish to match Open Design](#step-91--ui-polish-to-match-open-design)
   - [⬜ 9.2 — README adjust for new behavior](#step-92--readme-adjust-for-new-behavior)
@@ -79,9 +80,9 @@ Feature steps can advance in parallel when Needs/Files allow.
 | ✅ | **1.x** API cleanup | **2.x** Video temp | **3.x** charsets / JSON / picker |
 | ✅ | **4.x** auto-convert | **5.1** image-ascii-result | **6.1 → 6.2 → 6.3** player (component) |
 | ✅ | **7.x** viewer + compose + page host | — | — |
-| now | **8.2 → 8.3** (Needs **5.2** ✅) | — | — |
-| then | **8.2** hug success · **8.3** icon actions · **6.4** player chrome (⏸️) | — | — |
-| last | **9.x** Finalization (needs **8.3**; may run while **5.2**/**6.4** still ⏸️) | — | — |
+| now | **8.2 → 8.3** (Needs **8.5** ✅ for 8.3) | — | — |
+| then | **6.4** player chrome (⏸️; prefer after **8.3**) | — | — |
+| last | **9.x** Finalization (needs **8.3**; may run while **6.4** still ⏸️) | — | — |
 
 Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 
@@ -153,7 +154,7 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
       ascii-frame-viewer.ts           # Step 7.1 — AsciiFrame input; natural size (8.1)
       image-ascii-result.ts           # Steps 5.1 / 7.2 / 5.2 — ASCII-only stage
       ascii-video-player.ts           # Steps 6.x / 7.3 — AsciiVideo + transport; renders ascii-frame-viewer
-      result-actions.ts               # Copy / Download; icon-only + placement in 8.3
+      result-actions.ts               # Copy only (8.5); icon-only + placement in 8.3
   app.component.ts
   app.config.ts
   styles.scss                         # Step 8.1 growable shell (+ 8.2 / 9.1 polish)
@@ -178,8 +179,8 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 | Temp files | Guid path under temp; scoped dispose deletes |
 | FE debounce | Width ~400ms; file/charset/invert immediate |
 | FE cancel | Cancel prior convert on new request |
-| Copy/Download export | Join video frame `.ascii` strings with `\n\n----\n\n` |
-| Copy/Download UI | **Icon-only** `bi-copy` + `bi-download` (NOT `bi-clipboard`); **top-right** of result region / hugged stage; `title` tooltips OK; no visible labels; disabled when no result |
+| Copy export | Image: frame `.ascii`. Video: join all frame `.ascii` with `\n\n----\n\n` (until a later “current frame only” leaf) |
+| Copy UI | **Copy only** — no Download / file export. Placement polish in **8.3** (icon-only `bi-copy`, top-right). Disabled when no result |
 | Charset UI | Segmented strip (shared outer border); selected = inset accent + subtle fill; monospace glyphs; no name labels |
 | Player | input `AsciiVideo`; owns index/timing via `frameDelayMs` (FE fallback ~120ms if 0); **icon-only** Play/Pause toggle + Restart + seek on one row under ASCII; no speed; no loop (stop on last frame; Play from end → frame 0); **Restart** → frame 0 and play (start if paused/ended, keep going if already playing); autoplay on new `video`; renders via `ascii-frame-viewer` |
 | ascii-frame-viewer | input `AsciiFrame`; monospace `<pre>` at **natural size** (no CSS scale); parents must not clip/scroll it |
@@ -197,7 +198,7 @@ Source: OD **Media to Ascii** / `media-to-ascii-refresh.html` (decision comment 
 |----|----------|
 | **D1** | Image success: original **below the sidebar card** (not inside it; width = sidebar column, natural aspect ratio); result region is **ASCII only**. Video: no sidebar original. |
 | **D2** | Video transport: single Play/Pause **toggle** + Restart + flex seek on **one row under ASCII**; **icons only** (no button text; `title` OK); stop on last frame (**no loop**); Play from end restarts at 0; no frame counter. OD frames **6** (playing), **7** (ended), **10** (mobile). |
-| **D3** | Result actions: icon-only **`bi-copy`** + **`bi-download`**; **top-right** of result region (or hugged stage); not a full-width row under preview; disabled on empty/loading/error. Transport stays under ASCII; actions stay in the corner. |
+| **D3** | Result actions: **Copy only** (no Download). Icon-only **`bi-copy`** (NOT `bi-clipboard`); **top-right** of result region (or hugged stage); not a full-width row under preview; disabled on empty/loading/error. Transport stays under ASCII; Copy stays in the corner. |
 | **D4** | Shell: empty/loading/error **spacious** (~360px min); success **hugs** natural-size ASCII (**no** CSS scale; **no** ASCII-pane scrollbars). Centered working area has a default laptop width (~1080); when ASCII needs more width, the shell **grows horizontally** (equal L/R padding shrinks) up to the viewport (padding → ~0). Controls left \| preview right. |
 | **D5** | Charset: **segmented strip** (shared outer border); selected = inset accent bar + subtle fill; left-aligned monospace glyphs; ellipsis if long. |
 
@@ -481,7 +482,7 @@ Gated by **Needs: 7.4** (✅). Scale-to-fit was tried and rolled back — **do n
 
 ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working area grows with wide ASCII until L/R padding ≈ 0. Actions match **D3**.
 
-**Split:** **8.1** = natural-size ASCII + growable centered shell (**D4** core). **8.2** = spacious empty / hug polish. **8.3** = icon-only Copy/Download top-right (**D3**). **8.4** = drop on-page tool-header; empty-state hint only in the result pane (no sidebar footer copy).
+**Split:** **8.1** = natural-size ASCII + growable centered shell (**D4** core). **8.2** = spacious empty / hug polish. **8.3** = icon-only Copy top-right (**D3**). **8.4** = drop on-page tool-header; empty-state hint. **8.5** = remove Download (Copy only).
 
 ### Step 8.1 — Natural-size ASCII + growable page shell
 
@@ -501,14 +502,14 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 - Done when: empty feels like a real workspace; narrow success hugs; layout balanced
 - Commit: `frontend - layout, shell spacious empty and hug polish`
 
-### Step 8.3 — Icon-only Copy / Download (top-right)
+### Step 8.3 — Icon-only Copy (top-right)
 
 - Status: ⬜
-- Needs: 8.2
+- Needs: 8.2, 8.5
 - Files: `{Ng}/src/app/pages/convert/results/result-actions.ts`, `{Ng}/src/app/pages/convert/convert-page.ts` (placement / result-region positioning)
-- Do: match **D3** — icon-only **`bi-copy`** + **`bi-download`** (NOT `bi-clipboard`); optional `title="Copy"` / `title="Download"`; place **top-right** of the result region (or hugged stage), not a full-width band under the preview; disabled on empty/loading/error; do not put actions in the video transport row. **Reminder (from 5.2 scope cut):** keep labeled Copy/Download under the result until this leaf.
-- Done when: actions match OD corner icon chrome on empty/loading/success/error (and video frames)
-- Commit: `frontend - ui, icon-only copy and download top-right`
+- Do: match **D3** — icon-only **`bi-copy`** (NOT `bi-clipboard`); optional `title="Copy"`; place **top-right** of the result region (or hugged stage), not a full-width band under the preview; disabled on empty/loading/error; do not put actions in the video transport row. No Download (removed in **8.5**).
+- Done when: Copy matches OD corner icon chrome on empty/loading/success/error (and video frames)
+- Commit: `frontend - ui, icon-only copy top-right`
 
 ### Step 8.4 — Drop page header; empty-state result hint
 
@@ -518,6 +519,15 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 - Do: remove on-page `.tool-header` (h1 + subtitle) so the working area starts at the tool layout — reclaim vertical space for ASCII. Keep brand in the document `<title>` only. **Do not** add sidebar-footer instructions. On empty (no result yet), show one short hint in the result pane (upload zone already covers drop/choose). Tighten shell top spacing that existed mainly for the header.
 - Done when: no title band above the tool; empty result has a brief hint; success/loading/error unchanged aside from gained viewport height
 - Commit: `frontend - ui, drop page header and keep empty-state result hint`
+
+### Step 8.5 — Remove Download; Copy only
+
+- Status: ✅
+- Needs: 7.4
+- Files: `{Ng}/src/app/pages/convert/results/result-actions.ts`; update Locked contracts / **D3** in this plan
+- Do: remove Download / file-export from the UI and component (`download()` + button). Keep a single Copy action (labeled as today; icon/placement polish stays in **8.3**). Do not change what Copy copies yet (image ascii / all video frames joined) — current-frame-only is a later leaf if wanted.
+- Done when: no Download control or blob-download path; Copy still works; contracts say Copy-only
+- Commit: `frontend - ui, remove download keep copy only`
 
 ---
 
