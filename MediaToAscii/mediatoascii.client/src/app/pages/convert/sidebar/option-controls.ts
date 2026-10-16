@@ -7,13 +7,14 @@ import {
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { debounceTime, filter } from 'rxjs';
+import { ToggleSwitchComponent } from '@components/toggle-switch';
 import { AsciiCharsetOption } from '@services/configuration-api.service';
 import { ConvertOptions } from '@services/convert-api.service';
 import { CharsetPickerComponent } from './charset-picker';
 
 @Component({
   selector: 'app-option-controls',
-  imports: [FormsModule, CharsetPickerComponent],
+  imports: [FormsModule, CharsetPickerComponent, ToggleSwitchComponent],
   template: `
     <div class="opt-row">
       <div>
@@ -32,16 +33,11 @@ import { CharsetPickerComponent } from './charset-picker';
         />
       </div>
 
-      <div class="form-check">
-        <input
-          id="convert-invert"
-          type="checkbox"
-          class="form-check-input"
-          [ngModel]="options().invert"
-          (ngModelChange)="emitPatch({ invert: $event })"
-        />
-        <label class="form-check-label" for="convert-invert">Invert</label>
-      </div>
+      <app-toggle-switch
+        label="Invert"
+        [ngModel]="options().invert"
+        (ngModelChange)="emitPatch({ invert: $event })"
+      />
 
       <app-charset-picker
         [options]="charsets()"
@@ -55,8 +51,7 @@ import { CharsetPickerComponent } from './charset-picker';
       display: grid;
       gap: 0.85rem;
 
-      label.form-label,
-      .form-check-label {
+      .form-label {
         color: var(--fg);
         font-size: 0.9rem;
       }
