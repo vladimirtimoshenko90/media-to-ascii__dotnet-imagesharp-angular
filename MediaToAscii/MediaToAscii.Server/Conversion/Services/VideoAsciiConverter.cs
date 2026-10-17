@@ -1,6 +1,5 @@
 using FFMpegCore;
 using FFMpegCore.Enums;
-using FFMpegCore.Pipes;
 using MediaToAscii.Server.Common;
 using MediaToAscii.Server.Conversion.Entities;
 
@@ -22,18 +21,33 @@ public sealed class VideoAsciiConverter(
 
         var analysis = await FFProbe.AnalyseAsync(videoPath, cancellationToken: ct);
         var duration = analysis.Duration;
-        var timestamps = SampleTimestamps(duration, ResolveFrameCount(analysis));
 
-        var pngBuffers = new MemoryStream[timestamps.Count];
+        // One decode pass → real PNG files. Per-seek pipe extract fails/empties at full fps.
+        var framesDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(framesDir);
+
         try
         {
-            for (var i = 0; i < timestamps.Count; i++)
+            var pattern = Path.Combine(framesDir, "frame%05d.png");
+            await FFMpegArguments
+                .FromFileInput(videoPath, verifyExists: true)
+                .OutputToFile(pattern, overwrite: true, opts => opts
+                    .WithCustomArgument("-map 0:v:0")
+                    .WithVideoCodec(VideoCodec.Image.Png)
+                    .ForceFormat("image2"))
+                .CancellableThrough(ct)
+                .ProcessAsynchronously();
+
+            var framePaths = Directory.GetFiles(framesDir, "frame*.png")
+                .OrderBy(static p => p, StringComparer.Ordinal)
+                .ToArray();
+
+            if (framePaths.Length == 0)
             {
-                ct.ThrowIfCancellationRequested();
-                pngBuffers[i] = await ExtractFramePng(videoPath, timestamps[i], ct);
+                throw new InvalidOperationException("FFmpeg produced no video frames.");
             }
 
-            var frames = new AsciiFrame[timestamps.Count];
+            var frames = new AsciiFrame[framePaths.Length];
             var parallelOptions = new ParallelOptions
             {
                 MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount),
@@ -41,11 +55,12 @@ public sealed class VideoAsciiConverter(
             };
 
             await Parallel.ForEachAsync(
-                Enumerable.Range(0, pngBuffers.Length),
+                Enumerable.Range(0, framePaths.Length),
                 parallelOptions,
                 async (i, token) =>
                 {
-                    frames[i] = await imageConverter.Convert(pngBuffers[i], options, token);
+                    await using var png = File.OpenRead(framePaths[i]);
+                    frames[i] = await imageConverter.Convert(png, options, token);
                 });
 
             var durationMs = (int)Math.Max(0, Math.Round(duration.TotalMilliseconds));
@@ -56,60 +71,26 @@ public sealed class VideoAsciiConverter(
         }
         finally
         {
-            foreach (var png in pngBuffers)
+            TryDeleteDirectory(framesDir);
+        }
+    }
+
+    private static void TryDeleteDirectory(string path)
+    {
+        try
+        {
+            if (Directory.Exists(path))
             {
-                if (png is not null)
-                {
-                    await png.DisposeAsync();
-                }
+                Directory.Delete(path, recursive: true);
             }
         }
-    }
-
-    private static async Task<MemoryStream> ExtractFramePng(
-        string videoPath,
-        TimeSpan captureTime,
-        CancellationToken ct)
-    {
-        var pngBuffer = new MemoryStream();
-
-        await FFMpegArguments
-            .FromFileInput(videoPath, verifyExists: true, opts => opts.Seek(captureTime))
-            .OutputToPipe(new StreamPipeSink(pngBuffer), opts => opts
-                .WithCustomArgument("-map 0:v:0")
-                .WithVideoCodec(VideoCodec.Image.Png)
-                .WithFrameOutputCount(1)
-                .ForceFormat("image2"))
-            .CancellableThrough(ct)
-            .ProcessAsynchronously();
-
-        pngBuffer.Position = 0;
-        return pngBuffer;
-    }
-
-    private static int ResolveFrameCount(IMediaAnalysis analysis)
-    {
-        var stream = analysis.PrimaryVideoStream!;
-        var fps = stream.AvgFrameRate > 0 ? stream.AvgFrameRate : stream.FrameRate;
-        return (int)Math.Round(analysis.Duration.TotalSeconds * fps);
-    }
-
-    /// <summary>
-    /// Evenly spaced sample times at segment midpoints (avoids seeking exactly to EOF).
-    /// </summary>
-    internal static IReadOnlyList<TimeSpan> SampleTimestamps(TimeSpan duration, int count)
-    {
-        if (count <= 1 || duration <= TimeSpan.Zero)
+        catch (IOException)
         {
-            return [TimeSpan.Zero];
+            // Best-effort cleanup; OS temp scavenges leftovers.
         }
-
-        var timestamps = new TimeSpan[count];
-        for (var i = 0; i < count; i++)
+        catch (UnauthorizedAccessException)
         {
-            timestamps[i] = TimeSpan.FromTicks((long)(duration.Ticks * (i + 0.5) / count));
+            // Best-effort cleanup; OS temp scavenges leftovers.
         }
-
-        return timestamps;
     }
 }
