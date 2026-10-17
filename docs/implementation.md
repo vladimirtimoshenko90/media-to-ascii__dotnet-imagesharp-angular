@@ -43,6 +43,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 8.6 — Upload-first empty; preview replaces upload](#step-86--upload-first-empty-preview-replaces-upload)
   - [✅ 8.7 — Sidebar source video preview (display-only)](#step-87--sidebar-source-video-preview-display-only)
   - [✅ 8.8 — Sync source video preview to ASCII player](#step-88--sync-source-video-preview-to-ascii-player)
+  - [✅ 8.9 — Replace file control on source preview](#step-89--replace-file-control-on-source-preview)
 - [⬜ Step 9 — Finalization](#step-9--finalization)
   - [⬜ 9.1 — UI polish to match Open Design](#step-91--ui-polish-to-match-open-design)
   - [⬜ 9.2 — README adjust for new behavior](#step-92--readme-adjust-for-new-behavior)
@@ -87,6 +88,7 @@ Feature steps can advance in parallel when Needs/Files allow.
 | ✅ | **6.4** player chrome | — | — |
 | ✅ | **8.7** source video preview (display-only) | — | — |
 | ✅ | **8.8** sync source video to ASCII player | — | — |
+| ✅ | **8.9** replace file on source preview | — | — |
 | now | **8.2** shell hug polish | — | — |
 | last | **9.x** Finalization (needs **8.3**) | — | — |
 
@@ -102,7 +104,7 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 - `{Api}` = `MediaToAscii/MediaToAscii.Server`, `{Ng}` = `MediaToAscii/mediatoascii.client`.
 - **Shipped backend (Steps 1–2):** FluentValidation convert form (charset **id** → `AsciiCharsetType`); `GET /api/config/convert-options`; JSON convert (`AsciiFrame` / `AsciiVideo`); video frames via temp file (exit-69 pipe/seek fixed).
 - **Shipped FE:** **3.x** charsets/JSON/picker; **4.x** auto-convert; **5.1** / **7.2** image-ascii-result; **6.x** / **7.3** video player (D2 chrome); **7.1** `ascii-frame-viewer`; **7.4** convert-page result host (result | player; `ascii-preview` removed).
-- **Still to build:** shell polish (**8.2**); polish/docs (**9**). **5.2** / **8.7** / **8.8** ✅ source previews (image + video synced to ASCII).
+- **Still to build:** shell polish (**8.2**); polish/docs (**9**). **5.2** / **8.7** / **8.8** / **8.9** ✅ source previews + replace file.
 - **UI target (locked):** OD project **Media to Ascii** / `media-to-ascii-refresh.html` (HTML top comment **D1–D5** + 10 frames). Older [design-prompt.phase2.md](./design-prompt.phase2.md) is historical; **OD HTML wins** on any conflict. **No further OD clarification needed** to implement remaining leaves.
 
 ### Video runtime note
@@ -157,6 +159,7 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
       charset-picker.ts               # Step 3.3
       source-image-preview.ts         # Step 5.2 / 8.6 — raw image above options
       source-video-preview.ts         # 8.7 / 8.8 — raw video above options; follows ASCII frame
+      replace-file-button.ts          # 8.9 — icon picker overlay in sidebar column
     results/
       ascii-frame-viewer.ts           # Step 7.1 / 8.3 — AsciiFrame + icon Copy (current frame)
       image-ascii-result.ts           # Steps 5.1 / 7.2 / 5.2 — ASCII-only stage
@@ -203,7 +206,7 @@ Source: OD **Media to Ascii** / `media-to-ascii-refresh.html` (decision comment 
 
 | ID | Decision |
 |----|----------|
-| **D1** | Source preview **above** options (sidebar column width, height from aspect ratio): **image** = still; **video** = muted display-only `<video>` (no controls; `pointer-events: none`) scrubbed to ASCII player frame (`index * frameDelayMs`) — ASCII player is source of truth. Result region is ASCII only. |
+| **D1** | Source preview **above** options (sidebar column width, height from aspect ratio): **image** = still; **video** = muted display-only `<video>` (no controls; `pointer-events: none`) scrubbed to ASCII player frame (`index * frameDelayMs`) — ASCII player is source of truth. When a source URL exists, `replace-file-button` is absolutely positioned top-right in the sidebar column (`bi-folder2-open`; ~2.25rem; 0.25rem inset); native picker `image/*,video/*`; media stays non-clickable. Result region is ASCII only. |
 | **D2** | Video transport: Play/Pause **toggle** + **2×** (`bi-fast-forward-fill`, two triangles) + Restart + flex seek on **one row under ASCII**; **icons only**; **2×** active = pressed look; stop on last frame (**no loop**); Play from end restarts at 0; no frame counter. OD frames **6** (playing), **7** (ended), **10** (mobile) — speed control is a product add-on beyond OD. |
 | **D3** | **Copy only** (no Download), on the **visible frame** (`ascii-frame-viewer`). Icon-only **`bi-copy`** (NOT `bi-clipboard`); **top-right** of the frame stage; disabled when empty. Transport stays under ASCII; Copy is not in the transport row. |
 | **D4** | Shell: empty/loading/error **spacious** (~360px min); success **hugs** natural-size ASCII (**no** CSS scale; **no** ASCII-pane scrollbars). Centered working area has a default laptop width (~1080); when ASCII needs more width, the shell **grows horizontally** (equal L/R padding shrinks) up to the viewport (padding → ~0). Controls left \| preview right. |
@@ -562,6 +565,15 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 - Do: **phase 2** — ASCII player remains source of truth. Emit current frame index (`frameChange`); convert-page maps `index * frameDelayMs` → preview `currentTime` (ms). Preview stays paused, no controls; seek `video.currentTime` to match. Reset on new file.
 - Done when: play / 2× / restart / seek on ASCII player advances the sidebar source frame accordingly; user still cannot manipulate the preview
 - Commit: `frontend - player, sync source video preview to ASCII frame`
+
+### Step 8.9 — Replace file control on source preview
+
+- Status: ✅
+- Needs: 8.7
+- Files: `{Ng}/src/app/pages/convert/sidebar/replace-file-button.ts` (**new**), `{Ng}/src/app/pages/convert/convert-page.ts` (**hot**); update **D1**
+- Do: keep image/video preview `@if`s as before. Add `@if (imageUrl || videoUrl)` → `replace-file-button` (absolute top-right in `sidebar-column`). Icon-only `bi-folder2-open`; emits `fileSelected` → `onFileSelected`. Clear input after pick; reject non-image/video silently.
+- Done when: user can swap image/video without welcome drop zone; page template stays a thin extra `@if`
+- Commit: `frontend - ui, replace file icon on source preview`
 
 ---
 

@@ -16,6 +16,7 @@ import {
 import { AsciiVideoPlayerComponent } from './results/ascii-video-player';
 import { ImageAsciiResultComponent } from './results/image-ascii-result';
 import { OptionControlsComponent } from './sidebar/option-controls';
+import { ReplaceFileButtonComponent } from './sidebar/replace-file-button';
 import { SourceImagePreviewComponent } from './sidebar/source-image-preview';
 import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
 
@@ -26,6 +27,7 @@ import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
     OptionControlsComponent,
     SourceImagePreviewComponent,
     SourceVideoPreviewComponent,
+    ReplaceFileButtonComponent,
     ImageAsciiResultComponent,
     AsciiVideoPlayerComponent,
   ],
@@ -39,6 +41,9 @@ import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
     } @else {
       <div class="tool-layout">
         <div class="sidebar-column">
+          @if (imageUrl || videoUrl) {
+            <app-replace-file-button (fileSelected)="onFileSelected($event)" />
+          }
           @if (imageUrl) {
             <app-source-image-preview [imageUrl]="imageUrl" />
           } @else if (videoUrl) {
@@ -99,6 +104,7 @@ import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
     }
 
     .sidebar-column {
+      position: relative;
       display: flex;
       flex-direction: column;
       gap: 0.75rem;

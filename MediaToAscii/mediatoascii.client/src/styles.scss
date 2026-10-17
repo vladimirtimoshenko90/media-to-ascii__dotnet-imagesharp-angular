@@ -42,7 +42,7 @@ body {
 .tool-layout {
   display: grid;
   grid-template-columns: minmax(260px, 340px) minmax(24rem, max-content);
-  gap: 1rem;
+  gap: 1.5rem;
   align-items: start;
   width: max-content;
   max-width: none;
