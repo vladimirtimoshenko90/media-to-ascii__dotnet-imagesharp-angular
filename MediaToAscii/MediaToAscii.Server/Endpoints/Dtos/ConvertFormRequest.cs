@@ -47,8 +47,8 @@ public sealed class ConvertFormRequestValidator : AbstractValidator<ConvertFormR
         RuleFor(x => x.Charset)
             .Cascade(CascadeMode.Stop)
             .NotNull()
-            .WithMessage("Charset must be one of: classic, detailed, blocks.")
+            .WithMessage("Charset is required.")
             .IsInEnum()
-            .WithMessage("Charset must be one of: classic, detailed, blocks.");
+            .WithMessage("Charset must be a known charset id.");
     }
 }
