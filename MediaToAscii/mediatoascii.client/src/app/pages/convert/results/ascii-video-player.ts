@@ -72,10 +72,6 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
     }
 
     .frame-pane {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 0.25rem;
-      padding: 0.75rem;
       overflow: visible;
       height: auto;
       max-height: none;

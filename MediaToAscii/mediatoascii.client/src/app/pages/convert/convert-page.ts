@@ -13,8 +13,8 @@ import {
   ConvertApiService,
   ConvertOptions,
 } from '@services/convert-api.service';
+import { AsciiFrameViewerComponent } from './results/ascii-frame-viewer';
 import { AsciiVideoPlayerComponent } from './results/ascii-video-player';
-import { ImageAsciiResultComponent } from './results/image-ascii-result';
 import { OptionControlsComponent } from './sidebar/option-controls';
 import { ReplaceFileButtonComponent } from './sidebar/replace-file-button';
 import { SourceImagePreviewComponent } from './sidebar/source-image-preview';
@@ -28,7 +28,7 @@ import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
     SourceImagePreviewComponent,
     SourceVideoPreviewComponent,
     ReplaceFileButtonComponent,
-    ImageAsciiResultComponent,
+    AsciiFrameViewerComponent,
     AsciiVideoPlayerComponent,
   ],
   template: `
@@ -74,7 +74,7 @@ import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
               <p class="error-msg">{{ error }}</p>
             </div>
           } @else if (imageResult) {
-            <app-image-ascii-result [frame]="imageResult" />
+            <app-ascii-frame-viewer [frame]="imageResult" />
           } @else if (videoResult) {
             <app-ascii-video-player
               [video]="videoResult"
@@ -114,10 +114,6 @@ import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
     .result-status {
       min-height: 360px;
       min-width: 24rem;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 0.25rem;
-      padding: 0.75rem;
     }
 
     .error-msg,
