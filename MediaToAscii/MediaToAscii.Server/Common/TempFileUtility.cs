@@ -9,16 +9,18 @@ public interface ITempFileUtility
 
 public sealed class TempFileUtility : ITempFileUtility, IAsyncDisposable, IDisposable
 {
-    private readonly List<string> _paths = [];
-    private readonly object _gate = new();
-    private bool _disposed;
+    private readonly List<string> _files = [];
+    private readonly List<string> _dirs = [];
+    private readonly object _lock = new();
 
     public async Task<string> Persist(Stream stream, string extension, CancellationToken ct)
     {
-        ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentNullException.ThrowIfNull(stream);
 
-        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}{NormalizeExtension(extension)}");
+        var normalizedExtension = string.IsNullOrWhiteSpace(extension)
+            ? string.Empty
+            : extension.StartsWith('.') ? extension : $".{extension}";
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}{normalizedExtension}");
 
         try
         {
@@ -29,19 +31,13 @@ public sealed class TempFileUtility : ITempFileUtility, IAsyncDisposable, IDispo
         }
         catch
         {
-            TryDelete(path);
+            TryDeleteFile(path);
             throw;
         }
 
-        lock (_gate)
+        lock (_lock)
         {
-            if (_disposed)
-            {
-                TryDelete(path);
-                throw new ObjectDisposedException(nameof(TempFileUtility));
-            }
-
-            _paths.Add(path);
+            _files.Add(path);
         }
 
         return path;
@@ -49,20 +45,12 @@ public sealed class TempFileUtility : ITempFileUtility, IAsyncDisposable, IDispo
 
     public string CreateDirectory()
     {
-        ObjectDisposedException.ThrowIf(_disposed, this);
-
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(path);
 
-        lock (_gate)
+        lock (_lock)
         {
-            if (_disposed)
-            {
-                TryDelete(path);
-                throw new ObjectDisposedException(nameof(TempFileUtility));
-            }
-
-            _paths.Add(path);
+            _dirs.Add(path);
         }
 
         return path;
@@ -70,18 +58,26 @@ public sealed class TempFileUtility : ITempFileUtility, IAsyncDisposable, IDispo
 
     public void Dispose()
     {
-        lock (_gate)
-        {
-            if (_disposed)
-            {
-                return;
-            }
+        string[] files;
+        string[] dirs;
 
-            _disposed = true;
+        lock (_lock)
+        {
+            files = _files.ToArray();
+            dirs = _dirs.ToArray();
+            _files.Clear();
+            _dirs.Clear();
         }
 
-        DeleteAll();
-        GC.SuppressFinalize(this);
+        foreach (var file in files)
+        {
+            TryDeleteFile(file);
+        }
+
+        foreach (var dir in dirs)
+        {
+            TryDeleteDirectory(dir);
+        }
     }
 
     public ValueTask DisposeAsync()
@@ -90,30 +86,11 @@ public sealed class TempFileUtility : ITempFileUtility, IAsyncDisposable, IDispo
         return ValueTask.CompletedTask;
     }
 
-    private void DeleteAll()
-    {
-        string[] paths;
-        lock (_gate)
-        {
-            paths = _paths.ToArray();
-            _paths.Clear();
-        }
-
-        foreach (var path in paths)
-        {
-            TryDelete(path);
-        }
-    }
-
-    private static void TryDelete(string path)
+    private static void TryDeleteFile(string path)
     {
         try
         {
-            if (Directory.Exists(path))
-            {
-                Directory.Delete(path, recursive: true);
-            }
-            else if (File.Exists(path))
+            if (File.Exists(path))
             {
                 File.Delete(path);
             }
@@ -128,13 +105,23 @@ public sealed class TempFileUtility : ITempFileUtility, IAsyncDisposable, IDispo
         }
     }
 
-    private static string NormalizeExtension(string? extension)
+    private static void TryDeleteDirectory(string path)
     {
-        if (string.IsNullOrWhiteSpace(extension))
+        try
         {
-            return string.Empty;
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, recursive: true);
+            }
         }
-
-        return extension.StartsWith('.') ? extension : $".{extension}";
+        catch (IOException)
+        {
+            // Best-effort cleanup; OS temp scavenges leftovers.
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // Best-effort cleanup; OS temp scavenges leftovers.
+        }
     }
+
 }
