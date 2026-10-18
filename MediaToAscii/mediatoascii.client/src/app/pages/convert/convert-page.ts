@@ -61,27 +61,29 @@ import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
           </div>
         </div>
 
-        <div class="region">
-          @if (loading) {
+        @if (loading) {
+          <div class="region">
             <div class="result-status">
               <p class="loading-msg">
                 <span class="spinner-border spinner-border-sm"></span>
                 Converting…
               </p>
             </div>
-          } @else if (error) {
+          </div>
+        } @else if (error) {
+          <div class="region">
             <div class="result-status">
               <p class="error-msg">{{ error }}</p>
             </div>
-          } @else if (imageResult) {
-            <app-ascii-frame-viewer [frame]="imageResult" />
-          } @else if (videoResult) {
-            <app-ascii-video-player
-              [video]="videoResult"
-              (frameChange)="onAsciiFrameChange($event)"
-            />
-          }
-        </div>
+          </div>
+        } @else if (imageResult) {
+          <app-ascii-frame-viewer [frame]="imageResult" />
+        } @else if (videoResult) {
+          <app-ascii-video-player
+            [video]="videoResult"
+            (frameChange)="onAsciiFrameChange($event)"
+          />
+        }
       </div>
     }
   `,

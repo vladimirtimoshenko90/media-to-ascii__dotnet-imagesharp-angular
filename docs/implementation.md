@@ -34,9 +34,9 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 7.2 — Image ASCII result uses ascii-frame-viewer](#step-72--image-ascii-result-uses-ascii-frame-viewer)
   - [✅ 7.3 — Video player uses ascii-frame-viewer](#step-73--video-player-uses-ascii-frame-viewer)
   - [✅ 7.4 — Convert page result host](#step-74--convert-page-result-host)
-- [⬜ Step 8 — Feature: Preview shell (natural ASCII)](#step-8--feature-preview-shell-natural-ascii)
+- [✅ Step 8 — Feature: Preview shell (natural ASCII)](#step-8--feature-preview-shell-natural-ascii)
   - [✅ 8.1 — Natural-size ASCII + growable page shell](#step-81--natural-size-ascii--growable-page-shell)
-  - [⬜ 8.2 — Shell polish (spacious empty / hug success)](#step-82--shell-polish-spacious-empty--hug-success)
+  - [✅ 8.2 — Shell polish (spacious empty / hug success)](#step-82--shell-polish-spacious-empty--hug-success)
   - [✅ 8.3 — Icon-only Copy (top-right)](#step-83--icon-only-copy-top-right)
   - [✅ 8.4 — Drop page header; empty-state result hint](#step-84--drop-page-header-empty-state-result-hint)
   - [✅ 8.5 — Remove Download; Copy only](#step-85--remove-download-copy-only)
@@ -89,7 +89,7 @@ Feature steps can advance in parallel when Needs/Files allow.
 | ✅ | **8.7** source video preview (display-only) | — | — |
 | ✅ | **8.8** sync source video to ASCII player | — | — |
 | ✅ | **8.9** replace file on source preview | — | — |
-| now | **8.2** shell hug polish | — | — |
+| ✅ | **8.2** shell hug polish | — | — |
 | last | **9.x** Finalization (needs **8.3**) | — | — |
 
 Prefer fewer parallel claims over conflicts. **8.x** is sequential.
@@ -104,7 +104,7 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
 - `{Api}` = `MediaToAscii/MediaToAscii.Server`, `{Ng}` = `MediaToAscii/mediatoascii.client`.
 - **Shipped backend (Steps 1–2):** FluentValidation convert form (charset **id** → `AsciiCharsetType`); `GET /api/config/convert-options`; JSON convert (`AsciiFrame` / `AsciiVideo`); video frames via temp file (exit-69 pipe/seek fixed).
 - **Shipped FE:** **3.x** charsets/JSON/picker; **4.x** auto-convert; **5.1** / **7.2** image-ascii-result; **6.x** / **7.3** video player (D2 chrome); **7.1** `ascii-frame-viewer`; **7.4** convert-page result host (result | player; `ascii-preview` removed).
-- **Still to build:** shell polish (**8.2**); polish/docs (**9**). **5.2** / **8.7** / **8.8** / **8.9** ✅ source previews + replace file.
+- **Still to build:** polish/docs (**9**). **8.x** ✅ (incl. hug chrome on frame viewer + video transport). **5.2** / **8.7** / **8.8** / **8.9** ✅ source previews + replace file.
 - **UI target (locked):** OD project **Media to Ascii** / `media-to-ascii-refresh.html` (HTML top comment **D1–D5** + 10 frames). Older [design-prompt.phase2.md](./design-prompt.phase2.md) is historical; **OD HTML wins** on any conflict. **No further OD clarification needed** to implement remaining leaves.
 
 ### Video runtime note
@@ -505,12 +505,13 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 
 ### Step 8.2 — Shell polish (spacious empty / hug success)
 
-- Status: ⬜
+- Status: ✅
 - Needs: 8.1, 5.2
 - Files: `{Ng}/src/styles.scss`, `{Ng}/src/app/pages/convert/convert-page.ts`, optionally `pages/convert/results/*`
 - Do: match remaining **D4** — spacious empty/loading/error (~360px min feel); on success **hug** ASCII (no large empty field beside narrow art — drop forced ~24rem result min on success); keep equal L/R padding from **8.1**. **Reminder (from 5.2 scope cut):** do not ship this inside 5.2.
 - Done when: empty feels like a real workspace; narrow success hugs; layout balanced
 - Commit: `frontend - layout, shell spacious empty and hug polish`
+- Shipped: success chrome on `ascii-frame-viewer` host (no page `.region`); video transport joined under frame with matching surface; loading/error keep spacious `.region` + `result-status`
 
 ### Step 8.3 — Icon-only Copy (top-right)
 

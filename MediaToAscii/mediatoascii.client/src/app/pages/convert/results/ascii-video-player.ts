@@ -8,9 +8,7 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
   imports: [FormsModule, AsciiFrameViewerComponent],
   template: `
     <div class="ascii-video-player">
-      <div class="frame-pane">
-        <app-ascii-frame-viewer [frame]="currentFrame()" />
-      </div>
+      <app-ascii-frame-viewer [frame]="currentFrame()" />
 
       @if (frameCount()) {
         <div class="transport">
@@ -57,24 +55,20 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
       display: block;
       width: max-content;
       max-width: none;
-      height: auto;
-      max-height: none;
-      overflow: visible;
     }
 
     .ascii-video-player {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
       width: max-content;
-      height: auto;
-      max-height: none;
+      max-width: none;
     }
 
-    .frame-pane {
-      overflow: visible;
-      height: auto;
-      max-height: none;
+    /* Join frame + transport into one stack (no gap, no double border). */
+    .ascii-video-player > app-ascii-frame-viewer {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      border-bottom: none;
     }
 
     .transport {
@@ -82,35 +76,39 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
       flex-direction: row;
       align-items: center;
       gap: 0.5rem;
+      box-sizing: border-box;
       width: 100%;
-      min-width: 16rem;
-      max-width: 100%;
-    }
-
-    .transport-btn {
-      display: inline-flex;
-      flex-shrink: 0;
-      align-items: center;
-      justify-content: center;
-      width: 2rem;
-      height: 2rem;
-      padding: 0;
-      line-height: 1;
-    }
-
-    .transport-btn .bi {
-      font-size: 1rem;
-    }
-
-    .transport-btn--active {
-      border-color: var(--fg);
-      background: color-mix(in srgb, var(--fg) 8%, var(--surface));
-    }
-
-    .transport-seek {
-      flex: 1 1 auto;
       min-width: 0;
-      margin: 0;
+      padding: 0.75rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0 0 0.25rem 0.25rem;
+
+      .transport-btn {
+        display: inline-flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        padding: 0;
+        line-height: 1;
+
+        .bi {
+          font-size: 1rem;
+        }
+
+        &--active {
+          border-color: var(--fg);
+          background: color-mix(in srgb, var(--fg) 8%, var(--surface));
+        }
+      }
+
+      .transport-seek {
+        flex: 1 1 auto;
+        min-width: 0;
+        margin: 0;
+      }
     }
   `,
 })

@@ -20,10 +20,13 @@ import { AsciiFrame } from '@services/convert-api.service';
   styles: `
     :host {
       display: block;
+      box-sizing: border-box;
       width: max-content;
       max-width: none;
-      height: auto;
-      max-height: none;
+      padding: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.25rem;
       overflow: visible;
     }
 
