@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { UploadZoneComponent } from '@components/upload-zone';
@@ -36,7 +35,7 @@ import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
     AsciiVideoPlayerComponent,
   ],
   template: `
-    @if (!selectedFile) {
+    @if (!file) {
       <div class="welcome">
         <div class="welcome-card region">
           <app-upload-zone (fileSelected)="onFileSelected($event)" />
@@ -45,16 +44,13 @@ import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
     } @else {
       <div class="tool-layout">
         <div class="sidebar-column">
-          @if (imageUrl || videoUrl) {
+          @if (fileUrl) {
             <app-replace-file-button (fileSelected)="onFileSelected($event)" />
-          }
-          @if (imageUrl) {
-            <app-source-image-preview [imageUrl]="imageUrl" />
-          } @else if (videoUrl) {
-            <app-source-video-preview
-              [videoUrl]="videoUrl"
-              [playback]="videoPlayback"
-            />
+            @if (fileType === 'image') {
+              <app-source-image-preview [imageUrl]="fileUrl" />
+            } @else if (fileType === 'video') {
+              <app-source-video-preview [videoUrl]="fileUrl" [playback]="videoPlayback" />
+            }
           }
           <div class="region">
             <app-option-controls
@@ -118,6 +114,9 @@ import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
     }
 
     .result-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       min-height: 360px;
       min-width: 24rem;
     }
@@ -154,7 +153,10 @@ export class ConvertPage implements OnInit, OnDestroy {
   private readonly configurationApi = inject(ConfigurationApiService);
   private readonly cancelConvert$ = new Subject<void>();
 
-  selectedFile: File | null = null;
+  file: File | null = null;
+  fileType: 'image' | 'video' | 'unknown' = 'unknown';
+  fileUrl: string | null = null;
+
   charsets: AsciiCharsetOption[] = [];
   options: ConvertOptions = {
     width: ASCII_WIDTH.DEFAULT,
@@ -163,8 +165,6 @@ export class ConvertPage implements OnInit, OnDestroy {
   };
   loading = false;
   error: string | null = null;
-  imageUrl: string | null = null;
-  videoUrl: string | null = null;
   videoPlayback: VideoPlayback = { ...INITIAL_VIDEO_PLAYBACK };
   imageResult: AsciiFrame | null = null;
   videoResult: AsciiVideo | null = null;
@@ -173,7 +173,7 @@ export class ConvertPage implements OnInit, OnDestroy {
     this.configurationApi.getConvertOptions().subscribe((data) => {
       this.charsets = data;
       this.options = { ...this.options, charset: data[0].id };
-      if (this.selectedFile) {
+      if (this.file) {
         this.convert();
       }
     });
@@ -182,20 +182,23 @@ export class ConvertPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.cancelConvert$.next();
     this.cancelConvert$.complete();
-    this.revokeMediaUrls();
+    this.revokeFileUrl();
   }
 
   onFileSelected(file: File): void {
-    this.selectedFile = file;
+    this.file = file;
+    this.fileType = file.type.startsWith('image/')
+      ? 'image'
+      : file.type.startsWith('video/')
+        ? 'video'
+        : 'unknown';
     this.error = null;
     this.imageResult = null;
     this.videoResult = null;
     this.videoPlayback = { ...INITIAL_VIDEO_PLAYBACK };
-    this.revokeMediaUrls();
-    if (file.type.startsWith('image/')) {
-      this.imageUrl = URL.createObjectURL(file);
-    } else if (file.type.startsWith('video/')) {
-      this.videoUrl = URL.createObjectURL(file);
+    this.revokeFileUrl();
+    if (this.fileType !== 'unknown') {
+      this.fileUrl = URL.createObjectURL(file);
     }
     this.convert();
   }
@@ -206,14 +209,7 @@ export class ConvertPage implements OnInit, OnDestroy {
   }
 
   private convert(): void {
-    const file = this.selectedFile;
-    if (!file || !this.options.charset) {
-      return;
-    }
-
-    const isImage = file.type.startsWith('image/');
-    const isVideo = file.type.startsWith('video/');
-    if (!isImage && !isVideo) {
+    if (!this.file || !this.options.charset || this.fileType === 'unknown') {
       return;
     }
 
@@ -221,57 +217,43 @@ export class ConvertPage implements OnInit, OnDestroy {
     this.loading = true;
     this.error = null;
 
-    if (isImage) {
+    if (this.fileType === 'image') {
       this.convertApi
-        .convertImage(file, this.options)
+        .convertImage(this.file, this.options)
         .pipe(takeUntil(this.cancelConvert$))
         .subscribe({
           next: (frame) => {
             this.imageResult = frame;
             this.loading = false;
           },
-          error: (err: unknown) => this.onConvertError(err),
+          error: (message: string) => this.onConvertError(message),
         });
       return;
     }
 
     this.convertApi
-      .convertVideo(file, this.options)
+      .convertVideo(this.file, this.options)
       .pipe(takeUntil(this.cancelConvert$))
       .subscribe({
         next: (video) => {
           this.videoResult = video;
           this.loading = false;
         },
-        error: (err: unknown) => this.onConvertError(err),
+        error: (message: string) => this.onConvertError(message),
       });
   }
 
-  private onConvertError(err: unknown): void {
+  private onConvertError(message: string): void {
     this.loading = false;
     this.imageResult = null;
     this.videoResult = null;
-    this.error = this.errorMessage(err);
+    this.error = message;
   }
 
-  private revokeMediaUrls(): void {
-    if (this.imageUrl) {
-      URL.revokeObjectURL(this.imageUrl);
-      this.imageUrl = null;
+  private revokeFileUrl(): void {
+    if (this.fileUrl) {
+      URL.revokeObjectURL(this.fileUrl);
+      this.fileUrl = null;
     }
-    if (this.videoUrl) {
-      URL.revokeObjectURL(this.videoUrl);
-      this.videoUrl = null;
-    }
-  }
-
-  private errorMessage(err: unknown): string {
-    if (err instanceof HttpErrorResponse) {
-      if (typeof err.error === 'string' && err.error.trim()) {
-        return err.error;
-      }
-      return 'Conversion failed. Check the file and try again.';
-    }
-    return 'Conversion failed. Check the file and try again.';
   }
 }

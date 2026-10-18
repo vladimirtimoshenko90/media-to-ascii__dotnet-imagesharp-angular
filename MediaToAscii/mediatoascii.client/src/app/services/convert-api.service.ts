@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 
 export interface ConvertOptions {
   width: number;
@@ -23,11 +23,15 @@ export class ConvertApiService {
   private readonly http = inject(HttpClient);
 
   convertImage(file: File, options: ConvertOptions): Observable<AsciiFrame> {
-    return this.http.post<AsciiFrame>('/api/convert/image', this.toFormData(file, options));
+    return this.http
+      .post<AsciiFrame>('/api/convert/image', this.toFormData(file, options))
+      .pipe(catchError((err) => this.mapError(err)));
   }
 
   convertVideo(file: File, options: ConvertOptions): Observable<AsciiVideo> {
-    return this.http.post<AsciiVideo>('/api/convert/video', this.toFormData(file, options));
+    return this.http
+      .post<AsciiVideo>('/api/convert/video', this.toFormData(file, options))
+      .pipe(catchError((err) => this.mapError(err)));
   }
 
   private toFormData(file: File, options: ConvertOptions): FormData {
@@ -37,5 +41,15 @@ export class ConvertApiService {
     form.append('invert', String(options.invert));
     form.append('charset', options.charset);
     return form;
+  }
+
+  private mapError(err: unknown): Observable<never> {
+    const message =
+      err instanceof HttpErrorResponse &&
+      typeof err.error === 'string' &&
+      err.error.trim()
+        ? err.error
+        : 'Conversion failed. Check the file and try again.';
+    return throwError(() => message);
   }
 }
