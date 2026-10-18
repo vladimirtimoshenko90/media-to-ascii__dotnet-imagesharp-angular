@@ -1,4 +1,5 @@
 import { Component, effect, ElementRef, input, viewChild } from '@angular/core';
+import { VideoPlayback } from '@constants/video-playback';
 
 @Component({
   selector: 'app-source-video-preview',
@@ -7,9 +8,9 @@ import { Component, effect, ElementRef, input, viewChild } from '@angular/core';
       <video
         #video
         [src]="videoUrl()"
-        muted
+        [muted]="true"
         playsinline
-        preload="metadata"
+        preload="auto"
         (loadeddata)="sync()"
       ></video>
     </div>
@@ -44,25 +45,55 @@ import { Component, effect, ElementRef, input, viewChild } from '@angular/core';
 })
 export class SourceVideoPreviewComponent {
   readonly videoUrl = input.required<string>();
-  /** Offset in ms from ASCII player (`frameIndex * frameDelayMs`). */
-  readonly currentTime = input(0);
+  readonly playback = input.required<VideoPlayback>();
 
   private readonly videoRef = viewChild<ElementRef<HTMLVideoElement>>('video');
 
   constructor() {
     effect(() => {
-      this.currentTime();
       this.videoUrl();
+      this.playback();
       this.sync();
     });
   }
 
+  /**
+   * Follow ASCII transport via play/pause/rate — not by setting currentTime every frame
+   * (that seeks the MP4 constantly and lags). Snap time only when paused, starting play,
+   * or when clocks drift (scrub/restart).
+   */
   sync(): void {
     const el = this.videoRef()?.nativeElement;
-    if (!el) {
+    if (!el || el.readyState < HTMLMediaElement.HAVE_METADATA) {
       return;
     }
-    el.pause();
-    el.currentTime = this.currentTime() / 1000;
+
+    const { timeMs, playing, playbackRate } = this.playback();
+    const targetSec = timeMs / 1000;
+    el.muted = true;
+
+    if (el.playbackRate !== playbackRate) {
+      el.playbackRate = playbackRate;
+    }
+
+    if (!playing) {
+      if (!el.paused) {
+        el.pause();
+      }
+      if (Math.abs(el.currentTime - targetSec) > 0.05) {
+        el.currentTime = targetSec;
+      }
+      return;
+    }
+
+    if (el.paused) {
+      el.currentTime = targetSec;
+      void el.play().catch(() => undefined);
+      return;
+    }
+
+    if (Math.abs(el.currentTime - targetSec) > 0.2) {
+      el.currentTime = targetSec;
+    }
   }
 }
