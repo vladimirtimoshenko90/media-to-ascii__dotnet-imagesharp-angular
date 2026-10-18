@@ -23,74 +23,46 @@ public sealed class VideoAsciiConverter(
         var duration = analysis.Duration;
 
         // One decode pass → real PNG files. Per-seek pipe extract fails/empties at full fps.
-        var framesDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(framesDir);
+        var framesDir = tempFiles.CreateDirectory();
+        var pattern = Path.Combine(framesDir, "frame%05d.png");
+        await FFMpegArguments
+            .FromFileInput(videoPath, verifyExists: true)
+            .OutputToFile(pattern, overwrite: true, opts => opts
+                .WithCustomArgument("-map 0:v:0")
+                .WithVideoCodec(VideoCodec.Image.Png)
+                .ForceFormat("image2"))
+            .CancellableThrough(ct)
+            .ProcessAsynchronously();
 
-        try
+        var framePaths = Directory.GetFiles(framesDir, "frame*.png")
+            .OrderBy(static p => p, StringComparer.Ordinal)
+            .ToArray();
+
+        if (framePaths.Length == 0)
         {
-            var pattern = Path.Combine(framesDir, "frame%05d.png");
-            await FFMpegArguments
-                .FromFileInput(videoPath, verifyExists: true)
-                .OutputToFile(pattern, overwrite: true, opts => opts
-                    .WithCustomArgument("-map 0:v:0")
-                    .WithVideoCodec(VideoCodec.Image.Png)
-                    .ForceFormat("image2"))
-                .CancellableThrough(ct)
-                .ProcessAsynchronously();
+            throw new InvalidOperationException("FFmpeg produced no video frames.");
+        }
 
-            var framePaths = Directory.GetFiles(framesDir, "frame*.png")
-                .OrderBy(static p => p, StringComparer.Ordinal)
-                .ToArray();
+        var frames = new AsciiFrame[framePaths.Length];
+        var parallelOptions = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount),
+            CancellationToken = ct,
+        };
 
-            if (framePaths.Length == 0)
+        await Parallel.ForEachAsync(
+            Enumerable.Range(0, framePaths.Length),
+            parallelOptions,
+            async (i, token) =>
             {
-                throw new InvalidOperationException("FFmpeg produced no video frames.");
-            }
+                await using var png = File.OpenRead(framePaths[i]);
+                frames[i] = await imageConverter.Convert(png, options, token);
+            });
 
-            var frames = new AsciiFrame[framePaths.Length];
-            var parallelOptions = new ParallelOptions
-            {
-                MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount),
-                CancellationToken = ct,
-            };
-
-            await Parallel.ForEachAsync(
-                Enumerable.Range(0, framePaths.Length),
-                parallelOptions,
-                async (i, token) =>
-                {
-                    await using var png = File.OpenRead(framePaths[i]);
-                    frames[i] = await imageConverter.Convert(png, options, token);
-                });
-
-            var durationMs = (int)Math.Max(0, Math.Round(duration.TotalMilliseconds));
-            var frameDelayMs = frames.Length > 0 && durationMs > 0
-                ? Math.Max(1, (int)Math.Round((double)durationMs / frames.Length))
-                : 0;
-            return new AsciiVideo(frames, durationMs, frameDelayMs);
-        }
-        finally
-        {
-            TryDeleteDirectory(framesDir);
-        }
-    }
-
-    private static void TryDeleteDirectory(string path)
-    {
-        try
-        {
-            if (Directory.Exists(path))
-            {
-                Directory.Delete(path, recursive: true);
-            }
-        }
-        catch (IOException)
-        {
-            // Best-effort cleanup; OS temp scavenges leftovers.
-        }
-        catch (UnauthorizedAccessException)
-        {
-            // Best-effort cleanup; OS temp scavenges leftovers.
-        }
+        var durationMs = (int)Math.Max(0, Math.Round(duration.TotalMilliseconds));
+        var frameDelayMs = frames.Length > 0 && durationMs > 0
+            ? Math.Max(1, (int)Math.Round((double)durationMs / frames.Length))
+            : 0;
+        return new AsciiVideo(frames, durationMs, frameDelayMs);
     }
 }

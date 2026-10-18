@@ -3,6 +3,8 @@ namespace MediaToAscii.Server.Common;
 public interface ITempFileUtility
 {
     Task<string> Persist(Stream stream, string extension, CancellationToken ct);
+
+    string CreateDirectory();
 }
 
 public sealed class TempFileUtility : ITempFileUtility, IAsyncDisposable, IDisposable
@@ -30,6 +32,27 @@ public sealed class TempFileUtility : ITempFileUtility, IAsyncDisposable, IDispo
             TryDelete(path);
             throw;
         }
+
+        lock (_gate)
+        {
+            if (_disposed)
+            {
+                TryDelete(path);
+                throw new ObjectDisposedException(nameof(TempFileUtility));
+            }
+
+            _paths.Add(path);
+        }
+
+        return path;
+    }
+
+    public string CreateDirectory()
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
+        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(path);
 
         lock (_gate)
         {
@@ -86,7 +109,11 @@ public sealed class TempFileUtility : ITempFileUtility, IAsyncDisposable, IDispo
     {
         try
         {
-            if (File.Exists(path))
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, recursive: true);
+            }
+            else if (File.Exists(path))
             {
                 File.Delete(path);
             }
