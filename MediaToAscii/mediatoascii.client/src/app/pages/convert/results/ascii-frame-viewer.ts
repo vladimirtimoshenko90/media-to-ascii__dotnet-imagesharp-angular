@@ -4,43 +4,38 @@ import { AsciiFrame } from '@services/convert-api.service';
 @Component({
   selector: 'app-ascii-frame-viewer',
   template: `
-    <div class="ascii-frame-viewer">
-      <button
-        type="button"
-        class="btn btn-sm btn-secondary-action copy-btn"
-        title="Copy"
-        [disabled]="!canCopy()"
-        (click)="copy()"
-      >
-        <i class="bi bi-copy"></i>
-      </button>
+    <button
+      type="button"
+      class="btn btn-sm btn-secondary-action copy-btn"
+      title="Copy"
+      [disabled]="!canCopy()"
+      (click)="copy()"
+    >
+      <i class="bi bi-copy"></i>
+    </button>
+    <div class="ascii-frame-viewer h-scroll">
       <pre class="ascii-frame-viewer__pre">{{ frame().ascii }}</pre>
     </div>
   `,
   styles: `
     :host {
       display: block;
+      position: relative;
       box-sizing: border-box;
       width: max-content;
-      max-width: none;
+      max-width: 100%;
+      min-width: 0;
       padding: 1rem;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 0.25rem;
-      overflow: visible;
+      overflow: hidden;
     }
 
-    .ascii-frame-viewer {
-      position: relative;
-      width: max-content;
-      max-width: none;
-    }
-
-    /* Overlay — does not shift the ASCII layout */
     .copy-btn {
       position: absolute;
-      top: 0;
-      right: 0;
+      top: 1rem;
+      right: 1rem;
       z-index: 1;
       display: inline-flex;
       align-items: center;
@@ -55,18 +50,22 @@ import { AsciiFrame } from '@services/convert-api.service';
       font-size: 1rem;
     }
 
-    /* Override Bootstrap reboot pre { overflow: auto } — never scroll here */
+    .ascii-frame-viewer {
+      overflow-x: auto;
+      overflow-y: hidden;
+      max-width: 100%;
+    }
+
     .ascii-frame-viewer__pre {
       display: block;
       margin: 0;
+      width: max-content;
       font-family: var(--font-mono);
       font-size: 11px;
       line-height: 1;
       white-space: pre;
       color: var(--fg);
       overflow: visible;
-      max-height: none;
-      height: auto;
     }
   `,
 })

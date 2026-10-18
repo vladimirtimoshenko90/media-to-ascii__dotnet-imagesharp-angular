@@ -54,18 +54,22 @@ import { AsciiFrameViewerComponent } from './ascii-frame-viewer';
     :host {
       display: block;
       width: max-content;
-      max-width: none;
+      max-width: 100%;
+      min-width: 0;
     }
 
     .ascii-video-player {
       display: flex;
       flex-direction: column;
       width: max-content;
-      max-width: none;
+      max-width: 100%;
+      min-width: 0;
     }
 
     /* Join frame + transport into one stack (no gap, no double border). */
     .ascii-video-player > app-ascii-frame-viewer {
+      max-width: 100%;
+      min-width: 0;
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
       border-bottom: none;
