@@ -48,7 +48,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
 - [⬜ Step 9 — Finalization](#step-9--finalization)
   - [✅ 9.2 — README adjust for new behavior](#step-92--readme-adjust-for-new-behavior)
   - [⬜ 9.3 — README sample ASCII](#step-93--readme-sample-ascii)
-  - [⬜ 9.4 — Refresh __spec.md](#step-94--refresh-__specmd)
+  - [✅ 9.4 — Refresh __spec.md](#step-94--refresh-__specmd)
   - [⬜ 9.5 — Archive this plan as implementation.phase2.md](#step-95--archive-this-plan-as-implementationphase2md)
 
 ### Status legend
@@ -610,7 +610,7 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 
 ### Step 9.4 — Refresh __spec.md
 
-- Status: ⬜
+- Status: ✅
 - Needs: 4.1, 1.3
 - Files: `docs/__spec.md`
 - Do: phase 2 capabilities/contracts; correct plan links
