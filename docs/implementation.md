@@ -46,7 +46,6 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 8.9 — Replace file control on source preview](#step-89--replace-file-control-on-source-preview)
   - [✅ 8.10 — In-frame horizontal scroll](#step-810--in-frame-horizontal-scroll)
 - [⬜ Step 9 — Finalization](#step-9--finalization)
-  - [⬜ 9.1 — UI polish to match Open Design](#step-91--ui-polish-to-match-open-design)
   - [⬜ 9.2 — README adjust for new behavior](#step-92--readme-adjust-for-new-behavior)
   - [⬜ 9.3 — README sample ASCII](#step-93--readme-sample-ascii)
   - [⬜ 9.4 — Refresh __spec.md](#step-94--refresh-__specmd)
@@ -169,7 +168,7 @@ Prefer fewer parallel claims over conflicts. **8.x** is sequential.
       (removed) result-actions.ts     # deleted in 8.3 — Copy lives on ascii-frame-viewer
   app.component.ts
   app.config.ts
-  styles.scss                         # Step 8.1 growable shell (+ 8.2 / 9.1 polish)
+  styles.scss                         # Step 8.1 growable shell (+ 8.2 polish)
 ```
 
 ### Locked contracts (freeze — do not bikeshed)
@@ -342,7 +341,7 @@ Stop hard-coding glyphs on FE; picker shows API samples.
 - Do: match OD — three clickable monospace samples from API `{ id, characters }`; emit id; no name labels (Classic/…); no native radios; no “Character set” heading required; width/invert stay on option-controls
 - Done when: click sample selects charset id; looks like OD options charset grid
 - Commit: `frontend - ui, add charset sample picker`
-- Note: locked visual is **D5** (segmented strip). Any drift vs OD → fix in **9.1** (or small follow-up), not a new leaf.
+- Note: locked visual was **D5** (segmented strip). Product UI is now the source of truth; no further OD-alignment leaf.
 
 ---
 
@@ -590,15 +589,6 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 ---
 
 ## Step 9 — Finalization
-
-### Step 9.1 — UI polish to match Open Design
-
-- Status: ⬜
-- Needs: 7.4, 4.2, 8.3
-- Files: `{Ng}/src/app/pages/**`, `components/**`, `styles.scss`
-- Do: final pass vs OD `media-to-ascii-refresh.html` + **Locked UI (OD)** (D1–D5); verify charset **D5**, transport **D2**, actions **D3**, shell **D4**, image-ascii-result **D1**; no new features
-- Done when: UI shippable vs locked OD mockup
-- Commit: `frontend - ui, polish to phase2 Open Design`
 
 ### Step 9.2 — README adjust for new behavior
 
