@@ -1,12 +1,12 @@
 # media-to-ascii
 
-Web app that converts uploaded images and videos into ASCII art. Angular handles upload, options, preview, copy, and download; ASP.NET Core runs all conversion on the server.
+Web app that converts uploaded images and videos into ASCII art. Angular handles upload, options, and preview; ASP.NET Core runs all conversion on the server.
 
 ## Prerequisites
 
 - **.NET 10 SDK**
-- **Node.js** (LTS)
-- **FFmpeg** (required for video) — e.g. `winget install Gyan.FFmpeg`
+- **Node.js** `^22.22.3` / `^24.15.0` / `^26.0.0` (required by Angular 22)
+- **FFmpeg** (required for video) — e.g. `winget install Gyan.FFmpeg` — `ffmpeg` and `ffprobe` on `PATH`
 
 ## Stack
 
@@ -14,9 +14,9 @@ Web app that converts uploaded images and videos into ASCII art. Angular handles
 |------|--------|
 | Solution | Visual Studio Angular + ASP.NET Core (SPA proxy in dev) |
 | Backend | .NET 10 Minimal API |
-| Frontend | Angular 19 |
+| Frontend | Angular 22 |
 | Images | SixLabors.ImageSharp |
-| Video frames | FFMpegCore (system **ffmpeg** / **ffprobe** required at runtime for video) |
+| Video frames | FFMpegCore (system **ffmpeg** / **ffprobe**) |
 
 ## Run
 
@@ -32,9 +32,9 @@ Dev SPA proxy serves the Angular app (typically `https://localhost:56677`) and f
 
 ## Usage
 
-1. Drop or choose an image or video.
-2. Adjust width, invert, and charset (Classic / Detailed / Blocks).
-3. Convert — ASCII appears in the preview.
-4. Copy to the clipboard or download as `.txt`.
+1. Drop or choose an image or video. Use the folder icon on the source preview to replace the file.
+2. Adjust resolution, invert, and charset samples — conversion runs automatically (width changes are debounced). There is no Convert button.
+3. View ASCII in the main pane; the sidebar shows the original source. For video, use the ASCII player transport (play/pause, 2×, restart, seek); the muted source preview follows that playback.
+4. Copy the current frame to the clipboard (icon on the frame).
 
-Video responses include up to 30 evenly sampled frames, separated in the plain-text body.
+Video conversion returns up to 30 evenly sampled frames as JSON (`frames`, `durationMs`, `frameDelayMs`).
