@@ -45,11 +45,11 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 8.8 — Sync source video preview to ASCII player](#step-88--sync-source-video-preview-to-ascii-player)
   - [✅ 8.9 — Replace file control on source preview](#step-89--replace-file-control-on-source-preview)
   - [✅ 8.10 — In-frame horizontal scroll](#step-810--in-frame-horizontal-scroll)
-- [⬜ Step 9 — Finalization](#step-9--finalization)
+- [✅ Step 9 — Finalization](#step-9--finalization)
   - [✅ 9.2 — README adjust for new behavior](#step-92--readme-adjust-for-new-behavior)
   - [✅ 9.3 — README sample ASCII](#step-93--readme-sample-ascii)
   - [✅ 9.4 — Refresh __spec.md](#step-94--refresh-__specmd)
-  - [⬜ 9.5 — Archive this plan as implementation.phase2.md](#step-95--archive-this-plan-as-implementationphase2md)
+  - [✅ 9.5 — Archive this plan as implementation.phase2.md](#step-95--archive-this-plan-as-implementationphase2md)
 
 ### Status legend
 
@@ -619,7 +619,7 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 
 ### Step 9.5 — Archive this plan as implementation.phase2.md
 
-- Status: ⬜
+- Status: ✅
 - Needs: all other phase-2 leaves ✅ **or** ⏸️ (no ⬜/⏳/🔍 left)
 - Files: `docs/implementation.md` → `docs/implementation.phase2.md`
 - Do: rename per `__workflow.md`; postponed leaves may remain ⏸️ or be finished first (human choice)
