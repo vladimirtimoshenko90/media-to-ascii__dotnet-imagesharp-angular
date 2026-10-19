@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { UploadZoneComponent } from '@components/upload-zone';
 import { ASCII_WIDTH } from '@constants/ascii-width';
@@ -35,7 +35,7 @@ import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
     AsciiVideoPlayerComponent,
   ],
   template: `
-    @if (!file) {
+    @if (!file()) {
       <div class="welcome">
         <div class="welcome-card region">
           <app-upload-zone (fileSelected)="onFileSelected($event)" />
@@ -44,24 +44,27 @@ import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
     } @else {
       <div class="tool-layout">
         <div class="sidebar-column">
-          @if (fileUrl) {
+          @if (fileUrl(); as url) {
             <app-replace-file-button (fileSelected)="onFileSelected($event)" />
-            @if (fileType === 'image') {
-              <app-source-image-preview [imageUrl]="fileUrl" />
-            } @else if (fileType === 'video') {
-              <app-source-video-preview [videoUrl]="fileUrl" [playback]="videoPlayback" />
+            @if (fileType() === 'image') {
+              <app-source-image-preview [imageUrl]="url" />
+            } @else if (fileType() === 'video') {
+              <app-source-video-preview
+                [videoUrl]="url"
+                [playback]="videoPlayback()"
+              />
             }
           }
           <div class="region">
             <app-option-controls
-              [charsets]="charsets"
-              [options]="options"
+              [charsets]="charsets()"
+              [options]="options()"
               (optionsChange)="onOptionsChange($event)"
             />
           </div>
         </div>
 
-        @if (loading) {
+        @if (loading()) {
           <div class="region">
             <div class="result-status">
               <p class="loading-msg">
@@ -70,18 +73,18 @@ import { SourceVideoPreviewComponent } from './sidebar/source-video-preview';
               </p>
             </div>
           </div>
-        } @else if (error) {
+        } @else if (error(); as err) {
           <div class="region">
             <div class="result-status">
-              <p class="error-msg">{{ error }}</p>
+              <p class="error-msg">{{ err }}</p>
             </div>
           </div>
-        } @else if (imageResult) {
-          <app-ascii-frame-viewer [frame]="imageResult" />
-        } @else if (videoResult) {
+        } @else if (imageResult(); as frame) {
+          <app-ascii-frame-viewer [frame]="frame" />
+        } @else if (videoResult(); as video) {
           <app-ascii-video-player
-            [video]="videoResult"
-            (playback)="videoPlayback = $event"
+            [video]="video"
+            (playback)="videoPlayback.set($event)"
           />
         }
       </div>
@@ -153,27 +156,27 @@ export class ConvertPage implements OnInit, OnDestroy {
   private readonly configurationApi = inject(ConfigurationApiService);
   private readonly cancelConvert$ = new Subject<void>();
 
-  file: File | null = null;
-  fileType: 'image' | 'video' | 'unknown' = 'unknown';
-  fileUrl: string | null = null;
+  readonly file = signal<File | null>(null);
+  readonly fileType = signal<'image' | 'video' | 'unknown'>('unknown');
+  readonly fileUrl = signal<string | null>(null);
 
-  charsets: AsciiCharsetOption[] = [];
-  options: ConvertOptions = {
+  readonly charsets = signal<AsciiCharsetOption[]>([]);
+  readonly options = signal<ConvertOptions>({
     width: ASCII_WIDTH.DEFAULT,
     invert: false,
     charset: '',
-  };
-  loading = false;
-  error: string | null = null;
-  videoPlayback: VideoPlayback = { ...INITIAL_VIDEO_PLAYBACK };
-  imageResult: AsciiFrame | null = null;
-  videoResult: AsciiVideo | null = null;
+  });
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly videoPlayback = signal<VideoPlayback>({ ...INITIAL_VIDEO_PLAYBACK });
+  readonly imageResult = signal<AsciiFrame | null>(null);
+  readonly videoResult = signal<AsciiVideo | null>(null);
 
   ngOnInit(): void {
     this.configurationApi.getConvertOptions().subscribe((data) => {
-      this.charsets = data;
-      this.options = { ...this.options, charset: data[0].id };
-      if (this.file) {
+      this.charsets.set(data);
+      this.options.update((o) => ({ ...o, charset: data[0].id }));
+      if (this.file()) {
         this.convert();
       }
     });
@@ -186,45 +189,50 @@ export class ConvertPage implements OnInit, OnDestroy {
   }
 
   onFileSelected(file: File): void {
-    this.file = file;
-    this.fileType = file.type.startsWith('image/')
+    const fileType = file.type.startsWith('image/')
       ? 'image'
       : file.type.startsWith('video/')
         ? 'video'
         : 'unknown';
-    this.error = null;
-    this.imageResult = null;
-    this.videoResult = null;
-    this.videoPlayback = { ...INITIAL_VIDEO_PLAYBACK };
+
+    this.file.set(file);
+    this.fileType.set(fileType);
+    this.error.set(null);
+    this.imageResult.set(null);
+    this.videoResult.set(null);
+    this.videoPlayback.set({ ...INITIAL_VIDEO_PLAYBACK });
     this.revokeFileUrl();
-    if (this.fileType !== 'unknown') {
-      this.fileUrl = URL.createObjectURL(file);
+    if (fileType !== 'unknown') {
+      this.fileUrl.set(URL.createObjectURL(file));
     }
     this.convert();
   }
 
   onOptionsChange(options: ConvertOptions): void {
-    this.options = options;
+    this.options.set(options);
     this.convert();
   }
 
   private convert(): void {
-    if (!this.file || !this.options.charset || this.fileType === 'unknown') {
+    const file = this.file();
+    const options = this.options();
+    const fileType = this.fileType();
+    if (!file || !options.charset || fileType === 'unknown') {
       return;
     }
 
     this.cancelConvert$.next();
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
 
-    if (this.fileType === 'image') {
+    if (fileType === 'image') {
       this.convertApi
-        .convertImage(this.file, this.options)
+        .convertImage(file, options)
         .pipe(takeUntil(this.cancelConvert$))
         .subscribe({
           next: (frame) => {
-            this.imageResult = frame;
-            this.loading = false;
+            this.imageResult.set(frame);
+            this.loading.set(false);
           },
           error: (message: string) => this.onConvertError(message),
         });
@@ -232,28 +240,29 @@ export class ConvertPage implements OnInit, OnDestroy {
     }
 
     this.convertApi
-      .convertVideo(this.file, this.options)
+      .convertVideo(file, options)
       .pipe(takeUntil(this.cancelConvert$))
       .subscribe({
         next: (video) => {
-          this.videoResult = video;
-          this.loading = false;
+          this.videoResult.set(video);
+          this.loading.set(false);
         },
         error: (message: string) => this.onConvertError(message),
       });
   }
 
   private onConvertError(message: string): void {
-    this.loading = false;
-    this.imageResult = null;
-    this.videoResult = null;
-    this.error = message;
+    this.loading.set(false);
+    this.imageResult.set(null);
+    this.videoResult.set(null);
+    this.error.set(message);
   }
 
   private revokeFileUrl(): void {
-    if (this.fileUrl) {
-      URL.revokeObjectURL(this.fileUrl);
-      this.fileUrl = null;
+    const url = this.fileUrl();
+    if (url) {
+      URL.revokeObjectURL(url);
+      this.fileUrl.set(null);
     }
   }
 }
