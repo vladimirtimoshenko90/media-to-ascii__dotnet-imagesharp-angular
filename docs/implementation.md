@@ -47,7 +47,7 @@ Living plan — **feature-centric**: each top-level Step is one feature; leaves 
   - [✅ 8.10 — In-frame horizontal scroll](#step-810--in-frame-horizontal-scroll)
 - [⬜ Step 9 — Finalization](#step-9--finalization)
   - [✅ 9.2 — README adjust for new behavior](#step-92--readme-adjust-for-new-behavior)
-  - [⬜ 9.3 — README sample ASCII](#step-93--readme-sample-ascii)
+  - [✅ 9.3 — README sample ASCII](#step-93--readme-sample-ascii)
   - [✅ 9.4 — Refresh __spec.md](#step-94--refresh-__specmd)
   - [⬜ 9.5 — Archive this plan as implementation.phase2.md](#step-95--archive-this-plan-as-implementationphase2md)
 
@@ -601,7 +601,7 @@ ASCII at natural glyph size; no ASCII-pane scrollbars. Centered page working are
 
 ### Step 9.3 — README sample ASCII
 
-- Status: ⬜
+- Status: ✅
 - Needs: 9.2
 - Files: `README.md`
 - Do: short sample at bottom
